@@ -1860,11 +1860,418 @@ function initWidgets3(){
  ['coldMyth','whichWay'].forEach(()=>{});
 }
 
+/* =================== CHAPTER 4: Maintaining life =================== */
+const KEYWORDS4=[
+ {id:'root hairs',t:'root hairs',topic:'4.1',d:'Tiny hair-like parts of root cells that grow out into the soil. Each root hair is part of a single cell, and together they give a huge surface for absorbing water and mineral ions.'},
+ {id:'xylem vessels',t:'xylem vessels',topic:'4.1',d:'Long, empty tubes made of dead cells stacked end to end. They carry water and mineral ions from the roots all the way up to the leaves.'},
+ {id:'transpiration',t:'transpiration',topic:'4.2',d:'The loss of water vapour from the leaves of a plant, mostly through the stomata on the underside.'},
+ {id:'wilted',t:'wilted',topic:'4.2',d:'Describes a plant that has collapsed because its cells do not contain enough water, so they are soft and floppy.'},
+ {id:'excretion',t:'excretion',topic:'4.3',d:'Getting rid of waste substances made in the body\'s cells, and substances the body has too much of. Faeces do not count.'},
+ {id:'urea',t:'urea',topic:'4.3',d:'A poisonous waste substance made in liver cells from extra protein. It is removed by the kidneys.'},
+ {id:'kidneys',t:'kidneys',topic:'4.3',d:'Two organs that filter the blood, removing all of the urea and any excess water.'},
+ {id:'excretory system',t:'excretory system',topic:'4.3',d:'The organ system that removes urea from the blood: kidneys, ureters, bladder and urethra. Also called the renal system.'},
+ {id:'renal',t:'renal',topic:'4.3',d:'To do with the kidneys. The excretory system is also called the renal system.'},
+ {id:'urine',t:'urine',topic:'4.3',d:'A solution of urea dissolved in excess water, made by the kidneys.'},
+ {id:'ureter',t:'ureter',topic:'4.3',d:'The tube that carries urine from each kidney down to the bladder.'},
+ {id:'bladder',t:'bladder',topic:'4.3',d:'The organ that stores urine for a while before it leaves the body.'},
+ {id:'urethra',t:'urethra',topic:'4.3',d:'The tube that carries urine from the bladder to the outside of the body.'},
+ {id:'fetus',t:'fetus',topic:'4.4',d:'A baby before it is born, during the nine months it grows inside its mother.'},
+ {id:'fetal',t:'fetal',topic:'4.4',d:'To do with a fetus, as in "fetal health".'}
+];
+
+const TOPICS4=[
+{
+ id:'4.1',title:'Plants and water',pages:'142–147',
+ goals:['Find out how plants absorb water.','Discover how water moves from a plant\'s roots to its leaves.'],
+ hook:{q:'All living things need water to stay alive. How many sentences can you make that start with "Living things need water …"?',a:'For example: living things need water to dissolve the chemicals inside their cells, so that chemical reactions such as respiration can happen. In this chapter you will meet more reasons, for plants and for humans.'},
+ big:'Root hairs absorb water and mineral ions from the soil. The water crosses the root to the xylem vessels, which carry it all the way up to the leaves.',
+ steps:[
+  {t:'Into the root hairs',body:`<p>Plants are made mostly of water, and they absorb it almost all the time through their roots.</p>
+   <p>Soil is made of tiny rock particles of all shapes and sizes. They don't pack together tightly, so there are spaces between them filled with air and water.</p>
+   <p>Special cells called <span class="kw">root hairs</span> grow out of the surface of a root. <b>Each root hair is part of a single cell.</b> Together they give a really big surface for absorbing water.</p>
+   <p>Water moves from the soil, through the cell wall and the cell membrane, and into the cytoplasm of the root hair cell. Mineral ions such as <b>magnesium</b> and <b>nitrate</b>, dissolved in the soil water, go in with it.</p>
+   <p class="note">Watch the water and the mineral ions move into the root hair cell.</p>`,
+   vis:'rootHair',
+   check:C('How does the shape of a root hair cell help it absorb water?',['It has a thick wall that keeps water in','Its long, thin hair gives a really big surface for absorbing water','It has chloroplasts to trap water','It is a dead, empty tube'],1,'The hair reaches out between the soil particles and gives a large surface through which water and mineral ions can enter.')},
+  {t:'Across the root to the xylem',body:`<p>Once water is inside a root hair cell, it moves from the outside of the root towards the inside, into the <span class="kw">xylem vessels</span> in the centre.</p>
+   <p>In a root, the xylem is found in a <b>cross-shaped area</b> in the middle. The <b>root cap</b> protects the tip of the root as it grows through the soil.</p>
+   <p class="note">Tap each part of the root cross-section, then send the water on its journey.</p>`,
+   extra:'rootCross',
+   check:C('Where is the xylem found in a root?',['In the root hairs on the outside','In a cross-shaped area in the centre','In the root cap at the tip','Only in the leaves'],1,'Water crosses the root from the root hairs on the outside to the xylem in the centre.')},
+  {t:'What xylem vessels are like',body:`<p>Xylem vessels are long, tube-like cells, and they are <b>dead</b>. Everything inside them, such as the cytoplasm and the nucleus, has disappeared. All that is left is the cell wall, with an empty space inside.</p>
+   <p>Their end walls have disappeared too, so xylem vessels stack on top of one another to make long, empty tubes. They reach all the way from the roots to the highest parts of the plant.</p>
+   <p>The wood in a tree trunk is made of xylem vessels. A xylem vessel is only about <b>0.05 mm</b> across, although they come in a range of sizes.</p>
+   <p class="note">Build a xylem tube from living cells, one step at a time.</p>`,
+   extra:'xylemBuild',
+   check:C('Which statement about xylem vessels is correct?',['They are living cells full of cytoplasm','They are dead, empty tubes with no end walls','They carry sugar down from the leaves','They are found only in the roots'],1,'Dead and empty, with the end walls gone, so water can flow straight up through them.')},
+  {t:'The celery experiment',body:`<p>In the book's experiment you stand the cut end of a celery stalk in 1 to 2 cm of water mixed with a coloured dye, such as blue ink. Every five minutes or so you look for the dye moving up. It can happen very quickly or very slowly.</p>
+   <p>When the dye reaches the top, you rinse the end of the stalk and cut across it, about halfway up. The cut end shows <b>blue spots</b> near its outer edge. These are where the xylem vessels are.</p>
+   <div class="safety"><b>Safety:</b> put the stalk on a non-slip surface before cutting, and cut away from you so the blade can't hit your hand.</div>
+   <p class="note">Start the experiment, then cut the stalk.</p>`,
+   extra:'celery',
+   check:C('Which kind of cells are found where you see the blue spots?',['Palisade cells','Root hair cells','Xylem cells'],2,'The dye travels up the stalk in the xylem, so the blue spots mark the xylem.')},
+  {t:'Planning your own experiment',body:`<p>The book asks you to modify the celery experiment to test a <b>hypothesis</b>: what effect does <b>temperature</b> have on how fast water moves up a stalk?</p>
+   <p>A good plan includes:</p>
+   <ul><li>a list or drawing of the apparatus</li><li>the variable you will change (the <b>independent variable</b>)</li><li>what you will measure, how and when (the <b>dependent variable</b>)</li><li>the variables you will keep the same (<b>control variables</b>)</li><li>a <b>risk assessment</b>: what the risks are and how you will control them</li></ul>
+   <p class="note">Sort the parts of a temperature experiment. (These are example choices for practice; your own plan may differ.)</p>`,
+   extra:'planSort',
+   check:C('In an experiment testing the effect of temperature on how fast water moves up a stalk, what is the independent variable?',['The temperature','The time taken for the dye to reach the top','The type of plant','The depth of the water'],0,'You change the temperature on purpose. The time (or speed) is what you measure.')}
+ ],
+ mistakes:[
+  ['Xylem vessels are living cells.','They are dead. Their contents and end walls have gone, leaving empty tubes.'],
+  ['Each root hair is a separate cell on its own.','Each root hair is part of a single root hair cell: a long outgrowth of that one cell.'],
+  ['Roots only absorb water.','Mineral ions such as magnesium and nitrate are absorbed too, dissolved in the water.']
+ ],
+ bq:[
+  {p:'p. 143',q:'Root hair cells are different from other plant cells. Describe how the structure of a root hair cell helps it to carry out its function.',a:'It has a long, thin hair that grows out between the soil particles, giving a really big surface through which water and mineral ions can be absorbed.'},
+  {p:'p. 143',q:'Why do plants need nitrate ions and magnesium ions?',a:'This page of the book does not give the answer; it refers back to ions in Topic 2.4. Check the plant nutrition work from your earlier studies or ask your teacher, and add the answer to your notes.'},
+  {p:'p. 146',q:'Which kind of cells do you think are found in the places where you can see blue spots? Choose from: palisade cells, root hair cells, xylem cells.',a:'Xylem cells. The dye is carried up the stalk in the xylem vessels.'},
+  {p:'p. 146',q:'Suggest why it was important to (a) put no more than 2 cm of water in the container at the start, and (b) wash the stalk before cutting across it at the end.',a:'The book does not print answers. Reasoning: (a) with only a little water, the dye can only get higher up the stalk by travelling up the xylem, not by the stalk simply standing deep in dye; (b) rinsing removes dye from the outside, so the blue you see on the cut surface comes only from dye inside the xylem.'},
+  {p:'p. 146',q:'There were no roots on the plant in your experiment. Explain how, in a complete plant, water would get to the stalk.',a:'Water is absorbed from the soil by the root hair cells, moves across the root to the xylem vessels in the centre, and then travels up the xylem vessels, which run all the way from the roots into the stalk.'},
+  {p:'p. 147',q:'If the temperature increases, do you think water would move up a stalk faster or more slowly? Write your idea as a hypothesis, then plan how to test it.',a:'This is your own hypothesis, so the book gives no answer. Make sure your plan names the independent variable (temperature), the dependent variable (how fast the dye rises, and how you will measure it), the control variables, and a risk assessment.'}
+ ],
+ checklist:['I can describe how water and mineral salts are absorbed from the soil into root hair cells.','I can describe how water and mineral salts cross the root to reach the xylem vessels.','I can suggest a hypothesis about the rate of movement of water in a stalk.','I can plan an experiment to test my hypothesis.','I can carry out a risk assessment for my experiment.']
+},
+{
+ id:'4.2',title:'Transpiration',pages:'148–154',
+ goals:['Find out how water vapour is lost from plant leaves.','Summarise why plants need water.'],
+ hook:{q:'Draw the particles in liquid water and in water as a gas. What happens to the particles when liquid water changes to a gas?',a:'In the liquid the particles are close together but can move past each other. In the gas they are far apart and moving fast. When water evaporates, particles gain enough energy to escape from the liquid and spread out as a gas.'},
+ big:'Water evaporates from the walls of leaf cells, the water vapour diffuses into the air spaces, and it escapes through the stomata. This loss of water vapour is transpiration.',
+ steps:[
+  {t:'Through the leaf and out',body:`<p>When water reaches a leaf, it moves out of the xylem vessels and into the leaf cells. Cells with chloroplasts use a little of it for photosynthesis, but most of the water doesn't stay in the cell.</p>
+   <ol><li>The liquid water soaks into the <b>cellulose cell wall</b>.</li><li>It changes to <b>water vapour</b>: it evaporates.</li><li>The water vapour diffuses into the <b>air spaces</b> between the cells.</li><li>The air spaces connect with the outside air through tiny holes in the <b>underside</b> of the leaf, called <b>stomata</b>. The water vapour diffuses out through them.</li></ol>
+   <p>This loss of water vapour from leaves is called <span class="kw">transpiration</span>.</p>
+   <p class="note">Step through the water's journey across the leaf.</p>`,
+   extra:'leafJourney',
+   check:C('Where in a leaf does liquid water change into water vapour?',['In the xylem vessels','At the cell walls of the leaf cells','Inside the stomata','In the chloroplasts'],1,'Water soaks into the cellulose cell wall and evaporates from there into the air spaces.')},
+  {t:'Measuring water loss',body:`<p>In the book's investigation you take two very similar plants in the same size pots, with moist soil.</p>
+   <ul><li><b>Plant 1:</b> a polythene bag covers the whole plant <i>and</i> its pot.</li><li><b>Plant 2:</b> a bag covers only the pot and soil, tied around the stem. The leaves are left open to the air.</li></ul>
+   <p>You weigh both every day for at least a week, record the masses in a results table with units in the headings, and draw a line graph with a line for each plant.</p>
+   <p>Only Plant 2's leaves can lose water vapour to the air, so it is the one that loses mass faster, by transpiration.</p>
+   <p class="note">Run the simulated week. (The numbers here are a made-up illustration, not results from the book.)</p>`,
+   extra:'bagPlants',
+   check:C('In this investigation, what is the independent variable?',['The mass of the plants','Whether the leaves are covered by the bag or not','The number of days','The size of the pots'],1,'That is the one thing that differs between the two plants. The mass is what you measure.')},
+  {t:'Which side of a leaf loses most water?',body:`<p>In another investigation, you hang eight similar leaves on a "washing line", in pairs:</p>
+   <ul><li>A and B: no petroleum jelly</li><li>C and D: jelly on the upper surface only</li><li>E and F: jelly on the lower surface only</li><li>G and H: jelly on both surfaces</li></ul>
+   <p>Petroleum jelly stops water vapour escaping from the surface it covers. You weigh the leaves, leave them to dry for at least a day, weigh them again and work out the mean change in mass for each pair.</p>
+   <p>Remember that the stomata are in the <b>underside</b> of the leaf. Use that to predict which treatment keeps the most water.</p>
+   <p class="note">Put the pairs in order. (This is a prediction from leaf structure; the book asks you to find out by experiment.)</p>`,
+   extra:'jellyRank',
+   check:C('Why does most transpiration happen from the underside of a leaf?',['The underside is closer to the soil','The stomata are in the underside of the leaf','The top of the leaf has no cells','Sunlight stops evaporation on the top'],1,'Water vapour can only escape through the stomata, the tiny holes in the underside of the leaf.')},
+  {t:'Why plants need water',body:`<p>The book gives four reasons:</p>
+   <ul><li><b>Support.</b> Plant cells hold a lot of water, especially in their vacuoles. Cells full of water are firm and press on each other, so the plant stands upright. Without enough water the cells become soft and floppy, and the plant collapses: it has <span class="kw">wilted</span>.</li>
+   <li><b>Transport.</b> Water moving up the xylem carries dissolved mineral salts from the roots to every other part of the plant.</li>
+   <li><b>Cooling.</b> Evaporation takes heat away, so water evaporating from leaf cell walls cools the cells. This matters for plants in very hot places.</li>
+   <li><b>Photosynthesis.</b> Water is a reactant: plants change water and carbon dioxide into glucose and oxygen.</li></ul>
+   <p class="note">Change how much water the plant gets.</p>`,
+   extra:'wilt',
+   check:C('Why does a plant wilt when it does not get enough water?',['Its xylem vessels break','Its cells become soft and floppy, so they no longer support the plant','It photosynthesises too fast','Its roots grow too long'],1,'Cells full of water press against each other and hold the plant up. Without water they go floppy and the plant collapses.')}
+ ],
+ mistakes:[
+  ['Water leaves the leaf as a liquid.','It leaves as water vapour, after evaporating from the cell walls.'],
+  ['Transpiration happens equally from both sides of a leaf.','Most happens from the underside, where the stomata are.'],
+  ['Plants need water only for photosynthesis.','They also need it for support, for transporting mineral salts and for cooling.']
+ ],
+ bq:[
+  {p:'p. 149',q:'Use the leaf diagram in Topic 1.2 to identify the upper epidermis, the palisade layer and the spongy layer on the diagram on page 149.',a:'Compare the two diagrams in your book: the upper epidermis is the top layer of cells, the palisade layer is the row of tall cells packed with chloroplasts beneath it, and the spongy layer has rounder cells with air spaces between them.'},
+  {p:'p. 149',q:'Most transpiration happens from the underside of a leaf, not the top. Why is this?',a:'The stomata, the tiny holes that water vapour diffuses out through, are in the underside of the leaf.'},
+  {p:'p. 151',q:'Investigating transpiration: (1) What was the independent variable? (2) What variables did you keep the same? (3) Compare the changes in mass of the two plants. (4) Explain why one plant lost mass faster, using the word "transpiration".',a:'(1) Whether the leaves were covered by the bag. (2) For example: similar plants, same size pots, same volume of water at the start, same place and the same times for weighing. (3) The plant with its leaves uncovered lost more mass, and lost it faster. (4) Its leaves could lose water vapour to the air by transpiration; the other plant\'s leaves were sealed in the bag. (Answers (3) and (4) describe the result the book\'s method is designed to show; use your own results.)'},
+  {p:'p. 152',q:'List, in rank order, the treatments that best helped the leaves to conserve their water, and explain the order using leaf structure and transpiration.',a:'The book asks you to find this from your results. Expected from leaf structure: jelly on both surfaces (G, H) keeps the most water, then jelly on the lower surface (E, F), then the upper surface only (C, D), and no jelly (A, B) loses the most. Jelly on the underside blocks the stomata, where most transpiration happens.'},
+  {p:'p. 153',q:'Did the two leaves with the same treatment lose exactly the same mass? Why did you use two leaves for each treatment, and would more leaves have been better?',a:'They are unlikely to lose exactly the same mass, because no two leaves are identical in size or number of stomata. Using two (or more) leaves lets you calculate a mean, which makes the evidence more reliable; more leaves would be better still.'},
+  {p:'p. 153',q:'Activity 4.2.1: How are desert plants adapted to get as much water as possible from the soil, and to reduce the water they lose by transpiration?',a:'This is a discussion activity that builds on your Stage 8 work on desert habitats. The book does not give answers, so share your ideas with your class.'}
+ ],
+ checklist:['I can describe how water moves from xylem vessels to the outside of a leaf.','I can describe where in a leaf water changes from liquid water to water vapour.','I can explain that transpiration is the loss of water vapour from the surface of leaves.','I can explain why plants need water.','I can measure small masses accurately and precisely, and record my measurements in a results chart.','I can evaluate how strong the evidence I collect in my experiment is, and suggest improvements to my experiment.']
+},
+{
+ id:'4.3',title:'Excretion in humans',pages:'155–158',
+ goals:['Find out what substances humans excrete.','Study the structure of the human excretory system.','Learn how the kidneys help with excretion.'],
+ hook:{q:'Are any of the reasons why plants need water the same for humans? Are there reasons that are different?',a:'Both use water to dissolve the chemicals in their cells and to transport substances. Plants also need water for support, for cooling by transpiration and as a reactant in photosynthesis. In this topic you will see that humans use water to carry urea out of the body.'},
+ big:'Excretion gets rid of wastes made in our cells: carbon dioxide, urea and excess water. The kidneys filter urea and excess water out of the blood to make urine.',
+ steps:[
+  {t:'What counts as excretion?',body:`<p><span class="kw">Excretion</span> means getting rid of waste materials, and it is one of the characteristics of all living things. But it only applies to wastes that have been <b>truly inside the body</b>, even for a short while.</p>
+   <p>Food travels down one long tube from the mouth to the anus. Strangely, what stays inside that tube has never really been part of the body. Only things that move out of the digestive system, into the blood or body cells, become part of the body. So getting rid of <b>faeces is not excretion</b>.</p>
+   <p>Excretion includes wastes that cells make, plus substances the body has too much of. For humans:</p>
+   <ul><li><b>carbon dioxide</b>, made by body cells in respiration</li><li><span class="kw">urea</span>, a waste made in liver cells</li><li><b>excess water</b> that the body doesn't need</li></ul>
+   <p class="note">Is it excretion or not?</p>`,
+   extra:'excreteSort',
+   check:C('Why is getting rid of faeces NOT excretion?',['Faeces contain no waste','Faeces have never really been part of the body; they stayed inside the digestive tube','Faeces are removed by the kidneys','Only plants produce faeces'],1,'Excretion only covers wastes that have been inside the body, in the blood or body cells.')},
+  {t:'How urea is made',body:`<p>When we eat food, proteins are broken down into smaller molecules in the digestive system. These go into the blood, which carries them to the <b>liver</b>.</p>
+   <p>If we have more protein than we need, the liver changes those small molecules into <span class="kw">urea</span>. Urea is <b>poisonous</b>: if it builds up in the body, it makes a person ill.</p>
+   <p>So as soon as urea is made in a liver cell, the blood takes it away from the liver. The <span class="kw">kidneys</span>, in the <span class="kw">excretory system</span>, remove it from the blood. This system is also called the <span class="kw">renal</span> system ("renal" means "to do with kidneys").</p>`,
+   vis:'ureaFlow',
+   check:C('Where in the body is urea made?',['In the kidneys','In the liver','In the bladder','In the stomach'],1,'Liver cells make urea from extra protein. The kidneys then remove it.')},
+  {t:'The excretory system',body:`<p>An <b>artery</b> brings blood to each kidney, and a <b>vein</b> takes blood away. As blood flows through, the kidneys <b>filter</b> it. They remove <b>all</b> of the urea, and they also remove excess water. The urea dissolves in the excess water, and this solution is called <span class="kw">urine</span>.</p>
+   <p>Urine from each kidney flows down a tube called a <span class="kw">ureter</span> to the <span class="kw">bladder</span>, which stores it for a while. It leaves the body through another tube, the <span class="kw">urethra</span>.</p>
+   <p class="note">Tap each part, then watch the urine's route.</p>`,
+   extra:'renal',
+   check:C('Which tube carries urine from a kidney to the bladder?',['The urethra','The ureter','The artery','The vein'],1,'Ureter: kidney to bladder. Urethra: bladder to the outside.')},
+  {t:'Word match game',body:`<p>This topic has lots of new words beginning with "u", and people often mix up <b>urea</b> and <b>urine</b>, or <b>ureter</b> and <b>urethra</b>.</p>
+   <p>Here is the book's card game (Activity 4.3.1) to play on your own: flip two cards at a time and match each key word with its meaning in as few turns as you can.</p>
+   <p class="note">Memory tip: ur<b>e</b>t<b>e</b>r comes first on the way out (kidney to bladder), and ur<b>e</b>thr<b>a</b> is the way out to the <b>a</b>ir.</p>`,
+   extra:'memoryGame',
+   check:C('What is urine?',['A waste made in the liver','A solution of urea dissolved in water','The tube that carries urea','Another name for the bladder'],1,'Urea is the waste. Urine is urea dissolved in excess water.')}
+ ],
+ mistakes:[
+  ['Urea and urine are the same thing.','Urea is the waste substance made in the liver. Urine is urea dissolved in excess water.'],
+  ['Getting rid of faeces is excretion.','Faeces have never been inside the body proper, so removing them is not excretion.'],
+  ['The ureter carries urine out of the body.','The ureter goes from a kidney to the bladder. The urethra carries urine out of the body.']
+ ],
+ bq:[
+  {p:'p. 158',q:'What is another name for the excretory system?',a:'The renal system.'},
+  {p:'p. 158',q:'In Stage 8 you learnt about respiration. Carbon dioxide is a waste substance that humans excrete. How is carbon dioxide excreted from the body?',a:'This book page does not repeat the answer; it relies on your Stage 8 work. From that work: carbon dioxide made in respiration is carried in the blood to the lungs and breathed out. Check it against your Stage 8 notes.'},
+  {p:'p. 158',q:'Humans excrete urea, which is made from excess proteins. Suggest why plants do not produce urea that they have to excrete. (Think about how plants get their proteins.)',a:'The book leaves this as a "suggest" question with no printed answer. A reasonable suggestion: plants make their own proteins rather than eating them, so they do not take in extra protein that has to be broken down into urea.'}
+ ],
+ checklist:['I can explain what excretion is.','I can describe the structure of the excretory (renal) system.','I can explain that the function of the kidneys is to filter the blood and remove urea.','I can state that urea is excreted in urine.']
+},
+{
+ id:'4.4',title:'Keeping a fetus healthy',pages:'159–165',
+ goals:['Think about how the development of a fetus is affected by the health of the mother.','Find out how diet, smoking and drugs can affect fetal health.'],
+ hook:{q:'In Stage 8 you learnt about the nutrients a person needs. Can you list them and say what each is for? Does a woman need the same diet when she is pregnant?',a:'Not quite the same. During pregnancy she needs a balanced diet with a little more than usual, because some of the nutrients she eats pass to her growing fetus.'},
+ big:'A fetus gets everything it needs from its mother\'s blood, so the mother\'s diet, and whether she smokes or takes drugs, affects the fetus too.',
+ steps:[
+  {t:'Sharing without mixing',body:`<p>For the first nine months of its life, a new human grows inside its mother. During this time it is called a <span class="kw">fetus</span>: a baby before it is born.</p>
+   <p>A fetus needs nutrients, uses respiration to release energy, and makes wastes, just like you. It relies on its mother for all of it.</p>
+   <p>The substances it needs come in the mother's blood. But <b>the mother's blood does not mix with the fetus's blood</b>. The two blood systems come very close together but don't touch:</p>
+   <ul><li>substances the fetus needs <b>diffuse</b> from the mother's blood into the fetus's blood</li><li>substances the fetus needs to excrete diffuse the opposite way</li></ul>`,
+   vis:'exchange',
+   check:C('How do substances get from the mother\'s blood to the fetus\'s blood?',['The two bloods mix together','They diffuse across where the two blood systems come close together','The fetus drinks the mother\'s blood','They travel through the urethra'],1,'The two blood systems come very close but never touch, so substances diffuse between them.')},
+  {t:'Eating for two',body:`<p>A good diet during pregnancy has a big effect on <span class="kw">fetal</span> health. The mother needs a <b>balanced diet</b> and a little more food than usual.</p>
+   <p class="note">Tap each nutrient to see why it matters.</p>`,
+   extra:'nutrients',
+   check:C('Why does a pregnant woman need extra iron?',['To make her bones stronger','To make haemoglobin, for her own blood and her fetus\'s','To supply energy','To stop her getting too much weight'],1,'Iron is needed to make haemoglobin. Her blood carries oxygen for two, and the fetus makes haemoglobin too.')},
+  {t:'Smoking in pregnancy',body:`<p>Tobacco smoke contains <b>carbon monoxide</b>, <b>nicotine</b> and <b>tar</b>. When a pregnant woman smokes, carbon monoxide and nicotine diffuse from her blood into her fetus's blood. It is as though the fetus is smoking too.</p>
+   <p>Carbon monoxide <b>reduces the amount of oxygen that haemoglobin can transport</b>. The fetus's cells get less oxygen, so they can't respire as much or release as much energy. This can affect the fetus's development: babies born to mothers who smoked during pregnancy tend to be <b>smaller</b>.</p>
+   <p><b>Nicotine</b> is an addictive drug that can damage blood vessels, so it is not good for a developing fetus to have it in its blood. In many countries, cigarette packets carry health warnings for pregnant mothers.</p>
+   <p class="note">Switch the smoke on and watch what happens to the oxygen. (A simplified model.)</p>`,
+   extra:'smokeO2',
+   check:C('How does carbon monoxide from smoking harm a fetus?',['It adds extra oxygen','It reduces the oxygen haemoglobin can carry, so the fetus\'s cells respire less','It makes the fetus grow faster','It removes urea from the fetus'],1,'Less oxygen reaches the fetus\'s cells, so they release less energy and development can be affected.')},
+  {t:'Drugs and medicines',body:`<p>A <b>drug</b> is something taken into the body that affects the way the body works.</p>
+   <p>Some drugs are good for health. <b>Antibiotics</b> kill bacteria and cure infections they cause, and some painkillers such as <b>aspirin</b> are also medicinal drugs. But any drug we don't need can cause harm, and it can be even more harmful to a fetus than to an adult. Most drugs a pregnant woman takes go into her fetus's blood.</p>
+   <p>The book gives one country's recommendations for pregnancy: check with a doctor or pharmacist about any prescribed drug, and don't stop it without checking; check with a doctor before taking non-prescription drugs such as aspirin; stop smoking; avoid alcohol; never take illegal drugs; and don't drink a lot of coffee or cola, because there is some evidence that caffeine harms a developing fetus.</p>
+   <p class="note">Match each situation with the book's advice.</p>`,
+   extra:'drugAdvice',
+   check:C('A pregnant woman regularly takes a prescribed medicine. What do the book\'s recommendations say?',['Stop taking it straight away','Check with her doctor or pharmacist, and don\'t stop without checking first','Take twice as much','It never matters during pregnancy'],1,'She should check whether it is safe to keep taking it, but not stop without advice.')},
+  {t:'How scientists linked smoking to health',body:`<p>It isn't easy to do experiments on human health. Scientists can't ask some pregnant women to smoke and others not to, and then compare their babies.</p>
+   <p>Instead, they collect information from as many people as possible and look for <b>correlations</b> between smoking and fetal health. They publish how they did their study and what they found, so other scientists can look at the information and decide for themselves what it shows.</p>
+   <p>The book's project asks you to research questions such as when scientists first suspected smoking was harmful, what evidence there is that it harms a fetus, and whether fewer people now smoke in most countries.</p>`,
+   check:C('Why do scientists look for correlations instead of doing experiments to find out how smoking affects a fetus?',['Correlations are always more accurate','It would be wrong to ask pregnant women to smoke for an experiment','Scientists are not allowed to publish experiments','Smoking cannot be measured'],1,'Experimenting on human health in that way would be unethical, so scientists study data from many people instead.')}
+ ],
+ mistakes:[
+  ['The mother\'s blood flows into the fetus.','The two blood systems never mix. Substances diffuse between them.'],
+  ['Pregnant women should eat as much as they like.','She needs a little more than usual, but too much carbohydrate can be changed to fat and lead to too much weight gain.'],
+  ['All medicines are safe in pregnancy.','Most drugs reach the fetus, so she should check with a doctor or pharmacist first.']
+ ],
+ bq:[
+  {p:'p. 161',q:'List three substances that move from the mother\'s blood into her fetus\'s blood.',a:'From this topic: oxygen, glucose (carbohydrate) and protein. Iron, calcium and vitamins also pass to the fetus.'},
+  {p:'p. 161',q:'List two substances that the fetus excretes, which are removed by the mother\'s blood.',a:'Carbon dioxide (from respiration) and urea, the two wastes from Topic 4.3.'},
+  {p:'p. 161',q:'You learnt about vitamins A, C and D in Stage 8. Explain why a pregnant mother needs plenty of each of these vitamins in her diet.',a:'This builds on your Stage 8 notes, which this page does not repeat. The point the book makes is that some of what she eats passes to the fetus, so she needs enough for both of them. Use your Stage 8 notes for what each vitamin does.'},
+  {p:'p. 161',q:'Suggest some foods that a pregnant woman could eat that would supply plenty of protein, carbohydrate, iron, calcium and vitamins A, C and D.',a:'The book leaves this for you to suggest; it does not list foods. Use your Stage 8 notes on food sources of each nutrient.'},
+  {p:'p. 162',q:'Activity 4.4.1: make a display about the importance of eating well during pregnancy.',a:'A group project, so there is no fixed answer. Make it bright and explain why a good diet matters, using the ideas in this topic.'}
+ ],
+ checklist:['I can explain why a pregnant woman needs to eat a well balanced diet.','I can name some nutrients that a woman should eat more of when she is pregnant.','I can explain why a pregnant woman should never smoke.','I can explain why she should check with a doctor or pharmacist before taking any drugs.']
+}
+];
+
+const CYP4=[
+ {p:'4.1',m:6,q:'Choose the word that matches each description: bladder, kidney, urea, ureter, urethra, urine. (a) This organ filters the blood. (b) A tube that carries urine from the kidneys to the bladder. (c) A waste substance made in the liver from excess proteins. (d) Where urine is stored before leaving the body. (e) A tube that carries urine to the outside of the body. (f) A liquid containing urea dissolved in water.',a:'(a) kidney (b) ureter (c) urea (d) bladder (e) urethra (f) urine'},
+ {p:'4.2',m:7,q:'Complete using: air, gas, leaves, liquid, root hairs, soil, stomata, xylem vessels. Plants take up water from the …… into their …… . The water flows through …… which carry it to the plant\'s …… . In the leaves, a lot of the water changes from …… to …… . It diffuses out of the leaf through the …… .',a:'soil … root hairs … xylem vessels … leaves … liquid … gas … stomata'},
+ {p:'4.3a',m:1,q:'Arun weighed two potted plants every day for seven days. Plant A had no bag. Plant B had a clear bag over its leafy shoot, tied at the stem; its pot was not covered. What apparatus could Arun use to measure the mass of the plants in their pots?',a:'A balance.'},
+ {p:'4.3b',m:1,q:'Plant B + pot: day 6 = 932 g, day 7 = 929 g. Calculate how much mass plant B lost from day 6 to day 7.',a:'932 − 929 = 3 g'},
+ {p:'4.3c',m:3,q:'Plant A + pot: day 1 = 945 g, day 7 = 808 g (daily losses 20, 24, 24, 22, 23, 24 g). Calculate how much mass plant A lost during the experiment. Choose the fastest way and show your working.',a:'Fastest way: first mass − last mass = 945 − 808 = 137 g. (Adding the six daily losses gives the same: 20 + 24 + 24 + 22 + 23 + 24 = 137 g.)'},
+ {p:'4.3d',m:1,q:'Calculate the mean loss of mass per day for plant A during the experiment.',a:'137 g ÷ 6 days = 22.8 g per day (to 1 decimal place). There are six one-day intervals between day 1 and day 7.'},
+ {p:'4.3e',m:3,q:'During the experiment, was more mass lost from the soil or from the plant? Use the results to explain your answer. (Plant B lost 8, 6, 6, 4, 4 g per day.)',a:'From the plant. Plant B\'s leaves were sealed in the bag, so its daily loss (4 to 8 g) came mostly from the uncovered soil. Plant A, with its leaves open, lost 20 to 24 g per day, so most of its loss was water vapour lost from the leaves by transpiration. (The book does not print answers; this is reasoning from the results.)'},
+ {p:'4.3f',m:3,q:'At the end of the experiment, Arun found little drops of water on the inside of the bag that covered plant B. Explain how they got there.',a:'Water evaporated from the cell walls inside plant B\'s leaves and diffused out through the stomata as water vapour (transpiration). The vapour was trapped by the bag and condensed into liquid drops on the inside of the bag. (Reasoning from the chapter; no printed answer.)'},
+ {p:'4.4a',m:3,q:'Recommended daily amounts: protein 45.0 g (not pregnant) and 60.0 g (pregnant); calcium 0.8 g and 1.2 g; iron 15.0 mg and 30.0 mg. Write one sentence about each nutrient to explain why a woman needs more of it when she is pregnant.',a:'Protein: the fetus needs it to make new cells and grow, and she needs extra to make extra haemoglobin. Calcium: it is needed for the baby\'s bones to grow strong, and to keep her own bones and teeth healthy. Iron: it is needed to make haemoglobin, because her blood carries oxygen for herself and her fetus, and the fetus makes its own haemoglobin.'},
+ {p:'4.4b',m:1,q:'For each nutrient, name one food that she could eat that contains plenty of that nutrient.',a:'The book does not list foods for this; use your Stage 8 notes on food sources of protein, calcium and iron.'},
+ {p:'4.4c',m:1,q:'Suggest why it is not recommended that she eats more fat when she is pregnant.',a:'The book does not print an answer. Suggestion based on page 161: extra energy-rich food that she doesn\'t need can be stored as fat and make her put on too much weight, which is not healthy.'},
+ {p:'4.4d',m:2,q:'Explain why a woman should not smoke cigarettes when she is pregnant.',a:'Carbon monoxide from the smoke diffuses into the fetus\'s blood and reduces the oxygen its haemoglobin can carry, so the fetus\'s cells respire less and its development can be affected (babies tend to be smaller). Nicotine also reaches the fetus and can damage blood vessels.'}
+];
+
+const QUIZ4=[
+ C('Which cells absorb water from the soil?',['Palisade cells','Root hair cells','Xylem vessels','Guard cells'],1,'Root hairs give a huge surface for absorbing water and mineral ions.'),
+ C('Each root hair is…',['A separate small root','Part of a single cell','A dead empty tube','A group of many cells'],1,'Each root hair grows out of one root hair cell.'),
+ C('Which mineral ions does the book name as being absorbed with water?',['Sodium and chloride','Magnesium and nitrate','Iron and calcium','Copper and zinc'],1,'Magnesium and nitrate ions, dissolved in the soil water.'),
+ C('Xylem vessels are…',['Living cells with big nuclei','Dead, empty tubes with no end walls','Found only in leaves','Filled with chlorophyll'],1,'Their contents and end walls have gone.'),
+ C('About how wide is a xylem vessel?',['0.05 mm','5 mm','0.5 cm','5 cm'],0,'About 0.05 mm, though sizes vary.'),
+ C('In the celery experiment, the blue spots on the cut stalk show the…',['Phloem','Xylem','Stomata','Root hairs'],1,'The dye travels up in the xylem.'),
+ C('Transpiration is…',['The uptake of water by roots','The loss of water vapour from leaves','Making glucose in leaves','Carrying urea to the kidneys'],1,'Loss of water vapour, mainly through stomata.'),
+ C('Where are most stomata found?',['On the upper surface of a leaf','On the underside of a leaf','In the roots','In the xylem'],1,'That is why most transpiration happens from the underside.'),
+ C('A wilted plant…',['Has too much water','Has cells that are soft and floppy from lack of water','Is photosynthesising fast','Has more xylem'],1,'Without water the cells cannot hold the plant up.'),
+ C('Which is NOT one of the book\'s reasons why plants need water?',['Support','Transport of mineral salts','Cooling','Making urea'],3,'Plants don\'t make urea.'),
+ C('Which of these is NOT excretion?',['Breathing out carbon dioxide','Getting rid of urea','Getting rid of faeces','Getting rid of excess water'],2,'Faeces were never truly inside the body.'),
+ C('Urea is made in the…',['Kidneys','Liver','Bladder','Lungs'],1,'Liver cells make urea from excess protein.'),
+ C('What do the kidneys do?',['Store urine','Filter the blood, removing urea and excess water','Make urea','Digest protein'],1,'They filter the blood.'),
+ C('Urine flows from the bladder to the outside through the…',['Ureter','Urethra','Artery','Vein'],1,'Urethra: bladder to the outside.'),
+ C('"Renal" means…',['To do with the liver','To do with the kidneys','To do with the lungs','To do with the heart'],1,'The renal system is the excretory system.'),
+ C('How do substances pass between a mother and her fetus?',['The bloods mix','By diffusion where the blood systems come close','Through the urethra','They don\'t pass at all'],1,'The blood systems come very close but don\'t touch.'),
+ C('Why does a pregnant woman need extra calcium?',['For the baby\'s strong bones, and her own bones and teeth','To make urea','For energy','To make haemoglobin'],0,'Calcium is essential for strong bones.'),
+ C('Carbon monoxide from cigarette smoke…',['Increases oxygen in the blood','Reduces the oxygen haemoglobin can carry','Is a nutrient','Cures infections'],1,'So the fetus\'s cells get less oxygen.'),
+ C('Antibiotics are drugs that…',['Kill bacteria','Kill viruses','Make urea','Contain nicotine'],0,'They cure infections caused by bacteria.'),
+ C('Why do scientists study correlations to link smoking with fetal health?',['Experiments on pregnant women would be wrong','Correlations prove everything','It is faster to guess','They can\'t measure babies'],0,'They collect data from many people instead.')
+];
+
+/* =================== CHAPTER 4 VISUALS =================== */
+Object.assign(VIS,{
+rootHair(){const parts=[[60,70,30],[150,40,26],[230,150,28],[80,170,24],[300,60,22]];
+ return `<div class="vis"><svg viewBox="0 0 400 240" role="img" aria-label="A root hair cell growing between soil particles, with water and mineral ions moving into it">
+ <rect width="400" height="240" fill="#2A2238"/>
+ <path d="M0 110 Q200 95 400 120 L400 240 L0 240Z" fill="rgba(125,183,255,.18)"/>
+ ${parts.map(([x,y,r],i)=>`<path d="M${x-r} ${y}q${r*.3} ${-r} ${r} ${-r*.9}q${r*.9} ${r*.1} ${r} ${r}q${-r*.2} ${r*.9} ${-r} ${r}q${-r*.9} 0 ${-r} ${-r*1.1}z" fill="#7A5236" stroke="#3A2414"/>`).join('')}
+ <g><rect x="250" y="95" width="150" height="120" rx="10" fill="#3B6E4F" stroke="#9FE3B8" stroke-width="2"/>
+ <path d="M252 140 C190 140 150 125 100 118 C90 117 88 128 98 130 C150 136 190 152 252 160Z" fill="#3B6E4F" stroke="#9FE3B8" stroke-width="2"/>
+ <ellipse cx="330" cy="150" rx="48" ry="34" fill="#5B8FBF" opacity=".55"/><circle cx="290" cy="190" r="10" fill="#8E5BD6"/>
+ <text x="330" y="154" text-anchor="middle" class="small" style="fill:#fff">vacuole</text><text x="290" y="212" text-anchor="middle" class="small" style="fill:#fff">nucleus</text></g>
+ ${[0,1,2,3,4,5].map(i=>`<circle class="h2o4" cx="${40+i*28}" cy="${125+(i%2)*12}" r="4" fill="#7DB7FF" style="animation-delay:${i*.45}s"/>`).join('')}
+ ${[0,1,2].map(i=>`<g class="ion4" style="animation-delay:${.3+i*.9}s"><circle cx="${60+i*40}" cy="${132}" r="5" fill="#FFD36E"/><text x="${60+i*40}" y="135" text-anchor="middle" style="font-size:7px;font-weight:700;fill:#2A2010">${i%2?'NO₃':'Mg'}</text></g>`).join('')}
+ <text x="10" y="20" class="small" style="fill:#ddd">soil particles with water between them</text>
+ <text x="110" y="108" class="small" style="fill:#9FE3B8">root hair (part of one cell)</text>
+</svg><div class="row" style="justify-content:center"><span class="chip"><span style="color:#7DB7FF">●</span> water</span><span class="chip"><span style="color:#FFD36E">●</span> mineral ions (magnesium, nitrate)</span></div><p class="cap">Redrawn and simplified from the book's diagram on page 143.</p></div>`},
+ureaFlow(){const S=[['Protein in food','#FFD36E'],['Digestive system breaks it into small molecules','#FF9E64'],['Blood carries them to the liver','#FF7A8E'],['Liver turns extra into urea','#C3A6FF'],['Blood carries urea to the kidneys','#FF7A8E'],['Kidneys remove it in urine','#5FD4F4']];
+ return `<div class="vis"><div class="flow4">${S.map(([t,c],i)=>`<div class="fstep4" style="--c:${c};animation-delay:${i*.35}s"><span class="fn4">${i+1}</span><span>${t}</span></div>${i<S.length-1?'<span class="farr4" aria-hidden="true">➜</span>':''}`).join('')}</div><p class="cap">Urea is poisonous, so the blood takes it away from the liver as soon as it is made.</p></div>`},
+exchange(){return `<div class="vis"><svg viewBox="0 0 420 230" role="img" aria-label="Mother's and fetus's blood vessels running close together, with substances diffusing between them">
+ <defs><marker id="m4a" viewBox="0 0 10 10" refX="7" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9FE3B8"/></marker><marker id="m4b" viewBox="0 0 10 10" refX="7" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#FFB0C0"/></marker></defs>
+ <rect x="20" y="40" width="380" height="50" rx="25" fill="#B3263A"/><rect x="20" y="140" width="380" height="50" rx="25" fill="#E0566B"/>
+ ${[0,1,2,3,4,5,6,7].map(i=>`<circle class="bc4" cx="${40+i*46}" cy="65" r="9" fill="#FF8A9A" style="animation-delay:${i*.2}s"/><circle class="bc4 rev" cx="${40+i*46}" cy="165" r="9" fill="#FFC2CC" style="animation-delay:${i*.2}s"/>`).join('')}
+ <text x="30" y="30" style="font-weight:700">mother's blood</text><text x="30" y="215" style="font-weight:700">fetus's blood</text>
+ <text x="300" y="118" text-anchor="middle" class="small">close, but never touching</text>
+ ${[100,170].map((x,i)=>`<path class="flow" d="M${x} 92L${x} 136" stroke="#9FE3B8" stroke-width="3" marker-end="url(#m4a)" style="animation-delay:${i*.3}s"/>`).join('')}
+ <path class="flow" d="M240 138L240 94" stroke="#FFB0C0" stroke-width="3" marker-end="url(#m4b)"/>
+ <text x="108" y="118" class="small" style="fill:#9FE3B8">needed: oxygen, nutrients</text><text x="248" y="134" class="small" style="fill:#FFB0C0">wastes</text>
+</svg><p class="cap">Examples of needed substances come from this chapter (oxygen for respiration, glucose, protein, iron, calcium). The wastes include carbon dioxide and urea.</p></div>`}
+});
+
+/* =================== CHAPTER 4 INTERACTIVE EXTRAS =================== */
+Object.assign(EXTRA,{
+rootCross(){const P={hair:['Root hair','Absorbs water and mineral ions from the soil.'],cortex:['Cells across the root','Water moves from cell to cell, from the outside of the root towards the centre.'],xylem:['Xylem (cross-shaped area)','The xylem vessels in the centre carry water and mineral ions up the plant.'],cap:['Root cap','Protects the tip of the root as it grows through the soil.']};
+ return `<div class="vis" id="rc4"><div class="calcgrid"><svg viewBox="0 0 220 300" style="width:230px;margin:0" aria-label="Root cross-section and root tip">
+ <g class="rcp" data-p="cortex"><circle cx="110" cy="110" r="90" fill="#3B6E4F" stroke="#9FE3B8" stroke-width="2"/></g>
+ <g class="rcp" data-p="hair">${[0,40,80,130,170,220,260,300,340].map(a=>{const r=a*Math.PI/180;return `<line x1="${110+Math.cos(r)*90}" y1="${110+Math.sin(r)*90}" x2="${110+Math.cos(r)*104}" y2="${110+Math.sin(r)*104}" stroke="#9FE3B8" stroke-width="5" stroke-linecap="round"/>`}).join('')}</g>
+ <g class="rcp" data-p="xylem"><path d="M110 70 L122 98 L150 110 L122 122 L110 150 L98 122 L70 110 L98 98Z" fill="#E5475E" stroke="#fff"/></g>
+ <circle id="rcDrop" cx="${110+Math.cos(.7)*104}" cy="${110+Math.sin(.7)*104}" r="6" fill="#7DB7FF" stroke="#fff" opacity="0"/>
+ <g class="rcp" data-p="cap"><rect x="92" y="226" width="36" height="34" fill="#3B6E4F" stroke="#9FE3B8"/><path d="M90 258 Q110 296 130 258Z" fill="#C8A26B" stroke="#fff"/></g>
+ <text x="84" y="250" text-anchor="end" class="small">root tip</text></svg>
+ <div style="display:grid;gap:8px"><div class="infobox" id="rcInfo"><b>Tap a part of the root.</b></div><button class="btn primary" id="rcGo">Send water to the xylem</button></div></div><p class="cap">Top: a root cut across. Bottom: the tip of a root seen from the side.</p></div>`},
+xylemBuild(){return `<div class="vis" id="xb4"><svg viewBox="0 0 360 250" aria-label="A column of cells becoming a xylem vessel"><g id="xbCells"></g><g id="xbWater"></g></svg>
+ <div class="row" style="justify-content:center"><button class="btn" data-xb="1">1. Cells die and empty</button><button class="btn" data-xb="2">2. End walls disappear</button><button class="btn primary" data-xb="3">3. Let water flow</button><button class="btn" data-xb="0">Reset</button></div>
+ <div class="infobox" id="xbInfo">Start with a column of living cells, each with cytoplasm and a nucleus.</div></div>`},
+celery(){return `<div class="vis"><div class="calcgrid"><svg viewBox="0 0 150 260" style="width:150px;margin:0" aria-label="Celery stalk in dye"><path d="M30 200 L40 250 L110 250 L120 200Z" fill="rgba(200,230,255,.25)" stroke="var(--ink)"/><rect x="38" y="232" width="74" height="16" fill="#3D5BD9"/>
+ <rect x="62" y="40" width="26" height="205" rx="8" fill="#8FD18F" stroke="#3B6E4F"/><rect id="clDye" x="66" y="245" width="18" height="0" rx="6" fill="#3D5BD9" opacity=".75"/><path d="M75 40 l-20 -26 m20 26 l0 -34 m0 34 l20 -26" stroke="#3B9E4F" stroke-width="5" stroke-linecap="round"/>
+ <text id="clMin" x="140" y="20" text-anchor="end" class="small">0 min</text></svg>
+ <div style="display:grid;gap:8px;justify-items:center"><svg viewBox="0 0 200 120" style="width:220px" aria-label="Cut end of the stalk"><path id="clCut" d="M20 100 Q100 0 180 100 Q100 60 20 100Z" fill="#B8E3A8" stroke="#3B6E4F" stroke-width="2"/><g id="clSpots" opacity="0">${[0,1,2,3,4,5,6,7].map(i=>{const t=.08+i*.12,x=(1-t)*(1-t)*20+2*(1-t)*t*100+t*t*180,y=(1-t)*(1-t)*100+2*(1-t)*t*0+t*t*100;return `<circle cx="${x.toFixed(1)}" cy="${(y+7).toFixed(1)}" r="5" fill="#3D5BD9"/>`;}).join('')}</g></svg>
+ <div class="row"><button class="btn primary" id="clGo">Stand it in the dye</button><button class="btn" id="clCutB" disabled>Cut across the stalk</button></div><div class="infobox" id="clInfo">The dyed water is no more than 2 cm deep.</div></div></div><p class="cap">The time shown is only for the animation; in real life the speed varies a lot.</p></div>`},
+planSort(){const S=[['The temperature of the water','iv'],['How long the dye takes to reach the top of the stalk','dv'],['The type and length of the celery stalk','cv'],['The depth of the dyed water','cv'],['The amount of dye in the water','cv'],['Cutting away from you on a non-slip surface','ra']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="iv">Independent</button><button class="btn" data-v="dv">Dependent</button><button class="btn" data-v="cv">Control</button><button class="btn" data-v="ra">Risk control</button></span></div>`).join('')}</div></div>`},
+leafJourney(){return `<div class="vis" id="lj4"><svg viewBox="0 0 420 250" aria-label="Section through a leaf showing water's path"><g id="ljBase"></g><circle id="ljDot" r="7" fill="#7DB7FF" stroke="#fff" stroke-width="2"/></svg>
+ <div class="row" style="justify-content:center"><button class="btn" id="ljPrev">◀ Back</button><span class="chip" id="ljN">1 / 5</span><button class="btn primary" id="ljNext">Next ▶</button></div>
+ <div class="infobox" id="ljInfo"></div><p class="cap">Simplified from the leaf section on page 149.</p></div>`},
+bagPlants(){return `<div class="vis" id="bp4"><canvas id="bpC" class="trough" style="height:240px" aria-label="Two plants losing mass over a week"></canvas>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="bpGo">Run the week</button><span class="chip">Plant 1: whole plant and pot in a bag</span><span class="chip">Plant 2: only the pot in a bag</span></div>
+ <p class="cap">Illustration only: made-up numbers to show the pattern the method is designed to reveal.</p></div>`},
+jellyRank(){const L=[['A, B','no jelly'],['C, D','jelly on the upper surface'],['E, F','jelly on the lower surface'],['G, H','jelly on both surfaces']];
+ return `<div class="vis" id="jr4"><p class="tiny" style="margin:0">Tap the pairs in order, from <b>keeps the most water</b> to <b>loses the most water</b>.</p><div class="row" id="jrBtns" style="justify-content:center">${L.map(([k,t],i)=>`<button class="btn" data-jr="${i}">${k}: ${t}</button>`).join('')}</div>
+ <ol id="jrList" class="tiny"></ol><div class="row" style="justify-content:center"><button class="btn" id="jrReset">Start again</button></div><div class="infobox" id="jrInfo" hidden></div></div>`},
+wilt(){return `<div class="vis"><div class="calcgrid"><svg viewBox="0 0 200 220" style="width:210px;margin:0" aria-label="A potted plant"><path d="M60 170 L70 215 L130 215 L140 170Z" fill="#C2693E" stroke="var(--ink)"/><g id="wtPlant" style="transition:all .6s"></g></svg>
+ <div style="display:grid;gap:8px"><svg viewBox="0 0 220 90" aria-label="Plant cells" style="width:220px"><g id="wtCells"></g></svg>
+ <label for="wtR" class="tiny">Water in the soil</label><input type="range" id="wtR" min="0" max="100" value="100"><div class="infobox" id="wtInfo"></div></div></div>
+ <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${[['Support','Firm cells hold the plant up.'],['Transport','Carries dissolved mineral salts up the xylem.'],['Cooling','Evaporation from leaf cells takes heat away.'],['Photosynthesis','Water + carbon dioxide → glucose + oxygen.']].map(([a,b])=>`<div class="card" style="gap:4px;padding:12px"><b>${a}</b><span class="tiny">${b}</span></div>`).join('')}</div></div>`},
+excreteSort(){const S=[['Breathing out carbon dioxide made in respiration','y'],['Getting rid of urea in urine','y'],['Getting rid of excess water','y'],['Getting rid of faeces','n'],['Undigested food leaving through the anus','n']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="y">Excretion</button><button class="btn" data-v="n">Not excretion</button></span></div>`).join('')}</div></div>`},
+renal(){const P={artery:['Artery','Brings blood to the kidney.'],vein:['Vein','Takes blood away from the kidney.'],kidney:['Kidney','Filters the blood, removing all of the urea and the excess water. Together they make urine.'],ureter:['Ureter','Carries urine from the kidney down to the bladder.'],bladder:['Bladder','Stores urine for a while.'],urethra:['Urethra','Carries urine from the bladder to the outside of the body.']};
+ return `<div class="vis" id="rn4"><div class="calcgrid"><svg viewBox="0 0 240 280" style="width:240px;margin:0" aria-label="Human excretory system">
+ <g class="rnp" data-p="artery"><rect x="110" y="20" width="9" height="160" fill="#E5475E"/><path d="M110 80 L70 80 M119 80 L160 80" stroke="#E5475E" stroke-width="6"/></g>
+ <g class="rnp" data-p="vein"><rect x="122" y="20" width="9" height="160" fill="#4F6FD4"/><path d="M122 92 L72 92 M131 92 L162 92" stroke="#4F6FD4" stroke-width="6"/></g>
+ <g class="rnp" data-p="kidney"><path d="M40 60 C10 60 10 120 40 125 C60 128 68 110 60 92 C68 75 60 58 40 60Z" fill="#B3263A" stroke="#fff"/><path d="M200 60 C230 60 230 120 200 125 C180 128 172 110 180 92 C172 75 180 58 200 60Z" fill="#B3263A" stroke="#fff"/></g>
+ <g class="rnp" data-p="ureter"><path d="M50 124 C60 170 95 190 108 212 M190 124 C180 170 145 190 132 212" fill="none" stroke="#F2E9C9" stroke-width="5"/></g>
+ <g class="rnp" data-p="bladder"><ellipse cx="120" cy="225" rx="30" ry="22" fill="#F2D06B" stroke="#fff"/></g>
+ <g class="rnp" data-p="urethra"><rect x="116" y="246" width="8" height="30" fill="#F2E9C9"/></g>
+ <g id="rnDrops"></g></svg>
+ <div style="display:grid;gap:8px"><div class="infobox" id="rnInfo"><b>Tap a part.</b></div><button class="btn primary" id="rnGo">Follow the urine</button></div></div></div>`},
+memoryGame(){return `<div class="vis" id="mg4"><div class="row" style="justify-content:space-between"><span class="chip" id="mgTurns">Turns: 0</span><span class="chip" id="mgPairs">Pairs: 0 / 9</span><button class="btn" id="mgNew">New game</button></div><div class="mgrid4" id="mgGrid"></div><div class="infobox" id="mgInfo" hidden></div></div>`},
+nutrients(){const N=[['Protein','The fetus needs it to make new cells and grow. The mother needs it for her muscles, and extra to make extra haemoglobin, because her blood carries oxygen for her fetus as well as herself.'],['Carbohydrate','Supplies energy. Glucose is a carbohydrate, and cells combine it with oxygen in respiration. She needs enough for both of them, but not too much: the extra could be changed to fat and make her put on too much weight.'],['Iron','Needed to make haemoglobin. Sometimes it helps if she takes iron pills, if she can\'t get enough in her diet.'],['Calcium','Essential for helping the baby grow strong bones, and for keeping the mother\'s bones and teeth healthy.'],['Vitamins','She needs to make sure she gets plenty of vitamins in her diet.']];
+ return `<div class="vis"><div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${N.map(([a,b])=>`<button class="card nut4" style="gap:6px;padding:12px;text-align:left;cursor:pointer"><b>${a}</b><span class="tiny nutd" hidden>${b}</span><span class="tiny nuth">Tap to see why</span></button>`).join('')}</div></div>`},
+smokeO2(){return `<div class="vis"><canvas id="smC" class="trough" style="height:220px" aria-label="Red blood cells carrying oxygen to the fetus"></canvas>
+ <div class="row" style="justify-content:center"><button class="btn" id="smT" aria-pressed="false">Mother smokes: OFF</button></div>
+ <div class="row" style="gap:6px;justify-content:center"><span class="tiny">Oxygen reaching the fetus's cells</span><span class="ebar" style="max-width:240px"><i id="smBar" style="width:100%"></i></span></div>
+ <p class="cap">A simplified model: blue dots are oxygen, grey dots are carbon monoxide taking oxygen's place on haemoglobin. Not to scale.</p></div>`},
+drugAdvice(){const S=[['She regularly takes a prescribed medicine','chk'],['She wants to take aspirin for a headache','chk'],['She smokes cigarettes','stop'],['Alcohol','stop'],['Illegal drugs','stop'],['Coffee and cola','less']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="chk">Check with doctor or pharmacist</button><button class="btn" data-v="stop">Stop or avoid</button><button class="btn" data-v="less">Don't have a lot</button></span></div>`).join('')}</div></div>`}
+});
+
+/* =================== CHAPTER 4 WIDGET INIT =================== */
+function initWidgets4(){
+ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const dpr=Math.min(2,devicePixelRatio||1);
+ const fit=cv=>{const W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==Math.round(W*dpr)){cv.width=W*dpr;cv.height=H*dpr;}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return[g,W,H];};
+ const loop=(cv,fn)=>{const f=t=>{if(!document.body.contains(cv))return;fn(t);requestAnimationFrame(f);};requestAnimationFrame(f);};
+ const pick=(sel,info,P,cls)=>$$(sel).forEach(g=>g.addEventListener('click',e=>{e.stopPropagation();$$(sel).forEach(x=>x.classList.toggle('sel',x===g));const[a,b]=P[g.dataset.p];$(info).innerHTML=`<b>${a}.</b> ${b}`;}));
+
+ // root cross-section
+ if($('#rc4')){const P={hair:['Root hair','Absorbs water and mineral ions from the soil.'],cortex:['Cells across the root','Water moves from cell to cell, from the outside of the root towards the centre.'],xylem:['Xylem (cross-shaped area)','The xylem vessels in the centre carry water and mineral ions up the plant.'],cap:['Root cap','Protects the tip of the root as it grows through the soil.']};
+  pick('.rcp','#rcInfo',P);
+  $('#rcGo').onclick=()=>{const d=$('#rcDrop');const a=.7,x0=110+Math.cos(a)*104,y0=110+Math.sin(a)*104;let t=0;d.setAttribute('opacity',1);const step=()=>{t+=reduce?1:.02;const k=Math.min(1,t);d.setAttribute('cx',x0+(110-x0)*k);d.setAttribute('cy',y0+(110-y0)*k);if(k<1)requestAnimationFrame(step);else $('#rcInfo').innerHTML='<b>In the xylem.</b> From here the water is carried up the plant.';};$('#rcInfo').innerHTML='Root hair → across the root → xylem…';step();};}
+ // xylem build
+ if($('#xb4')){let st=0;const draw=()=>{const g=$('#xbCells');let s='';if(st>=2)s+=`<rect x="150" y="10" width="60" height="232" fill="rgba(255,255,255,.04)"/><line x1="150" y1="6" x2="150" y2="246" stroke="#9FE3B8" stroke-width="4"/><line x1="210" y1="6" x2="210" y2="246" stroke="#9FE3B8" stroke-width="4"/>`;for(let i=0;i<5;i++){const y=12+i*46;if(st<2)s+=`<rect x="150" y="${y}" width="60" height="44" rx="${st?2:8}" fill="${st?'rgba(255,255,255,.04)':'#3B6E4F'}" stroke="#9FE3B8" stroke-width="3"/>`;if(!st)s+=`<circle cx="180" cy="${y+22}" r="7" fill="#8E5BD6"/><circle cx="165" cy="${y+12}" r="3" fill="#9FE3B8"/><circle cx="196" cy="${y+30}" r="3" fill="#9FE3B8"/>`;}
+   g.innerHTML=s;$('#xbWater').innerHTML=st===3?[0,1,2,3,4,5].map(i=>`<circle class="xw4" cx="180" cy="240" r="6" fill="#7DB7FF" style="animation-delay:${i*.35}s"/>`).join(''):'';
+   $('#xbInfo').innerHTML=['Start with a column of living cells, each with cytoplasm and a nucleus.','The cells die. Their cytoplasm and nucleus disappear, leaving only the cell walls around an empty space.','The end walls disappear too, so the cells join into one long, empty tube.','Water flows straight up the tube, from the roots towards the leaves.'][st];};
+  $$('[data-xb]').forEach(b=>b.onclick=()=>{const v=+b.dataset.xb;st=v===0?0:Math.max(st,v);if(v===3&&st<3)st=3;if(v===2&&st<2)st=2;if(v===1)st=Math.max(1,st);draw();});draw();}
+ // celery
+ if($('#clGo')){let t=null;$('#clGo').onclick=()=>{if(t)return;let m=0;$('#clCutB').disabled=true;$('#clSpots').setAttribute('opacity',0);t=setInterval(()=>{if(!document.getElementById('clDye')){clearInterval(t);return;}m+=5;const h=Math.min(205,m*3.4);const d=$('#clDye');d.setAttribute('y',245-h);d.setAttribute('height',h);$('#clMin').textContent=m+' min';if(h>=205){clearInterval(t);t=null;$('#clCutB').disabled=false;$('#clInfo').textContent='The dye has reached the top. Rinse the end, then cut across the stalk about halfway up.';}},reduce?20:180);};
+  $('#clCutB').onclick=()=>{$('#clSpots').setAttribute('opacity',1);$('#clInfo').innerHTML='<b>Blue spots near the outer edge.</b> These mark the xylem vessels that carried the dye up the stalk.';};}
+ // leaf journey
+ if($('#lj4')){const base=$('#ljBase');let s='';s+=`<rect x="10" y="20" width="400" height="22" fill="#5DA06E" stroke="#9FE3B8"/>`;for(let i=0;i<9;i++)s+=`<rect x="${14+i*44}" y="46" width="38" height="70" rx="8" fill="#3B6E4F" stroke="#9FE3B8"/>${[0,1,2].map(k=>`<circle cx="${22+i*44+k*11}" cy="${62+k*18}" r="4" fill="#7FE08A"/>`).join('')}`;
+  [[40,150],[110,160],[190,150],[300,160]].forEach(([x,y])=>s+=`<ellipse cx="${x}" cy="${y}" rx="28" ry="20" fill="#3B6E4F" stroke="#9FE3B8"/>`);
+  s+=`<g><circle cx="360" cy="150" r="9" fill="#E5475E"/><circle cx="378" cy="146" r="9" fill="#E5475E"/><circle cx="368" cy="164" r="9" fill="#E5475E"/></g><text x="392" y="136" class="small" style="fill:#FF9E9E">xylem</text>`;
+  s+=`<rect x="10" y="200" width="400" height="20" fill="#5DA06E" stroke="#9FE3B8"/><rect x="236" y="198" width="22" height="24" fill="#1D1937"/><text x="247" y="240" text-anchor="middle" class="small">stoma</text><text x="150" y="190" class="small">air space</text>`;base.innerHTML=s;
+  const W=[[368,155,'Water arrives in the leaf in the <b>xylem vessels</b>.'],[300,160,'It moves out of the xylem and into a <b>leaf cell</b>. A little is used for photosynthesis.'],[276,150,'It soaks into the <b>cellulose cell wall</b> and <b>evaporates</b>: liquid water becomes water vapour.'],[247,185,'The water vapour <b>diffuses</b> into the <b>air spaces</b> between the cells.'],[247,240,'It diffuses out through a <b>stoma</b> in the underside of the leaf. This loss is <b>transpiration</b>.']];
+  let i=0;const go=()=>{const[x,y,t]=W[i];const d=$('#ljDot');d.style.transition=reduce?'none':'all .6s';d.setAttribute('cx',x);d.setAttribute('cy',y);d.setAttribute('fill',i>=2?'#E8F4FF':'#7DB7FF');$('#ljN').textContent=`${i+1} / ${W.length}`;$('#ljInfo').innerHTML=t;};
+  $('#ljNext').onclick=()=>{i=Math.min(W.length-1,i+1);go();};$('#ljPrev').onclick=()=>{i=Math.max(0,i-1);go();};go();}
+ // bag plants
+ if($('#bpC')){const cv=$('#bpC');let t=-1;$('#bpGo').onclick=()=>{t=0;};
+  loop(cv,()=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);if(t>=0&&t<7){t+=reduce?7:.02;}const day=Math.max(0,Math.min(7,t));
+   const X0=50,X1=W-14,Y0=H-30,Y1=14,sx=d=>X0+d/7*(X1-X0),sy=m=>Y0-(m-400)/120*(Y0-Y1);
+   g.strokeStyle=css('--line');g.fillStyle=css('--muted');g.font='11px system-ui';for(let m=400;m<=520;m+=40){g.beginPath();g.moveTo(X0,sy(m));g.lineTo(X1,sy(m));g.stroke();g.fillText(m+' g',4,sy(m)+4);}for(let d=0;d<=7;d++)g.fillText(d,sx(d)-3,H-12);g.fillText('day',X1-24,H-2);
+   [[500,1.2,'#5FD4F4','Plant 1'],[500,11,'#FFD36E','Plant 2']].forEach(([m0,k,c,l])=>{g.strokeStyle=c;g.lineWidth=3;g.beginPath();for(let d=0;d<=day;d+=.05){const y=sy(m0-k*d);d?g.lineTo(sx(d),y):g.moveTo(sx(d),y);}g.stroke();g.fillStyle=c;g.fillText(`${l}: ${(m0-k*day).toFixed(0)} g`,sx(day)+(day>5?-90:6),sy(m0-k*day)-6);});});}
+ // jelly rank
+ if($('#jr4')){const L=['A, B: no jelly','C, D: upper surface','E, F: lower surface','G, H: both surfaces'];const best=[3,2,1,0];let order=[];
+  const draw=()=>{$('#jrList').innerHTML=order.map(i=>`<li>${L[i]}</li>`).join('');$$('[data-jr]').forEach(b=>b.disabled=order.includes(+b.dataset.jr));if(order.length===4){const ok=order.every((v,k)=>v===best[k]);const info=$('#jrInfo');info.hidden=false;info.innerHTML=(ok?'<b>That matches the prediction from leaf structure.</b> ':'<b>Have another think.</b> ')+'Expected order: both surfaces (G, H) keeps the most water, then lower surface (E, F), then upper surface (C, D), and no jelly (A, B) loses the most. Jelly on the underside blocks the stomata, where most water vapour escapes. Your own experiment is the real test.';}};
+  $$('[data-jr]').forEach(b=>b.onclick=()=>{if(order.length<4)order.push(+b.dataset.jr);draw();});$('#jrReset').onclick=()=>{order=[];$('#jrInfo').hidden=true;draw();};draw();}
+ // wilt
+ if($('#wtR')){const up=()=>{const w=+$('#wtR').value/100;const droop=(1-w);let s=`<path d="M100 172 Q${100+droop*30} ${120+droop*10} ${100+droop*55} ${70+droop*70}" stroke="#3B9E4F" stroke-width="5" fill="none"/>`;
+   [[-1,140],[1,120],[-1,100],[1,85]].forEach(([sd,y],k)=>{const yy=y+droop*(30+k*8);const ang=sd*(40-droop*-60);s+=`<ellipse cx="${100+droop*(k*12)+sd*24}" cy="${yy+droop*20}" rx="24" ry="9" fill="${w>.4?'#4FC98A':'#8BAA5A'}" transform="rotate(${sd*(-20+droop*70)} ${100+droop*(k*12)+sd*24} ${yy+droop*20})"/>`;});
+   $('#wtPlant').innerHTML=s;let c='';for(let i=0;i<4;i++){const sq=1-droop*.35;c+=`<rect x="${10+i*52}" y="${15+(1-sq)*30}" width="46" height="${60*sq}" rx="${6+droop*14}" fill="#3B6E4F" stroke="#9FE3B8" stroke-width="2"/><ellipse cx="${33+i*52}" cy="45" rx="${16*w+3}" ry="${20*w+3}" fill="#5B8FBF" opacity=".6"/>`;}$('#wtCells').innerHTML=c;
+   $('#wtInfo').innerHTML=w>.6?'<b>Plenty of water.</b> The vacuoles are full, the cells are firm and press on each other, and the plant stands upright.':w>.25?'<b>Getting dry.</b> The cells are losing water and becoming softer.':'<b>Wilted.</b> The cells are soft and floppy, so the plant collapses.';};$('#wtR').oninput=up;up();}
+ // renal
+ if($('#rn4')){const P={artery:['Artery','Brings blood to the kidney.'],vein:['Vein','Takes blood away from the kidney.'],kidney:['Kidney','Filters the blood, removing all of the urea and the excess water. Together they make urine.'],ureter:['Ureter','Carries urine from the kidney down to the bladder.'],bladder:['Bladder','Stores urine for a while.'],urethra:['Urethra','Carries urine from the bladder to the outside of the body.']};
+  pick('.rnp','#rnInfo',P);
+  $('#rnGo').onclick=()=>{const path=[[45,95,'Kidney: filters urea and excess water out of the blood'],[55,140,'Ureter'],[105,205,'Ureter, down to the bladder'],[120,225,'Bladder: stored for a while'],[120,262,'Urethra: out of the body']];let k=0;const g=$('#rnDrops');const tick=()=>{if(!document.getElementById('rnDrops'))return;const[x,y,t]=path[k];g.innerHTML=`<circle cx="${x}" cy="${y}" r="7" fill="#FFE07A" stroke="#fff" stroke-width="2"/>`;$('#rnInfo').innerHTML=`<b>${k+1}.</b> ${t}`;k++;if(k<path.length)setTimeout(tick,reduce?50:900);};tick();};}
+ // memory game
+ if($('#mg4')){const W=['kidneys','urea','urine','ureter','urethra','bladder','renal','excretion','excretory system'];
+  const D={kidneys:'Filter the blood to remove urea and excess water',urea:'Poisonous waste made in the liver from extra protein',urine:'Urea dissolved in excess water',ureter:'Tube from a kidney to the bladder',urethra:'Tube from the bladder to the outside',bladder:'Stores urine for a while',renal:'To do with the kidneys','excretion':'Getting rid of wastes made inside the body','excretory system':'The organ system that removes urea from the blood'};
+  let cards,open,turns,pairs,lock;
+  const deal=()=>{cards=shuffle(W.flatMap(w=>[{k:w,t:w,word:1},{k:w,t:D[w],word:0}]));open=[];turns=0;pairs=0;lock=false;$('#mgInfo').hidden=true;draw();};
+  const draw=()=>{$('#mgGrid').innerHTML=cards.map((c,i)=>`<button class="mc4 ${c.done?'done':''} ${open.includes(i)||c.done?'up':''} ${c.word?'w':''}" data-mc="${i}" aria-label="${open.includes(i)||c.done?esc(c.t):'Hidden card'}">${open.includes(i)||c.done?esc(c.t):'?'}</button>`).join('');$('#mgTurns').textContent='Turns: '+turns;$('#mgPairs').textContent=`Pairs: ${pairs} / ${W.length}`;};
+  $('#mgGrid').addEventListener('click',e=>{const b=e.target.closest('[data-mc]');if(!b||lock)return;const i=+b.dataset.mc;const c=cards[i];if(c.done||open.includes(i))return;open.push(i);draw();
+   if(open.length===2){turns++;const[a,bb]=open.map(j=>cards[j]);if(a.k===bb.k&&a.word!==bb.word){a.done=bb.done=true;pairs++;open=[];draw();if(pairs===W.length){const m=$('#mgInfo');m.hidden=false;m.innerHTML=`<b>All ${W.length} pairs in ${turns} turns!</b> ${turns<=14?'Brilliant memory.':'Play again to beat your score.'}`;}}else{lock=true;setTimeout(()=>{open=[];lock=false;draw();},reduce?300:900);}draw();}});
+  $('#mgNew').onclick=deal;deal();}
+ // nutrients
+ $$('.nut4').forEach(b=>b.onclick=()=>{const d=$('.nutd',b),h=$('.nuth',b);d.hidden=!d.hidden;h.hidden=!d.hidden;});
+ // smoking
+ if($('#smC')){const cv=$('#smC');let smoke=false;const btn=$('#smT');btn.onclick=()=>{smoke=!smoke;btn.setAttribute('aria-pressed',smoke);btn.textContent='Mother smokes: '+(smoke?'ON':'OFF');};
+  const C=Array.from({length:9},(_,i)=>({x:i/9,slots:[0,0,0,0].map(()=>Math.random())}));let lvl=1;
+  loop(cv,()=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);g.fillStyle='rgba(229,71,94,.18)';g.fillRect(0,H/2-34,W,68);g.fillStyle=css('--muted');g.font='12px system-ui';g.fillText("in the fetus's blood →",10,H/2-44);
+   g.fillStyle='#3B6E4F';g.fillRect(W-60,20,50,H-40);g.fillStyle='#fff';g.fillText('fetus',W-56,16);g.fillText('cells',W-54,H-8);
+   let o=0,n=0;C.forEach(c=>{if(!reduce)c.x=(c.x+.0025)%1;const x=c.x*(W-80),y=H/2;g.fillStyle='#E5475E';g.beginPath();g.ellipse(x,y,20,13,0,0,7);g.fill();
+    c.slots.forEach((r,k)=>{const co=smoke&&r<.45;const sx=x-9+(k%2)*18,sy=y-6+Math.floor(k/2)*12;g.fillStyle=co?'#9AA0AA':'#5FB4FF';g.beginPath();g.arc(sx,sy,4.5,0,7);g.fill();n++;if(!co)o++;});});
+   lvl+=((o/n)-lvl)*.05;$('#smBar').style.width=(lvl*100).toFixed(0)+'%';});}
+}
+
 /* =================== CHAPTER REGISTRY =================== */
 const CHAPTERS_DATA={
  1:{title:'Photosynthesis and the carbon cycle',pages:'8–47',cypPages:'45–47',cypNote:'Questions 1.2, 1.3 and 1.4 use a diagram or graph, so keep your book open at those pages.',topics:TOPICS1,kw:KEYWORDS1,cyp:CYP1,quiz:QUIZ1},
  2:{title:'Properties of materials',pages:'48–83',cypPages:'82–83',cypNote:'Questions 2.1, 2.4 and 2.5 use a table, a model or a diagram, so keep your book open at those pages.',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2},
- 3:{title:'Forces and energy',pages:'84–141',cypPages:'139–141',cypNote:'Questions 3.9 and 3.10 use diagrams, so keep your book open at pages 140–141.',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3}};
+ 3:{title:'Forces and energy',pages:'84–141',cypPages:'139–141',cypNote:'Questions 3.9 and 3.10 use diagrams, so keep your book open at pages 140–141.',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3},
+ 4:{title:'Maintaining life',pages:'142–167',cypPages:'166–167',cypNote:'Question 4.3 uses a diagram of Arun\'s two plants on page 166, so keep your book open there.',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4}};
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
 function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPICS=CHD.topics;KEYWORDS=CHD.kw;CYP=CHD.cyp;QUIZ=CHD.quiz;S.ch=n;if(!S.sec[n])S.sec[n]=TOPICS[0].id;QZ=null;}
@@ -2029,6 +2436,7 @@ function initWidgets(){
   $$('[data-sea]',$('#sea')).forEach(b=>b.onclick=()=>{const k=b.dataset.sea;if(k==='reset'){st.sea=st.land=st.warm=false;$('#seaInfo').textContent='Try each change and watch the water level.';}else{st[k]=true;$('#seaInfo').textContent=msg[k];}upd();});upd();}
  initWidgets2();
  try{initWidgets3();}catch(e){console.error(e);}
+ try{initWidgets4();}catch(e){console.error(e);}
 }
 
 /* =================== GALAXY: themes, rail, study-later, stickers, notes, fonts =================== */
