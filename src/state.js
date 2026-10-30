@@ -18,10 +18,10 @@ async function ensureTable(db) {
     .run();
 }
 
-export async function onRequest({ request, env }) {
+export async function handleState(request, env, ctx) {
   // Cloudflare Access adds this header to every request it lets through.
   // Refusing requests without it keeps the data closed if Access is ever switched off.
-  if (env.ALLOW_WITHOUT_ACCESS !== 'true' && !request.headers.get('Cf-Access-Jwt-Assertion')) {
+  if (env.ALLOW_WITHOUT_ACCESS !== 'true' && !request.headers.get('Cf-Access-Jwt-Assertion') && !(ctx && ctx.access)) {
     return json({ error: 'This hub must be protected by Cloudflare Access.' }, 401);
   }
   if (!env.DB) return json({ error: 'The D1 database binding "DB" is missing.' }, 500);
