@@ -2266,12 +2266,504 @@ function initWidgets4(){
    lvl+=((o/n)-lvl)*.05;$('#smBar').style.width=(lvl*100).toFixed(0)+'%';});}
 }
 
+/* =================== CHAPTER 5: Reactivity =================== */
+const KEYWORDS5=[
+ {id:'reactivity',t:'reactivity',topic:'5.1',d:'How readily a metal reacts. Very reactive metals react quickly and strongly with oxygen, water and dilute acid.'},
+ {id:'reactivity series',t:'reactivity series',topic:'5.1',d:'A list of metals in order of their reactivity, with the most reactive at the top and the least reactive at the bottom.'},
+ {id:'displacement reaction',t:'displacement reaction',topic:'5.1',d:'A reaction where a more reactive metal "pushes out" a less reactive metal from its compound, such as a salt.'},
+ {id:'molten',t:'molten',topic:'5.2',d:'Melted into a liquid by heat, like the iron made in the thermite reaction.'},
+ {id:'ores',t:'ores',topic:'5.2',d:'Rocks that contain a metal compound, such as iron ore, which is mainly iron oxide.'},
+ {id:'salt',t:'salt',topic:'5.3',d:'A compound formed when the hydrogen in an acid is replaced by a metal, such as sodium chloride or copper sulfate.'},
+ {id:'chloride',t:'chloride',topic:'5.3',d:'A salt made from hydrochloric acid, such as sodium chloride (NaCl).'},
+ {id:'sulfate',t:'sulfate',topic:'5.3',d:'A salt made from sulfuric acid, such as copper sulfate (CuSO₄).'},
+ {id:'nitrate',t:'nitrate',topic:'5.3',d:'A salt made from nitric acid, such as potassium nitrate (KNO₃).'},
+ {id:'carbonate',t:'carbonate',topic:'5.3',d:'A salt made from carbonic acid, such as calcium carbonate (CaCO₃).'},
+ {id:'citrates',t:'citrates',topic:'5.3',d:'Salts made from citric acid, the acid in oranges and lemons. Sodium citrate is one.'},
+ {id:'formula',t:'formula (plural: formulae)',topic:'5.3',d:'Symbols showing which atoms are in a substance and how many, such as H₂SO₄ for sulfuric acid.'},
+ {id:'crystallisation',t:'crystallisation',topic:'5.3',d:'Letting the water evaporate slowly from a salt solution so that crystals of the salt form.'},
+ {id:'bases',t:'bases',topic:'5.4',d:'Metal oxides. Bases react with acids to make a salt and water. Soluble bases dissolve in water to form alkalis.'},
+ {id:'crystallise',t:'crystallise',topic:'5.4',d:'To form crystals as a solution slowly evaporates.'},
+ {id:'erodes',t:'erodes',topic:'5.4',d:'Wears away. Limestone erodes when acid rain reacts with it.'},
+ {id:'limestone',t:'limestone',topic:'5.4',d:'A rock made of calcium carbonate. It is damaged by acid rain.'},
+ {id:'neutralisation',t:'neutralisation',topic:'5.4',d:'The reaction between an acid and an alkali, which makes a salt and water.'},
+ {id:'crucible',t:'crucible',topic:'5.5',d:'A small heatproof dish with a lid, used to heat substances strongly, such as magnesium.'},
+ {id:'exothermic reaction',t:'exothermic reaction',topic:'5.5',d:'A reaction that releases energy, because less energy is needed to break the bonds than is released when new bonds form.'},
+ {id:'endothermic reactions',t:'endothermic reactions',topic:'5.5',d:'Reactions that take in energy, because more energy is needed to break the bonds than is released when new bonds form.'},
+ {id:'conservation of mass',t:'the law of conservation of mass',topic:'5.5',d:'In a chemical reaction no atoms are gained or lost, so the total mass at the end is the same as at the start.'},
+ {id:'conservation of energy',t:'the law of conservation of energy',topic:'5.5',d:'Energy cannot be created or destroyed, so there is no overall change in the amount of energy during a reaction.'}
+];
+
+const TOPICS5=[
+{
+ id:'5.1',title:'Reactivity and displacement reactions',pages:'168–173',
+ goals:['Use the reactivity series of metals to predict which metals will displace others from a solution of their salts.','Carry out some displacement reactions.'],
+ hook:{q:'How can you tell that a chemical reaction has taken place?',a:'Look for signs of a new substance: a colour change, bubbles of gas (fizzing), a solid appearing, light, or a temperature change. You will see several of these in this chapter.'},
+ big:'A more reactive metal can displace (push out) a less reactive metal from a solution of its salt. The reactivity series tells you which way round it works.',
+ steps:[
+  {t:'The reactivity series',body:`<p>In Stage 8 you saw that some metals are much more reactive than others, from how they react with <b>oxygen</b>, <b>water</b> (or steam) and <b>dilute acid</b>. Using all of those results, metals can be put in order of their <span class="kw">reactivity</span>.</p>
+   <p>This list is the <span class="kw">reactivity series</span>. The most reactive metals are at the top, and the least reactive are at the bottom.</p>
+   <p class="note">Tap a metal to see how it reacts, using the summary table on page 170 of your book.</p>`,
+   extra:'series5',
+   check:C('Which of these metals is the most reactive?',['Iron','Copper','Magnesium','Zinc'],2,'Magnesium is above zinc, iron and copper in the reactivity series.')},
+  {t:'Learn the order',body:`<p>Activity 5.1.1 suggests some ways to learn the order:</p>
+   <ul><li><b>Mnemonics:</b> make up a sentence where each word starts with the same letter as a metal (K, Na, Ca, Mg, Zn, Fe, Cu, Ag, Au), or with the same letters as their names.</li><li><b>Ordering cards:</b> put cards with the metals' names in the right order as fast as you can.</li><li><b>Pick a card:</b> name a metal that is more reactive and one that is less reactive than the card.</li></ul>
+   <p class="note">Play the ordering game. Tap the metals from most reactive to least reactive, and beat your best time.</p>`,
+   extra:'orderGame',
+   check:C('Which metal comes straight after iron in the reactivity series?',['Zinc','Copper','Silver','Magnesium'],1,'… zinc, iron, copper, silver, gold.')},
+  {t:'Displacement reactions',body:`<p>Put a clean <b>iron nail</b> in blue <b>copper sulfate</b> solution, and two things happen: the solution turns slightly paler, and the nail becomes <b>copper coloured</b>.</p>
+   <div class="eq">copper sulfate + iron → iron sulfate + copper<br><span class="tiny">CuSO₄ + Fe → FeSO₄ + Cu</span></div>
+   <p>Iron is more reactive than copper. It has "pushed out" the copper from the copper sulfate, and the iron has formed iron sulfate. This pushing out is called displacement, so this is a <span class="kw">displacement reaction</span>.</p>
+   <p>If you put a copper nail in iron sulfate solution, nothing happens: copper is <b>less</b> reactive than iron, so it cannot displace it.</p>
+   <p class="note">Try both ways round.</p>`,
+   extra:'nail5',
+   check:C('Can silver displace magnesium from magnesium sulfate?',['Yes, silver is more reactive','No, silver is less reactive than magnesium','Only if heated','Yes, any metal can'],1,'Only a more reactive metal can displace a less reactive one. Silver is near the bottom of the series.')},
+  {t:'Predict, then test',body:`<p>In the book's practical, you put small pieces of <b>copper, magnesium, iron and zinc</b> into solutions of each other's sulfates, leave them a few minutes, and record what you see.</p>
+   <p>Use the reactivity series to predict each result first. A reaction happens only when the metal you add is <b>more reactive</b> than the metal in the salt.</p>
+   <p class="note">Tap each square to predict "reaction" or "no reaction", then check your grid.</p>`,
+   extra:'dispGrid',
+   check:C('Which of the four metals (copper, magnesium, iron, zinc) displaces all three of the others from their sulfates?',['Copper','Iron','Zinc','Magnesium'],3,'Magnesium is the most reactive of the four, so it displaces copper, iron and zinc.')}
+ ],
+ mistakes:[
+  ['Any metal can displace any other metal.','Only a more reactive metal can displace a less reactive one from its salt.'],
+  ['In a displacement reaction the metal just gets dirty.','A new metal forms on its surface and the metal you added becomes part of a new salt.'],
+  ['Gold and silver react quickly with acid.','They are at the bottom of the series: no reaction with dilute acid.']
+ ],
+ bq:[
+  {p:'p. 171',q:'(a) The metal lithium is missing from the reactivity list. Suggest where it should be placed. (b) Give your reasons.',a:'The book does not print an answer. Lithium is not in the book\'s table, so this asks you to use what you know about lithium from earlier work or research (for example, how it reacts with water) and compare it with the metals in the series.'},
+  {p:'p. 171',q:'(a) Platinum is a precious metal used for jewellery that stays shiny for a long time. Where in the list would you place it? (b) Give your reasons.',a:'Near the bottom, with silver and gold. Staying shiny for a long time suggests it does not react easily with oxygen or water, like the least reactive metals. (Reasoning from the book\'s table; no printed answer.)'},
+  {p:'p. 171',q:'Small samples of three metals, A to C, were added to dilute hydrochloric acid, as shown in the diagram. Which metal is most reactive? How could you tell?',a:'Look at the diagram on page 171: the metal giving off the most bubbles is the most reactive, because a more reactive metal reacts more vigorously with acid.'},
+  {p:'p. 171',q:'Write a word equation for the reaction between zinc and sulfuric acid.',a:'zinc + sulfuric acid → zinc sulfate + hydrogen'},
+  {p:'p. 171',q:'Write the word equation for the reaction between magnesium and oxygen.',a:'magnesium + oxygen → magnesium oxide'},
+  {p:'p. 172',q:'(6) Which is more reactive: zinc or copper? (7) Can zinc displace the copper in copper sulfate? (8) Which is more reactive: silver or magnesium? (9) Can silver displace the magnesium in magnesium sulfate?',a:'(6) Zinc. (7) Yes. (8) Magnesium. (9) No.'},
+  {p:'p. 173',q:'Displacing metals practical: (1) How do you know one metal has displaced another? (2) Which of the four metals was most reactive? (3) Which was least reactive?',a:'(1) You see a change, such as a coating of a different metal forming on the piece you added, or a change in the colour of the solution. (2) Magnesium. (3) Copper.'}
+ ],
+ checklist:['I can use the reactivity series of metals to predict which metals will displace others from a solution of their salts.','I can carry out some displacement reactions safely.']
+},
+{
+ id:'5.2',title:'Using the reactivity series and displacement reactions',pages:'174–178',
+ goals:['Use displacement reactions to identify an unknown metal.','Learn about some useful displacement reactions.'],
+ hook:{q:'Start with a metal from the middle of the reactivity series. Can you add the metal just above it and just below it, and keep going until the whole series is complete?',a:'K, Na, Ca, Mg, Zn, Fe, Cu, Ag, Au. In this topic you will also see where aluminium and carbon fit in.'},
+ big:'Displacement reactions help identify unknown metals, weld railway lines (thermite) and extract iron from its ore with carbon.',
+ steps:[
+  {t:'Identify a mystery metal',body:`<p>In the book's investigation you have to identify a mystery metal from the reactivity series. You can look at it, test how it reacts with water, oxygen and dilute acid, and use <b>displacement reactions</b>.</p>
+   <div class="safety"><b>Safety:</b> you don't know what the metal is, so treat it with care and pick it up with forceps. Carry out a risk assessment and get your plan approved first.</div>
+   <p class="note">Play detective. Run tests to collect clues, then name the metal. Fewer tests means a better score. (The clues come from the book's reactions table and the reactivity series.)</p>`,
+   extra:'mystery5',
+   check:C('A metal displaces copper from copper sulfate but does not displace zinc from zinc sulfate. Which metal could it be?',['Magnesium','Iron','Silver','Gold'],1,'It is more reactive than copper but less reactive than zinc, so it sits between them: iron.')},
+  {t:'The thermite reaction (extension)',body:`<p><b>Aluminium</b> is above zinc and below magnesium in the reactivity series. When heated, it displaces iron from solid iron oxide:</p>
+   <div class="eq">aluminium + iron oxide → aluminium oxide + iron</div>
+   <p>This reaction releases a lot of energy (it is <b>exothermic</b>). It gets so hot that the iron produced is <span class="kw">molten</span>; iron melts at <b>1535 °C</b>.</p>
+   <p>It is called the <b>thermite reaction</b>, and it is used to weld railway rails together <i>in situ</i>, right on the railway line. The molten iron is shaped to join the rails. To start it, another exothermic reaction, between magnesium powder and barium nitrate, is used to ignite the mixture.</p>`,
+   vis:'thermite',
+   check:C('Why can aluminium displace iron from iron oxide?',['Aluminium is less reactive than iron','Aluminium is more reactive than iron','Iron oxide is a metal','Because it is heated, any metal would work'],1,'Aluminium is above iron in the reactivity series, so it can push iron out of its compound.')},
+  {t:'Carbon and the blast furnace (extension)',body:`<p>Carbon is not a metal, but it can displace some metals from their compounds. It displaces <b>zinc, iron, tin and lead</b> from their <span class="kw">ores</span>; an ore is a rock that contains a metal compound.</p>
+   <p>About 3500 years ago, people discovered that heating iron ore with charcoal (a form of carbon) at very high temperatures produced molten iron. Today this happens on a huge scale in a <b>blast furnace</b>. Iron ore is mainly iron oxide:</p>
+   <div class="eq">iron oxide + carbon → iron + carbon dioxide</div>
+   <p>In the book's practical, you heat a layer of charcoal powder on top of copper oxide (without mixing) and look where the layers meet. Carbon only displaces a metal that is <b>less reactive</b> than itself.</p>
+   <p class="note">Tap the labels on the blast furnace.</p>`,
+   extra:'furnace',
+   check:C('In a blast furnace, what displaces iron from iron oxide?',['Oxygen','Carbon','Aluminium','Water'],1,'Coke, a form of carbon, displaces the iron and becomes carbon dioxide.')}
+ ],
+ mistakes:[
+  ['Carbon is a metal because it is in the reactivity series.','Carbon is a non-metal. It is used because it can displace some metals, such as iron, from their ores.'],
+  ['Iron can displace aluminium.','Aluminium is more reactive, so iron cannot displace it from aluminium oxide.'],
+  ['Exothermic reactions need a lot of energy to keep going.','They release energy. The thermite reaction only needs another reaction to start it.']
+ ],
+ bq:[
+  {p:'p. 175',q:'Mystery metal: what do you think the mystery metal is? Give reasons, and say whether you changed your plan.',a:'This depends on your own results. Use the reactions with water, oxygen and acid, and which salts it can displace a metal from, to place it in the reactivity series.'},
+  {p:'p. 177',q:'Can iron displace aluminium from aluminium oxide? Explain your answer.',a:'No. Aluminium is more reactive than iron (it is above zinc), and a less reactive element cannot displace a more reactive one.'},
+  {p:'p. 177',q:'Why is the thermite reaction useful for welding rails?',a:'It produces molten iron that can be shaped to join the rails, and it can be done in situ, on the railway line itself, without workshop welding equipment.'},
+  {p:'p. 177',q:'The early blast furnaces were in areas with supplies of iron ore and a lot of coal mining. Why do you think this was?',a:'The book does not print an answer. A reasonable suggestion: the raw materials were close by, so the iron ore and the fuel used to make the carbon (coal) did not have to be carried far.'},
+  {p:'p. 178',q:'Extracting copper using carbon: (1) Has there been a reaction? (2) Write a word equation. (3) What evidence does this give about the reactivity of carbon? (4) Where would you place carbon in the reactivity series?',a:'Your observations decide (1). If copper has formed where the layers meet, then (2) copper oxide + carbon → copper + carbon dioxide (written the same way as the book\'s iron oxide equation), (3) carbon is more reactive than copper, and (4) the book says carbon displaces zinc, iron, tin and lead, so it goes above zinc. The book does not say which metals carbon cannot displace.'}
+ ],
+ checklist:['I can use displacement reactions to help identify an unknown metal.','I can describe some useful displacement reactions.']
+},
+{
+ id:'5.3',title:'Salts',pages:'179–186',
+ goals:['Explain what a salt is.','Give some examples of salts and their uses.','Prepare a salt by reacting a metal with an acid.','Prepare a salt by heating a metal oxide with an acid.'],
+ hook:{q:'Write word equations for three displacement reactions that can happen and two that cannot. Can a partner spot the two that would not take place?',a:'A reaction only takes place if the metal added is more reactive than the metal in the salt, so check each one against the reactivity series.'},
+ big:'Salts are made when the hydrogen in an acid is replaced by a metal. Acid + metal gives salt + hydrogen; acid + metal oxide gives salt + water.',
+ steps:[
+  {t:'What is a salt?',body:`<p>Table salt is <b>sodium chloride</b>, but there are many other <span class="kw">salt</span>s, such as copper <span class="kw">sulfate</span>, silver <span class="kw">nitrate</span> and calcium <span class="kw">carbonate</span>. Many have important everyday uses.</p>
+   <p class="note">Match each salt with the use shown in your book.</p>`,
+   extra:'saltUses',
+   check:C('Which salt do gymnasts use to keep their hands dry?',['Sodium chloride','Magnesium carbonate','Copper sulfate','Ammonium nitrate'],1,'Magnesium carbonate keeps their hands dry so they don\'t slip.')},
+  {t:'Acids make salts',body:`<p>All acids contain <b>hydrogen</b>. When a salt forms, the hydrogen in the acid is replaced by a metal. The acid decides the family of salt:</p>
+   <div class="ovx"><table class="dt"><tr><th>Acid</th><th>Formula</th><th>Salts</th><th>Example</th></tr>
+   <tr><td>hydrochloric acid</td><td>HCl</td><td>chlorides</td><td>sodium chloride, NaCl</td></tr>
+   <tr><td>sulfuric acid</td><td>H₂SO₄</td><td>sulfates</td><td>copper sulfate, CuSO₄</td></tr>
+   <tr><td>nitric acid</td><td>HNO₃</td><td>nitrates</td><td>potassium nitrate, KNO₃</td></tr></table></div>
+   <p>Two more: <b>carbonic acid</b>, a weak acid formed when carbon dioxide reacts with water, makes <b>carbonates</b>. <b>Citric acid</b>, found in oranges and lemons, makes <span class="kw">citrates</span>.</p>
+   <p class="note">Build a salt's name: pick a metal and an acid.</p>`,
+   extra:'saltNamer',
+   check:C('Which salt forms from magnesium and sulfuric acid?',['Magnesium chloride','Magnesium sulfate','Magnesium nitrate','Magnesium carbonate'],1,'Sulfuric acid always makes sulfates.')},
+  {t:'Metal + acid',body:`<p>Reacting a metal with a dilute acid is often a good way to make a salt:</p>
+   <div class="eq">acid + metal → salt + hydrogen</div>
+   <div class="eq">zinc + hydrochloric acid → zinc chloride + hydrogen<br><span class="tiny">Zn + 2HCl → ZnCl₂ + H₂</span></div>
+   <p>Copper and silver are too unreactive to displace hydrogen from an acid, so they don't make salts this way. At the other end, sodium and potassium react <b>violently and dangerously</b> with dilute acid.</p>
+   <p class="note">Choose a metal and an acid, and watch what happens.</p>`,
+   extra:'metalAcid',
+   check:C('Which gas is given off when a metal reacts with an acid?',['Oxygen','Carbon dioxide','Hydrogen','Chlorine'],2,'acid + metal → salt + hydrogen.')},
+  {t:'Making zinc sulfate',body:`<p>In the book's practical, you add 1 to 5 g of zinc to about 50 cm³ of dilute sulfuric acid. Once the fizzing stops, you pour the mixture into an evaporating dish and heat it very gently until crystals start forming at the edge. Then you leave it for a few days to form crystals: this is <span class="kw">crystallisation</span>.</p>
+   <div class="safety"><b>Safety:</b> be careful when heating the evaporating basin, as the solution may spit and burn you. Use tongs, and put the hot basin on a heatproof mat.</div>
+   <p class="note">Step through the method.</p>`,
+   extra:'procZinc',
+   check:C('Why do you stop heating once crystals form at the edge?',['The salt would explode','So the rest of the water evaporates slowly and crystals can form','The acid would turn back into zinc','The basin would melt'],1,'Leaving it to evaporate slowly over a few days lets crystals form. This is crystallisation.')},
+  {t:'Metal oxide + acid',body:`<p>For unreactive metals like copper, start with the <b>metal oxide</b> instead:</p>
+   <div class="eq">metal oxide + acid → salt + water</div>
+   <div class="eq">copper oxide + sulfuric acid → copper sulfate + water<br><span class="tiny">CuO + H₂SO₄ → CuSO₄ + H₂O</span></div>
+   <p>In the practical, you add black copper oxide powder to warm dilute sulfuric acid, stirring all the time, until the mixture turns <b>blue</b>. You filter it, and the filtrate (the copper sulfate solution) is heated gently in an evaporating basin, then left to crystallise.</p>
+   <div class="safety"><b>Safety:</b> don't boil the acid; use low heat. The solution may spit when you heat the evaporating basin.</div>
+   <p class="note">Step through the method.</p>`,
+   extra:'procCuO',
+   check:C('What is made when copper oxide reacts with sulfuric acid?',['Copper sulfate and hydrogen','Copper sulfate and water','Copper and water','Copper oxide and hydrogen'],1,'metal oxide + acid → salt + water.')}
+ ],
+ mistakes:[
+  ['Salt only means table salt.','Table salt is sodium chloride, just one of many salts.'],
+  ['metal oxide + acid → salt + hydrogen','A metal gives hydrogen. A metal oxide gives water.'],
+  ['Copper reacts with dilute acid to make a salt.','Copper is too unreactive. Use copper oxide or copper carbonate instead.']
+ ],
+ bq:[
+  {p:'p. 182',q:'(2) Which elements are present in nitric acid? (3) Which elements are present in sulfuric acid, and how many atoms of each make up one particle of sulfuric acid?',a:'(2) Hydrogen, nitrogen and oxygen (HNO₃). (3) Hydrogen, sulfur and oxygen; H₂SO₄ has 2 hydrogen atoms, 1 sulfur atom and 4 oxygen atoms.'},
+  {p:'p. 182',q:'(a) What is similar about the formulae for hydrochloric acid (HCl) and sodium chloride (NaCl)? (b) What is different?',a:'(a) Both contain chlorine (Cl). (b) In the acid the chlorine is with hydrogen; in the salt the hydrogen has been replaced by sodium.'},
+  {p:'p. 182',q:'A jam label lists: sugar, oranges, water, concentrated lemon juice, sodium citrate, citric acid, bitter orange oil. (a) Which ingredient is a salt? (b) Research why it is added to some foods.',a:'(a) Sodium citrate. (b) This is a research task; the book does not give the answer.'},
+  {p:'p. 183',q:'(6) Which compound in the zinc + hydrochloric acid equation is a salt? (7) Which acid would you add to magnesium to make magnesium sulfate? (8) Write the word equation for iron and hydrochloric acid. (9) Why would it be dangerous to make sodium chloride by reacting sodium with hydrochloric acid?',a:'(6) Zinc chloride. (7) Sulfuric acid. (8) iron + hydrochloric acid → iron chloride + hydrogen. (9) The book\'s table shows sodium reacts violently and very dangerously with dilute acid.'},
+  {p:'p. 184',q:'Making zinc sulfate: write the word equation. Which is better for large crystals: heating until very little liquid is left, or leaving it to evaporate slowly?',a:'zinc + sulfuric acid → zinc sulfate + hydrogen. The book asks you to think about and investigate the crystal question; its method stops heating early and leaves the solution for a few days to crystallise.'},
+  {p:'p. 186',q:'Making copper sulfate: (3) Suggest why the mixture was filtered. (4) How could a similar method make copper chloride? (5) Word equation for making copper chloride from copper oxide. (6) Word equation for copper oxide and nitric acid.',a:'(3) To remove solid that has not reacted, so only the copper sulfate solution goes into the basin (reasoning; no printed answer). (4) Use hydrochloric acid instead of sulfuric acid. (5) copper oxide + hydrochloric acid → copper chloride + water. (6) copper oxide + nitric acid → copper nitrate + water.'}
+ ],
+ checklist:['I can explain what a salt is.','I can list some examples of salts and state their uses.','I can prepare a salt safely by reacting a metal with an acid.','I can prepare a salt safely by heating a metal oxide with an acid.']
+},
+{
+ id:'5.4',title:'Other ways of making salts',pages:'187–193',
+ goals:['Prepare a salt by using an acid and a carbonate.','Prepare a salt using neutralisation.','Carry out risk assessments for practical work.','Use word and symbol equations.'],
+ hook:{q:'Make a mixed-up list of properties of acids and alkalis, for example "pH of more than 7", "all contain hydrogen", "turn universal indicator solution blue". Can a partner sort them?',a:'Acids contain hydrogen. Alkalis have a pH of more than 7 and turn universal indicator solution blue. You will use these ideas when you neutralise an alkali with an acid.'},
+ big:'Carbonates react with acids to give a salt, water and carbon dioxide. Acids and alkalis neutralise each other to give a salt and water.',
+ steps:[
+  {t:'Carbonates and acids',body:`<p><span class="kw">Carbonate</span>s, such as calcium carbonate, are salts. They react with acids to form other salts:</p>
+   <div class="eq">acid + carbonate → salt + water + carbon dioxide</div>
+   <div class="eq">hydrochloric acid + calcium carbonate → calcium chloride + water + carbon dioxide<br><span class="tiny">2HCl + CaCO₃ → CaCl₂ + H₂O + CO₂</span></div>
+   <p>The rock <span class="kw">limestone</span> is made of calcium carbonate. It is damaged when it reacts with acid rain and <span class="kw">erodes</span>. Coral skeletons are also calcium carbonate, and they react as the oceans become slightly more acidic because more carbon dioxide dissolves in the water.</p>
+   <p>The bright blue-green mineral <b>malachite</b>, seen in rocks in the Atacama Desert in Chile, is made from copper carbonate.</p>`,
+   vis:'carbonate',
+   check:C('What are the products when an acid reacts with a carbonate?',['Salt + hydrogen','Salt + water','Salt + water + carbon dioxide','Metal + oxygen'],2,'The carbon dioxide is why you see fizzing.')},
+  {t:'Copper chloride from copper carbonate',body:`<p>In this practical you add copper carbonate to 25 cm³ of hydrochloric acid until it <b>stops reacting</b> and a little is left over. Adding <b>excess</b> copper carbonate makes sure all the acid has reacted.</p>
+   <p>Then you filter. The unreacted copper carbonate stays in the filter paper, and the copper chloride solution passes through. Heat it gently, stop when crystals appear around the edge, and leave it to <span class="kw">crystallise</span>.</p>
+   <div class="safety"><b>Safety:</b> take care when heating the solution, as it may spit and burn you.</div>
+   <p class="note">Step through the method.</p>`,
+   extra:'procCarb',
+   check:C('Why do you add copper carbonate until some is left over?',['To make more carbon dioxide','To make sure all the acid has reacted','To make the solution darker','So that filtering is not needed'],1,'Excess copper carbonate uses up all the acid. The leftover solid is then filtered off.')},
+  {t:'Neutralisation',body:`<p>Alkalis react with acids to neutralise them, making a salt and water. This is <span class="kw">neutralisation</span>:</p>
+   <div class="eq">acid + alkali → salt + water</div>
+   <div class="eq">sodium hydroxide + hydrochloric acid → sodium chloride + water<br><span class="tiny">NaOH + HCl → NaCl + H₂O</span></div>
+   <p>In the practical, hydrochloric acid goes in a <b>burette</b>, and 20 cm³ of sodium hydroxide with a few drops of universal indicator goes in a flask. You add the acid slowly, swirling the flask, until the indicator turns <b>green</b>: the solution is neutral. Charcoal powder removes the indicator's colour, then you filter, heat gently and leave the salt to crystallise.</p>
+   <p class="note">Add acid drop by drop and stop when the solution is neutral.</p>`,
+   extra:'titrate',
+   check:C('What colour is universal indicator in a neutral solution?',['Red','Blue','Green','Colourless'],2,'Green means neutral. That is when you stop adding acid.')},
+  {t:'Bases and alkalis',body:`<p>Metal oxides are called <span class="kw">bases</span>. When a <b>soluble</b> base dissolves in water, it forms an alkali:</p>
+   <div class="eq">sodium oxide + water → sodium hydroxide</div>
+   <p>Sodium oxide is a base, and sodium hydroxide is an alkali.</p>
+   <p>Some metal oxides, such as <b>iron oxide</b> and <b>copper oxide</b>, are not soluble, so they don't form alkalis. But they can still react with acids to form salts.</p>
+   <p class="note">Sort each substance.</p>`,
+   extra:'baseSort',
+   check:C('What is the difference between a base and an alkali?',['There is no difference','An alkali is a base that has dissolved in water','A base contains hydrogen','Alkalis are metals'],1,'Soluble bases dissolve in water to form alkalis. Insoluble bases, like copper oxide, do not.')}
+ ],
+ mistakes:[
+  ['All bases are alkalis.','Only soluble bases form alkalis. Copper oxide and iron oxide are bases but not alkalis.'],
+  ['Fizzing with a carbonate means hydrogen is made.','Carbonates give carbon dioxide. Metals give hydrogen.'],
+  ['Neutralisation makes the acid disappear with nothing left.','It makes a salt and water.']
+ ],
+ bq:[
+  {p:'p. 188',q:'(1) Write the word equation for magnesium carbonate and nitric acid. (2) Write the symbol equation for magnesium carbonate and sulfuric acid. (3) How could you check that the gas given off is carbon dioxide?',a:'(1) magnesium carbonate + nitric acid → magnesium nitrate + water + carbon dioxide. (2) MgCO₃ + H₂SO₄ → MgSO₄ + H₂O + CO₂ (following the pattern of the book\'s calcium carbonate equation). (3) This chapter does not describe the test; use the gas test from your earlier science work.'},
+  {p:'p. 190',q:'Copper chloride practical: (3) What did you observe when you added copper carbonate to the acid? (4) Which gas is given off? (5) Word equation. (7) Which substances are salts? (8) What do your observations tell you about the solubility of copper carbonate and copper chloride? (9) How could you use copper carbonate to make copper sulfate?',a:'(3) Fizzing. (4) Carbon dioxide. (5) copper carbonate + hydrochloric acid → copper chloride + water + carbon dioxide. (7) Copper carbonate and copper chloride. (8) Copper carbonate is insoluble (it was trapped in the filter paper); copper chloride is soluble (it passed through in the filtrate). (9) React it with sulfuric acid instead of hydrochloric acid.'},
+  {p:'p. 191',q:'(4) How can you test to see if a liquid is an acid or an alkali? (5) What word describes a solution that is neither acid nor alkali?',a:'(4) Add universal indicator, as in the neutralisation practical, and look at the colour. (5) Neutral.'},
+  {p:'p. 192',q:'Neutralisation practical: (4) colour of universal indicator in a neutral solution? (5) Why swirl the flask? (6) You accidentally add too much acid; what could you do? (7) What salt is formed? (8) Word equation.',a:'(4) Green. (5) To mix the acid in as you add it, so the colour change shows the whole solution (reasoning). (6) Add a little more sodium hydroxide until the indicator is green again (reasoning; no printed answer). (7) Sodium chloride. (8) sodium hydroxide + hydrochloric acid → sodium chloride + water.'},
+  {p:'p. 193',q:'(7) Difference between a base and an alkali? (8) Word equation: magnesium oxide + sulfuric acid. (9) Symbol equation. (10) How could you use iron oxide to make iron chloride?',a:'(7) A base is a metal oxide; an alkali is a soluble base dissolved in water. (8) magnesium oxide + sulfuric acid → magnesium sulfate + water. (9) MgO + H₂SO₄ → MgSO₄ + H₂O. (10) React it with hydrochloric acid (iron oxide is insoluble, so it still reacts with acids to form salts).'}
+ ],
+ checklist:['I can prepare a salt using neutralisation.','I can write risk assessments for practical tasks.','I can use word and symbol equations.']
+},
+{
+ id:'5.5',title:'Rearranging atoms',pages:'194–203',
+ goals:['Look at the rearrangement of atoms in chemical reactions.','Learn what happens to the mass of reactants and products in a reaction.','Learn what happens to the energy involved in chemical reactions.','Carry out practical work safely.'],
+ hook:{q:'Write down the formulae of five compounds, and the names of an acid, a salt, an alkali and a metal oxide. Can a partner match names and formulae?',a:'For example HCl (hydrochloric acid), NaCl (sodium chloride), NaOH (sodium hydroxide), CuO (copper oxide), H₂SO₄ (sulfuric acid). Every formula tells you exactly which atoms, and how many.'},
+ big:'In a reaction atoms are only rearranged, never made or destroyed, so mass is conserved. Energy is conserved too: it is only transferred.',
+ steps:[
+  {t:'Atoms are rearranged',body:`<p>In chemical reactions, atoms form <b>new combinations</b>. Atoms on their own may join with others, and bonded atoms may separate. <b>No atoms are lost and no new atoms are made.</b></p>
+   <p>So every element in the reactants is still there in the products. In Mg + 2HCl → MgCl₂ + H₂, there is 1 magnesium atom, 2 hydrogen atoms and 2 chlorine atoms on each side.</p>
+   <p class="note">Pick an equation and count the atoms on each side.</p>`,
+   extra:'atomCount',
+   check:C('In Mg + 2HCl → MgCl₂ + H₂, how many chlorine atoms are there in the products?',['1','2','3','4'],1,'MgCl₂ contains 2 chlorine atoms, the same as the 2 in 2HCl.')},
+  {t:'Conservation of mass',body:`<p>Atoms have mass, so if no atoms are gained or lost, no mass is gained or lost either.</p>
+   <p>Zara, Sofia and Arun put calcium carbonate and hydrochloric acid in a flask with a <b>stopper</b> and watch the balance. Zara thinks the mass will go down because one product is a gas. Sofia thinks it will go up because there are more products. Arun thinks it will stay the same because nothing can get in or out.</p>
+   <p>The mass did not change: <b>Arun</b> was right, for the right reason. This is <span class="kw">the law of conservation of mass</span>.</p>
+   <p>But when Arun did it in an <b>open</b> flask, the mass fell from <b>250 g</b> to <b>207 g</b> in 10 minutes. The carbon dioxide escaped into the air, so its mass wasn't measured.</p>
+   <p class="note">Run the reaction with and without the stopper.</p>`,
+   extra:'massFlask',
+   check:C('A learner reacts 37 g of magnesium with 150 g of sulfuric acid. What is the total mass of the products?',['113 g','150 g','187 g','37 g'],2,'Mass is conserved: 37 + 150 = 187 g.')},
+  {t:'Burning magnesium',body:`<p>When magnesium is heated in a <span class="kw">crucible</span>, lifting the lid now and then to let air in, it turns into white ash. The ash has <b>more</b> mass than the magnesium did.</p>
+   <p>Some people expect the ash to be lighter, because it looks smaller and they see flames escaping. But the word equation explains it:</p>
+   <div class="eq">magnesium + oxygen → magnesium oxide</div>
+   <p>Oxygen from the air has combined with the magnesium. In 1772, the French scientist <b>Antoine Lavoisier</b> found this increase in mass every time. He worked out that when something burns it combines with a gas from the air, found that the same gas is involved in respiration, and named it <b>oxygen</b>.</p>
+   <div class="safety"><b>Safety:</b> the crucible stays hot for a long time; don't touch it. Lift the lid carefully with a spatula or tongs so no ash is lost.</div>`,
+   extra:'crucible',
+   check:C('Why is the mass of the ash greater than the mass of the magnesium?',['The flame adds mass','Oxygen from the air has combined with the magnesium','The crucible melts into it','Ash is always heavy'],1,'magnesium + oxygen → magnesium oxide. The extra mass is the oxygen.')},
+  {t:'Energy in reactions',body:`<p>All chemical reactions involve energy. Energy is used to <b>break bonds</b> in the reactants, and energy is released when <b>new bonds form</b> in the products.</p>
+   <ul><li><span class="kw">Exothermic reaction</span>: less energy is needed to break the bonds than is released when new ones form, so energy is <b>released</b>. When potassium reacts with water (2K + 2H₂O → 2KOH + H₂), it catches fire, melts, burns with a pinkish purple flame and moves across the water.</li>
+   <li><span class="kw">Endothermic reactions</span>: more energy is needed to break the bonds than is released, so energy is <b>taken in</b>. Sherbet sweets: sodium hydrogencarbonate + citric acid → sodium citrate + water + carbon dioxide. Energy is taken from your mouth, so it feels cool.</li></ul>
+   <p>Either way, there is no overall change in the amount of energy, because energy cannot be created or destroyed. This is <span class="kw">the law of conservation of energy</span>.</p>
+   <p class="note">Sort each reaction from the chapter.</p>`,
+   extra:'exoSort',
+   check:C('Sherbet feels cool in your mouth. What kind of reaction is it?',['Exothermic','Endothermic','Neither','Displacement'],1,'It takes in energy from your mouth: endothermic.')}
+ ],
+ mistakes:[
+  ['Mass is lost when a gas is made.','The gas still has mass. In an open flask it escapes, so the balance just can\'t measure it.'],
+  ['Burning makes things lighter.','Burning magnesium combines it with oxygen, so the product is heavier.'],
+  ['Endothermic reactions destroy energy.','They take energy in from the surroundings. Energy is never destroyed.']
+ ],
+ bq:[
+  {p:'p. 196',q:'Copper carbonate + hydrochloric acid (Topic 5.4): which product contains copper; which reactant contains hydrogen; which product contains hydrogen; which reactant contains carbon; which product contains carbon?',a:'Copper chloride; hydrochloric acid; water; copper carbonate; carbon dioxide.'},
+  {p:'p. 196',q:'CuO + H₂SO₄ → CuSO₄ + H₂O: (a) atoms of which elements are present at the start? (b) how many of each in the reactants? (c) at the end? (d) how many of each in the products?',a:'(a) Copper, oxygen, hydrogen, sulfur. (b) Cu 1, O 5 (1 + 4), H 2, S 1. (c) Copper, sulfur, oxygen, hydrogen. (d) Cu 1, S 1, O 5 (4 + 1), H 2.'},
+  {p:'p. 197',q:'(3) A learner reacts 37 g of magnesium with 150 g of sulfuric acid. What is the total mass of the products? (4) If a learner starts with 10 g of magnesium, how much magnesium will be present in the magnesium sulfate produced?',a:'(3) 37 + 150 = 187 g. (4) 10 g. No atoms are gained or lost, so all the magnesium ends up in the salt.'},
+  {p:'p. 197',q:'Some students weighed each piece of apparatus and each chemical separately before mixing them in the stoppered flask. Will the total be the same as the balance reading at the end? Give a reason.',a:'Yes. The stopper stops anything getting in or out, and no atoms are gained or lost, so the total mass stays the same (law of conservation of mass).'},
+  {p:'p. 198',q:'Calcium carbonate + hydrochloric acid: (a) which ONE reactant contains oxygen? (b) which TWO products contain oxygen? (c) where does the hydrogen in the water come from? (6) What should Arun have done to show that mass is conserved?',a:'(a) Calcium carbonate. (b) Water and carbon dioxide. (c) The hydrochloric acid. (6) Put a stopper in the flask, so the carbon dioxide couldn\'t escape.'},
+  {p:'p. 201',q:'Burning magnesium: (1) What has happened to the mass after heating? (2) Why? (3) Name the product. (5) Why lift the lid from time to time?',a:'(1) It has increased. (2) Oxygen from the air has combined with the magnesium. (3) Magnesium oxide. (5) To let air (oxygen) in.'}
+ ],
+ checklist:['I can use word and symbol equations to describe chemical reactions.','I can explain what is meant by the law of conservation of mass.','I can explain what is meant by the law of conservation of energy.','I can carry out practical work safely.']
+}
+];
+
+const CYP5=[
+ {p:'5.1a',m:1,q:'Arun places aluminium in copper sulfate solution: aluminium + copper sulfate → aluminium sulfate + copper. How can Arun tell that a reaction has taken place?',a:'He would see a change, such as a copper-coloured solid forming on the aluminium, and the blue solution becoming paler (like the iron nail in copper sulfate on page 172).'},
+ {p:'5.1b',m:1,q:'Why is this reaction called a displacement reaction?',a:'Aluminium is more reactive than copper, so it has pushed (displaced) the copper out of the copper sulfate.'},
+ {p:'5.1c',m:2,q:'Arun places zinc in lead nitrate solution, and a displacement reaction takes place. Write a word equation for this reaction.',a:'zinc + lead nitrate → zinc nitrate + lead'},
+ {p:'5.1d',m:1,q:'He places copper in sodium chloride solution. No reaction takes place. Give a reason.',a:'Copper is less reactive than sodium, so it cannot displace sodium from its salt.'},
+ {p:'5.2a',m:1,q:'(Extension) Aluminium displaces copper and lead; lead displaces copper and silver. Which of aluminium, copper, lead and silver is the most reactive?',a:'Aluminium. It displaces both copper and lead.'},
+ {p:'5.2b',m:1,q:'Decide if a reaction will take place when lead is placed in magnesium sulfate. If so, write the word equation.',a:'No reaction. The book places aluminium below magnesium, and aluminium displaces lead, so lead is less reactive than magnesium and cannot displace it.'},
+ {p:'5.2c',m:1,q:'Decide if a reaction will take place when iron is placed in lead nitrate. If so, write the word equation.',a:'The book\'s reactivity series does not include lead, so its position against iron is not in this chapter. In the standard reactivity series iron is above lead, so a reaction takes place: iron + lead nitrate → iron nitrate + lead.'},
+ {p:'5.3a',m:1,q:'Zinc metal is added to sulfuric acid. What is the name of the gas given off?',a:'Hydrogen.'},
+ {p:'5.3b',m:2,q:'How could you test for this gas?',a:'This chapter does not describe the test; use the hydrogen gas test from your earlier science work and write it in your notes.'},
+ {p:'5.3c',m:1,q:'What salt is formed in this reaction?',a:'Zinc sulfate.'},
+ {p:'5.3d',m:1,q:'How do you know when all the acid has reacted?',a:'The fizzing stops, even though some zinc is still there (the book\'s zinc sulfate method waits until the mixture stops fizzing).'},
+ {p:'5.3e',m:2,q:'Write the word equation for this reaction.',a:'zinc + sulfuric acid → zinc sulfate + hydrogen'},
+ {p:'5.4a',m:1,q:'Zara is making potassium chloride crystals by neutralisation. What is the piece of apparatus labelled A (the long graduated tube with a tap, above the conical flask)?',a:'A burette.'},
+ {p:'5.4b',m:1,q:'What is the name of the liquid labelled B, inside it?',a:'Hydrochloric acid. In the book\'s neutralisation method the acid goes in the burette, and a chloride salt is made from hydrochloric acid. (Check the diagram on page 205.)'},
+ {p:'5.4c',m:3,q:'Describe how she can obtain crystals of the salt.',a:'Add the acid until the universal indicator turns green (neutral). Add charcoal powder to remove the indicator\'s colour and filter. Heat the filtrate gently in an evaporating basin until crystals appear around the edge, then leave it for a few days so the water evaporates slowly and crystals form.'}
+];
+
+const QUIZ5=[
+ C('Which is the most reactive metal in the book\'s reactivity series?',['Sodium','Potassium','Calcium','Gold'],1,'Potassium is at the top.'),
+ C('Which metal is the least reactive?',['Silver','Copper','Gold','Iron'],2,'Gold is at the bottom.'),
+ C('Which metal reacts with steam but not with cold water?',['Potassium','Calcium','Zinc','Gold'],2,'Zinc and iron react with steam but not with water.'),
+ C('Iron nail in copper sulfate solution. What do you see?',['Nothing','The nail becomes copper coloured and the blue fades a little','The nail dissolves completely','The solution turns red'],1,'Iron displaces the copper.'),
+ C('Can copper displace iron from iron sulfate?',['Yes','No'],1,'Copper is less reactive than iron.'),
+ C('Where is aluminium in the reactivity series?',['Above potassium','Between magnesium and zinc','Between copper and silver','Below gold'],1,'Above zinc and below magnesium.'),
+ C('The thermite reaction makes…',['Molten iron','Molten aluminium','Copper','Hydrogen'],0,'aluminium + iron oxide → aluminium oxide + iron.'),
+ C('An ore is…',['A pure metal','A rock that contains a metal compound','A type of acid','A salt'],1,'For example, iron ore.'),
+ C('Salts made from sulfuric acid are called…',['Chlorides','Sulfates','Nitrates','Citrates'],1,'H₂SO₄ → sulfates.'),
+ C('What is the formula of sodium chloride?',['NaCl','NaCl₂','SoCl','NaC'],0,'NaCl.'),
+ C('acid + metal →',['salt + water','salt + hydrogen','salt + carbon dioxide','metal oxide'],1,'Hydrogen is given off.'),
+ C('acid + metal oxide →',['salt + water','salt + hydrogen','salt + oxygen','metal + acid'],0,'Water, not hydrogen.'),
+ C('acid + carbonate →',['salt + hydrogen','salt + water + carbon dioxide','salt only','metal + water'],1,'The fizzing is carbon dioxide.'),
+ C('Leaving a salt solution to evaporate slowly so crystals form is…',['Neutralisation','Crystallisation','Displacement','Filtration'],1,'Crystallisation.'),
+ C('A soluble base dissolved in water is…',['An acid','An alkali','A salt','An ore'],1,'Such as sodium hydroxide.'),
+ C('Copper oxide is…',['An alkali','An insoluble base','An acid','A pure metal'],1,'It doesn\'t dissolve, but it reacts with acids.'),
+ C('In an open flask, calcium carbonate + acid seems to lose mass because…',['Atoms are destroyed','Carbon dioxide escapes into the air','The acid evaporates instantly','The balance breaks'],1,'The gas still has mass; it just leaves.'),
+ C('Burning magnesium in a crucible makes the mass…',['Go down','Go up','Stay at zero','Disappear'],1,'Oxygen joins the magnesium.'),
+ C('An endothermic reaction…',['Releases energy','Takes in energy','Creates energy','Has no bonds'],1,'Like sherbet, which feels cool.'),
+ C('Who named oxygen after experiments on burning?',['Lavoisier','Kelvin','Newton','Mendeleev'],0,'Antoine Lavoisier, in the 1770s.')
+];
+
+/* =================== CHAPTER 5 VISUALS =================== */
+Object.assign(VIS,{
+thermite(){return `<div class="vis"><svg viewBox="0 0 420 220" role="img" aria-label="Thermite reaction welding two rails">
+ <rect x="0" y="170" width="420" height="50" fill="#2B2230"/>
+ <rect x="20" y="140" width="160" height="30" fill="#6E7782" stroke="#333"/><rect x="240" y="140" width="160" height="30" fill="#6E7782" stroke="#333"/>
+ <path d="M170 60 L250 60 L235 110 L185 110Z" fill="#8A4A2A" stroke="#333"/><text x="210" y="52" text-anchor="middle" class="small">aluminium + iron oxide</text>
+ <rect class="melt5" x="198" y="110" width="24" height="60" fill="#FF8A2B"/>
+ <rect x="180" y="150" width="60" height="20" fill="#FF6B2B" opacity=".9" class="glow5"/>
+ ${[0,1,2,3,4,5,6,7].map(i=>`<circle class="spk5" cx="210" cy="80" r="2.5" fill="#FFD36E" style="--dx:${(i-3.5)*22}px;--dy:${-30-(i%3)*18}px;animation-delay:${i*.18}s"/>`).join('')}
+ <text x="210" y="200" text-anchor="middle" class="small" style="fill:#FFB27A">molten iron joins the rails (iron melts at 1535 °C)</text>
+</svg></div>`},
+carbonate(){return `<div class="vis"><div class="calcgrid"><svg viewBox="0 0 180 200" style="width:190px;margin:0" aria-label="Calcium carbonate fizzing in acid"><path d="M40 40 L40 180 Q40 192 52 192 L128 192 Q140 192 140 180 L140 40" fill="rgba(200,230,255,.15)" stroke="var(--ink)" stroke-width="2"/><rect x="42" y="90" width="96" height="100" fill="rgba(125,183,255,.25)"/>
+ <path d="M70 170 q10 -18 22 -8 q12 -10 18 8 q-4 14 -20 14 q-16 0 -20 -14z" fill="#EDE6D6" stroke="#999"/>
+ ${[0,1,2,3,4,5,6,7].map(i=>`<circle class="bub3" cx="${70+i*6}" cy="${160-(i%3)*8}" r="3" fill="#fff" opacity=".8" style="animation-delay:${i*.3}s"/>`).join('')}<text x="90" y="26" text-anchor="middle" class="small">carbon dioxide bubbles</text></svg>
+ <div class="cards" style="grid-template-columns:1fr;gap:8px"><div class="card" style="padding:10px;gap:4px"><b>Limestone</b><span class="tiny">Calcium carbonate rock, eroded by acid rain.</span></div><div class="card" style="padding:10px;gap:4px"><b>Coral</b><span class="tiny">Calcium carbonate skeletons react as oceans become slightly more acidic.</span></div><div class="card" style="padding:10px;gap:4px"><b>Malachite</b><span class="tiny">Bright blue-green mineral made from copper carbonate.</span></div></div></div></div>`}
+});
+
+/* =================== CHAPTER 5 INTERACTIVE EXTRAS =================== */
+const SERIES5=[['K','potassium'],['Na','sodium'],['Ca','calcium'],['Mg','magnesium'],['Zn','zinc'],['Fe','iron'],['Cu','copper'],['Ag','silver'],['Au','gold']];
+const REACT5={
+ K:['Burns brightly when heated to form an oxide.','Very vigorous reaction in cold water; the hydroxide is formed.','Violent reaction, very dangerous.'],
+ Na:['Burns brightly when heated to form an oxide.','Very vigorous reaction in cold water; the hydroxide is formed.','Violent reaction, very dangerous.'],
+ Ca:['Burns brightly in air when heated to form an oxide.','Slow reaction in cold water to form the hydroxide.','Check the acid column for calcium in the table on page 170.'],
+ Mg:['Burns brightly in air when heated to form an oxide.','Slow reaction in cold water to form the hydroxide.','Reacts; the reaction becomes less vigorous as you go down from magnesium to iron.'],
+ Zn:['Slow reaction when heated to form an oxide.','Reacts with steam, but not water, to form an oxide.','Reacts, less vigorously than magnesium.'],
+ Fe:['Slow reaction when heated to form an oxide.','Reacts with steam, but not water, to form an oxide.','Reacts, less vigorously than zinc.'],
+ Cu:['Slow reaction when heated to form an oxide.','No reaction with steam or water.','No reaction.'],
+ Ag:['No reaction.','No reaction with steam or water.','No reaction.'],
+ Au:['No reaction.','No reaction with steam or water.','No reaction.']};
+const RANK5=Object.fromEntries(SERIES5.map(([s],i)=>[s,i]));
+const procHTML=(id,title)=>`<div class="vis" id="${id}"><div class="calcgrid"><svg viewBox="0 0 200 180" style="width:200px;margin:0" class="procSvg" aria-label="${title}"></svg><div style="display:grid;gap:8px;min-width:0"><div class="chip procN">Step 1</div><div class="infobox procT"></div><div class="row"><button class="btn procPrev">◀ Back</button><button class="btn primary procNext">Next ▶</button></div></div></div></div>`;
+Object.assign(EXTRA,{
+series5(){return `<div class="vis" id="sr5"><div class="calcgrid"><div class="ladder5">${SERIES5.map(([s,n],i)=>`<button class="rung5" data-sm="${s}" style="--k:${i}"><b>${s}</b> ${n}</button>`).join('')}<div class="tiny" style="display:flex;justify-content:space-between;gap:12px"><span>▲ most reactive (top)</span><span>least reactive (bottom) ▼</span></div></div>
+ <div class="infobox" id="srInfo" style="min-width:0"><b>Tap a metal.</b><br><span class="tiny">Potassium and sodium are extension material in the book.</span></div></div></div>`},
+orderGame(){return `<div class="vis" id="og5"><div class="row" style="justify-content:space-between"><span class="chip" id="ogTime">0.0 s</span><span class="chip" id="ogBest">Best: –</span><button class="btn" id="ogNew">New game</button></div>
+ <div class="row" id="ogPool" style="justify-content:center"></div><ol class="ogList" id="ogList"></ol><div class="infobox" id="ogInfo">Tap the most reactive metal first.</div></div>`},
+nail5(){return `<div class="vis"><div class="row" style="justify-content:center"><button class="btn" data-nl="fe" aria-pressed="true">Iron nail in copper sulfate</button><button class="btn" data-nl="cu" aria-pressed="false">Copper nail in iron sulfate</button></div>
+ <svg viewBox="0 0 300 220" aria-label="Nail in solution"><path d="M90 60 L90 200 Q90 210 100 210 L200 210 Q210 210 210 200 L210 60" fill="rgba(255,255,255,.05)" stroke="var(--ink)" stroke-width="2"/><rect id="nlSol" x="92" y="100" width="116" height="108" fill="#3D7BE0" style="transition:fill 3s"/>
+ <g transform="rotate(14 150 120)"><rect id="nlNail" x="144" y="30" width="12" height="160" rx="3" fill="#8A929C" style="transition:fill 3s"/><rect x="136" y="26" width="28" height="8" rx="2" fill="#6E7782"/></g></svg>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="nlGo">Wait a few minutes</button></div><div class="infobox" id="nlInfo"></div></div>`},
+dispGrid(){const M=['Cu','Mg','Fe','Zn'],N={Cu:'copper',Mg:'magnesium',Fe:'iron',Zn:'zinc'};
+ return `<div class="vis" id="dg5"><div class="ovx"><table class="dt dg5"><tr><th>metal added ↓ / solution →</th>${M.map(s=>`<th>${N[s]} sulfate</th>`).join('')}</tr>
+ ${M.map(m=>`<tr><th>${N[m]}</th>${M.map(s=>m===s?'<td class="tiny" style="opacity:.5">same metal</td>':`<td><button class="btn dgc" data-dm="${m}" data-ds="${s}">?</button></td>`).join('')}</tr>`).join('')}</table></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="dgCheck">Check my grid</button><button class="btn" id="dgClear">Clear</button></div><div class="infobox" id="dgInfo">Tap a square to switch between ✓ reaction and ✗ no reaction.</div></div>`},
+mystery5(){return `<div class="vis" id="my5"><div class="row" style="justify-content:space-between"><span class="chip" id="myTests">Tests used: 0</span><span class="chip" id="myScore">Score: 0</span><button class="btn" id="myNew">New mystery metal</button></div>
+ <div class="row" style="justify-content:center">${[['water','Add to cold water'],['acid','Add to dilute acid'],['cu','Put in copper sulfate'],['fe','Put in iron sulfate'],['zn','Put in zinc sulfate'],['mg','Put in magnesium sulfate']].map(([k,t])=>`<button class="btn" data-mt="${k}">${t}</button>`).join('')}</div>
+ <ul class="tiny" id="myClues" style="min-height:40px"></ul>
+ <div class="row" style="justify-content:center"><span class="tiny">It is…</span>${['Mg','Zn','Fe','Cu'].map(s=>`<button class="btn" data-mg="${s}">${{Mg:'magnesium',Zn:'zinc',Fe:'iron',Cu:'copper'}[s]}</button>`).join('')}</div><div class="infobox" id="myInfo" hidden></div></div>`},
+furnace(){return `<div class="vis" id="fu5"><div class="calcgrid"><svg viewBox="0 0 200 280" style="width:200px;margin:0" aria-label="Blast furnace">
+ <path d="M80 20 L120 20 L150 150 L150 230 L50 230 L50 150Z" fill="#3A3240" stroke="var(--ink)" stroke-width="2"/>
+ <path d="M84 30 L116 30 L142 150 L142 222 L58 222 L58 150Z" fill="url(#fg5)"/><defs><linearGradient id="fg5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A2A2A"/><stop offset=".6" stop-color="#E5552B"/><stop offset="1" stop-color="#FFC94D"/></linearGradient></defs>
+ <rect x="58" y="205" width="84" height="17" fill="#FFB347" class="glow5"/>
+ <g class="fup" data-p="top"><rect x="80" y="2" width="40" height="18" fill="#6E7782"/></g>
+ <g class="fup" data-p="mid"><circle cx="100" cy="110" r="16" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-dasharray="3 3"/></g>
+ <g class="fup" data-p="air"><path d="M10 175 L50 175" stroke="#9AD4FF" stroke-width="6" class="flow"/><path d="M190 175 L150 175" stroke="#9AD4FF" stroke-width="6" class="flow"/></g>
+ <g class="fup" data-p="bottom"><rect x="58" y="222" width="84" height="8" fill="#FFD36E"/><path d="M150 226 L185 250" stroke="#FFB347" stroke-width="5"/></g></svg>
+ <div class="infobox" id="fuInfo"><b>Tap a part of the furnace.</b></div></div></div>`},
+saltUses(){const S=[['Sodium chloride','food'],['Magnesium carbonate','gym'],['Calcium sulfate','chalk'],['Aluminium sulfate','dye'],['Copper sulfate','seed'],['Ammonium nitrate','fert']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl"><b>${t}</b></span><span class="seg"><button class="btn" data-v="food">Preserves and flavours food</button><button class="btn" data-v="gym">Keeps gymnasts' hands dry</button><button class="btn" data-v="chalk">Blackboard chalk</button><button class="btn" data-v="dye">Helps dyes stick to fibres</button><button class="btn" data-v="seed">Stops fungi on seeds</button><button class="btn" data-v="fert">Fertiliser for crops</button></span></div>`).join('')}</div></div>`},
+saltNamer(){return `<div class="vis" id="sn5"><div class="row" style="justify-content:center">${['sodium','potassium','magnesium','zinc','iron','copper','calcium'].map(m=>`<button class="btn" data-snm="${m}">${m}</button>`).join('')}</div>
+ <div class="row" style="justify-content:center">${[['hydrochloric acid','chloride'],['sulfuric acid','sulfate'],['nitric acid','nitrate']].map(([a,s])=>`<button class="btn" data-sna="${s}">${a}</button>`).join('')}</div>
+ <div class="bigstruct" id="snOut" style="font-size:24px">pick a metal and an acid</div><div class="tiny" id="snF" style="text-align:center"></div></div>`},
+metalAcid(){return `<div class="vis" id="ma5"><div class="row" style="justify-content:center">${['magnesium','zinc','iron','copper','sodium'].map(m=>`<button class="btn" data-mam="${m}">${m}</button>`).join('')}</div>
+ <div class="row" style="justify-content:center">${[['hydrochloric acid','chloride'],['sulfuric acid','sulfate']].map(([a,s])=>`<button class="btn" data-maa="${a}|${s}">${a}</button>`).join('')}</div>
+ <canvas id="maC" class="trough" style="height:180px" aria-label="Metal in acid"></canvas><div class="infobox" id="maInfo">Pick a metal and an acid.</div></div>`},
+procZinc(){return procHTML('pz5','Making zinc sulfate')},
+procCuO(){return procHTML('pc5','Making copper sulfate')},
+procCarb(){return procHTML('pk5','Making copper chloride')},
+titrate(){return `<div class="vis" id="ti5"><div class="calcgrid"><svg viewBox="0 0 160 280" style="width:170px;margin:0" aria-label="Burette over a flask">
+ <rect x="72" y="10" width="16" height="150" rx="4" fill="rgba(255,255,255,.08)" stroke="var(--ink)"/><rect id="tiAcid" x="74" y="20" width="12" height="138" fill="rgba(200,230,255,.6)"/><rect x="68" y="160" width="24" height="8" fill="#555"/><path d="M80 168 L80 182" stroke="var(--ink)" stroke-width="3"/>
+ <circle id="tiDrop" cx="80" cy="186" r="4" fill="rgba(200,230,255,.9)" opacity="0"/>
+ <path d="M60 200 L40 260 Q40 270 50 270 L110 270 Q120 270 120 260 L100 200 L100 190 L60 190Z" fill="rgba(255,255,255,.05)" stroke="var(--ink)" stroke-width="2"/>
+ <path id="tiSol" d="M48 240 L112 240 L118 262 Q118 268 110 268 L50 268 Q42 268 42 262Z" fill="#3D5BD9" style="transition:fill .4s"/></svg>
+ <div style="display:grid;gap:8px"><div class="row"><button class="btn primary" id="tiDrip">Add a drop of acid</button><button class="btn" id="tiTen">Add 1 cm³</button><button class="btn" id="tiReset">Start again</button></div>
+ <div class="tiny">Acid added: <b id="tiVol">0.0</b> cm³</div><div class="infobox" id="tiInfo">20 cm³ of sodium hydroxide with universal indicator. Swirl as you add the acid.</div></div></div>
+ <p class="cap">A model: the volume needed here is made up, because it depends on the strengths of the solutions you use.</p></div>`},
+baseSort(){const S=[['Sodium oxide','sb'],['Sodium hydroxide','al'],['Copper oxide','ib'],['Iron oxide','ib']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="sb">Soluble base</button><button class="btn" data-v="ib">Insoluble base</button><button class="btn" data-v="al">Alkali</button></span></div>`).join('')}</div></div>`},
+atomCount(){return `<div class="vis" id="ac5"><div class="row" style="justify-content:center" id="acBtns"></div><div id="acEq" class="eq"></div><svg viewBox="0 0 420 120" id="acSvg" aria-label="Atoms in the reaction"></svg><div class="ovx"><table class="dt" id="acTab"></table></div></div>`},
+massFlask(){return `<div class="vis" id="mf5"><div class="row" style="justify-content:center"><button class="btn" data-mf="closed" aria-pressed="true">With a stopper</button><button class="btn" data-mf="open" aria-pressed="false">Open flask (Arun's results)</button></div>
+ <svg viewBox="0 0 300 230" aria-label="Flask on a balance"><path d="M120 40 L120 90 L80 170 Q75 182 88 182 L212 182 Q225 182 220 170 L180 90 L180 40Z" fill="rgba(255,255,255,.05)" stroke="var(--ink)" stroke-width="2"/><rect id="mfStop" x="114" y="28" width="72" height="16" rx="4" fill="#C2693E"/>
+ <path d="M90 160 L210 160 L218 176 Q220 180 212 180 L88 180 Q80 180 82 176Z" fill="rgba(125,183,255,.3)"/><g id="mfBub"></g><g id="mfGas"></g>
+ <rect x="50" y="184" width="200" height="34" rx="6" fill="#4A4060" stroke="var(--ink)"/><rect x="110" y="190" width="80" height="22" rx="3" fill="#0E1A12"/><text id="mfRead" x="150" y="206" text-anchor="middle" style="font-family:var(--mono);fill:#7CFFB0;font-size:14px">78.92 g</text></svg>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="mfGo">Start the reaction</button></div><div class="infobox" id="mfInfo"></div></div>`},
+crucible(){return `<div class="vis" id="cr5"><svg viewBox="0 0 320 200" aria-label="Magnesium heated in a crucible"><path d="M110 90 Q110 140 160 140 Q210 140 210 90Z" fill="#E8E2D6" stroke="var(--ink)"/><rect id="crLid" x="104" y="80" width="112" height="10" rx="4" fill="#D8D0C2" stroke="var(--ink)" style="transition:transform .4s"/>
+ <path id="crMg" d="M130 112 Q145 102 160 114 Q175 104 190 112" stroke="#B8C0CC" stroke-width="5" fill="none"/><ellipse id="crAsh" cx="160" cy="118" rx="38" ry="10" fill="#F4F4F0" opacity="0"/><circle id="crGlow" cx="160" cy="112" r="30" fill="#FFF6C8" opacity="0"/>
+ <path d="M150 190 Q160 150 170 190Z" fill="#5FB4FF"/></svg>
+ <div class="row" style="gap:6px;justify-content:center"><span class="tiny" style="width:120px">Mass at start</span><span class="ebar" style="max-width:220px"><i style="width:60%"></i></span></div>
+ <div class="row" style="gap:6px;justify-content:center"><span class="tiny" style="width:120px">Mass after heating</span><span class="ebar" style="max-width:220px"><i id="crBar" style="width:60%;background:var(--sun-fill)"></i></span></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="crGo">Heat it</button><button class="btn" id="crLidB">Lift the lid</button></div><div class="infobox" id="crInfo">The bars only compare the masses; the book gives no measured values here.</div></div>`},
+exoSort(){const S=[['Potassium reacting with water','x'],['Sherbet: sodium hydrogencarbonate + citric acid','n'],['The thermite reaction','x'],['Magnesium powder + barium nitrate (used to start thermite)','x']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="x">Exothermic</button><button class="btn" data-v="n">Endothermic</button></span></div>`).join('')}</div></div>`}
+});
+
+/* =================== CHAPTER 5 WIDGET INIT =================== */
+function initWidgets5(){
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const dpr=Math.min(2,devicePixelRatio||1);
+ const fit=cv=>{const W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==Math.round(W*dpr)){cv.width=W*dpr;cv.height=H*dpr;}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return[g,W,H];};
+ const loop=(cv,fn)=>{const f=t=>{if(!document.body.contains(cv))return;fn(t);requestAnimationFrame(f);};requestAnimationFrame(f);};
+ const NAME={K:'potassium',Na:'sodium',Ca:'calcium',Mg:'magnesium',Zn:'zinc',Fe:'iron',Cu:'copper',Ag:'silver',Au:'gold'};
+ const SYM=Object.fromEntries(Object.entries(NAME).map(([s,n])=>[n,s]));
+
+ // series
+ $$('[data-sm]').forEach(b=>b.onclick=()=>{$$('[data-sm]').forEach(x=>x.classList.toggle('sel',x===b));const s=b.dataset.sm,r=REACT5[s];$('#srInfo').innerHTML=`<b>${NAME[s]} (${s})</b><div class="tiny" style="margin-top:6px"><b>Oxygen:</b> ${r[0]}<br><b>Water:</b> ${r[1]}<br><b>Dilute acid:</b> ${r[2]}</div>${s==='K'||s==='Na'?'<div class="tiny">Extension material in the book.</div>':''}`;});
+ // order game
+ if($('#og5')){let order=[],t0=0,tm=null,best=null;try{best=JSON.parse(localStorage.getItem('sci9-og5')||'null');}catch(e){}
+  const showBest=()=>$('#ogBest').textContent='Best: '+(best?best.toFixed(1)+' s':'–');showBest();
+  const deal=()=>{order=[];clearInterval(tm);tm=null;$('#ogTime').textContent='0.0 s';$('#ogList').innerHTML='';$('#ogInfo').textContent='Tap the most reactive metal first.';$('#ogPool').innerHTML=shuffle(SERIES5.slice()).map(([s,n])=>`<button class="btn ogb" data-og="${s}">${n}</button>`).join('');};
+  $('#ogPool').addEventListener('click',e=>{const b=e.target.closest('[data-og]');if(!b)return;if(!tm){t0=performance.now();tm=setInterval(()=>{if(!document.getElementById('ogTime')){clearInterval(tm);return;}$('#ogTime').textContent=((performance.now()-t0)/1000).toFixed(1)+' s';},100);}
+   const s=b.dataset.og;if(RANK5[s]===order.length){order.push(s);b.remove();$('#ogList').innerHTML=order.map(x=>`<li>${NAME[x]} (${x})</li>`).join('');
+    if(order.length===9){clearInterval(tm);tm=null;const t=(performance.now()-t0)/1000;const nb=!best||t<best;if(nb){best=t;try{localStorage.setItem('sci9-og5',JSON.stringify(best));}catch(e){}showBest();}$('#ogInfo').innerHTML=`<b>Done in ${t.toFixed(1)} s!</b> ${nb?'New best time.':'Try again to beat your best.'}`;}else $('#ogInfo').textContent='Correct. Which comes next?';}
+   else{b.classList.add('shake5');setTimeout(()=>b.classList.remove('shake5'),400);$('#ogInfo').textContent=`Not ${NAME[s]} yet. Think about what is more reactive.`;}});
+  $('#ogNew').onclick=deal;deal();}
+ // nail
+ if($('#nlGo')){let mode='fe';const set=()=>{$('#nlSol').setAttribute('fill',mode==='fe'?'#3D7BE0':'#9DC9A0');$('#nlNail').setAttribute('fill',mode==='fe'?'#8A929C':'#C87533');$('#nlInfo').innerHTML=mode==='fe'?'A clean iron nail in blue copper sulfate solution.':'A copper nail in iron sulfate solution.';};
+  $$('[data-nl]').forEach(b=>b.onclick=()=>{mode=b.dataset.nl;$$('[data-nl]').forEach(x=>x.setAttribute('aria-pressed',x===b));set();});
+  $('#nlGo').onclick=()=>{if(mode==='fe'){$('#nlSol').setAttribute('fill','#6E9BE6');$('#nlNail').setAttribute('fill','#B8642E');$('#nlInfo').innerHTML='<b>Displacement!</b> The nail is now copper coloured and the blue has faded a little. Iron is more reactive than copper: copper sulfate + iron → iron sulfate + copper.';}else $('#nlInfo').innerHTML='<b>No reaction.</b> Copper is less reactive than iron, so it cannot displace iron from iron sulfate.';};set();}
+ // displacement grid
+ if($('#dg5')){$$('.dgc').forEach(b=>b.onclick=()=>{const v=b.dataset.v==='y'?'n':'y';b.dataset.v=v;b.textContent=v==='y'?'✓':'✗';b.classList.remove('ok5','no5');});
+  $('#dgCheck').onclick=()=>{let ok=0,n=0,blank=0;$$('.dgc').forEach(b=>{const truth=RANK5[b.dataset.dm]<RANK5[b.dataset.ds]?'y':'n';n++;if(!b.dataset.v){blank++;return;}const r=b.dataset.v===truth;if(r)ok++;b.classList.toggle('ok5',r);b.classList.toggle('no5',!r);});$('#dgInfo').innerHTML=blank?`Fill in all ${n} squares first (${blank} left).`:`<b>${ok} / ${n} correct.</b> ${ok===n?'Perfect: a metal reacts only with salts of metals below it.':'Red squares need another look. A reaction happens only if the added metal is higher in the series.'}`;};
+  $('#dgClear').onclick=()=>{$$('.dgc').forEach(b=>{delete b.dataset.v;b.textContent='?';b.classList.remove('ok5','no5');});$('#dgInfo').textContent='Tap a square to switch between ✓ reaction and ✗ no reaction.';};}
+ // mystery metal
+ if($('#my5')){let secret,used,score=0;const OPT=['Mg','Zn','Fe','Cu'];
+  const clue=(k)=>{const r=REACT5[secret];if(k==='water')return 'Cold water: '+r[1];if(k==='acid')return 'Dilute acid: '+(secret==='Mg'?'reacts vigorously, more than zinc or iron':secret==='Zn'?'reacts, less vigorously than magnesium':secret==='Fe'?'reacts, less vigorously than zinc':'no reaction');
+   const salt={cu:'Cu',fe:'Fe',zn:'Zn',mg:'Mg'}[k];if(salt===secret)return `${NAME[salt]} sulfate: it is the same metal, so nothing to see.`;return `${NAME[salt]} sulfate: `+(RANK5[secret]<RANK5[salt]?`a reaction; ${NAME[salt]} forms on the metal.`:'no reaction.');};
+  const deal=()=>{secret=OPT[Math.floor(Math.random()*4)];used=new Set();$('#myClues').innerHTML='';$('#myTests').textContent='Tests used: 0';$('#myInfo').hidden=true;$$('[data-mt]').forEach(b=>b.disabled=false);$$('[data-mg]').forEach(b=>b.disabled=false);};
+  $$('[data-mt]').forEach(b=>b.onclick=()=>{const k=b.dataset.mt;if(used.has(k))return;used.add(k);b.disabled=true;$('#myClues').insertAdjacentHTML('beforeend',`<li>${clue(k)}</li>`);$('#myTests').textContent='Tests used: '+used.size;});
+  $$('[data-mg]').forEach(b=>b.onclick=()=>{const g=b.dataset.mg;const i=$('#myInfo');i.hidden=false;if(g===secret){const pts=Math.max(1,7-used.size);score+=pts;$('#myScore').textContent='Score: '+score;i.innerHTML=`<b>Correct: it's ${NAME[secret]}!</b> +${pts} points for using ${used.size} test${used.size===1?'':'s'}.`;$$('[data-mg],[data-mt]').forEach(x=>x.disabled=true);}else{i.innerHTML=`<b>Not ${NAME[g]}.</b> Run another test to narrow it down.`;b.disabled=true;}});
+  $('#myNew').onclick=deal;deal();}
+ // furnace
+ if($('#fu5')){const P={top:['Top','Iron ore and coke (a form of carbon) are added.'],mid:['Middle','Iron is displaced from its ore by carbon: iron oxide + carbon → iron + carbon dioxide.'],air:['Air blast','Air is blown in to burn the coke, creating the high temperatures needed for the reaction.'],bottom:['Bottom','Molten iron collects at the bottom.']};
+  $$('.fup').forEach(g=>g.addEventListener('click',()=>{$$('.fup').forEach(x=>x.classList.toggle('sel',x===g));const[a,b]=P[g.dataset.p];$('#fuInfo').innerHTML=`<b>${a}.</b> ${b}`;}));}
+ // salt namer
+ if($('#sn5')){let m=null,a=null;const F={'sodium chloride':'NaCl','copper sulfate':'CuSO₄','potassium nitrate':'KNO₃','zinc chloride':'ZnCl₂','magnesium chloride':'MgCl₂','calcium chloride':'CaCl₂','calcium sulfate':'CaSO₄','iron sulfate':'FeSO₄','magnesium sulfate':'MgSO₄','zinc sulfate':'ZnSO₄'};
+  const up=()=>{$$('[data-snm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.snm===m));$$('[data-sna]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sna===a));if(m&&a){const n=m+' '+a;$('#snOut').textContent=n;$('#snF').textContent=F[n]?'Formula: '+F[n]:'';}};
+  $$('[data-snm]').forEach(b=>b.onclick=()=>{m=b.dataset.snm;up();});$$('[data-sna]').forEach(b=>b.onclick=()=>{a=b.dataset.sna;up();});}
+ // metal + acid
+ if($('#maC')){let m=null,ac=null,rate=0,P=[];const R={magnesium:1,zinc:.55,iron:.3,copper:0,sodium:-1};
+  const up=()=>{$$('[data-mam]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mam===m));$$('[data-maa]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.maa===ac));if(!m||!ac)return;const[an,sn]=ac.split('|');rate=R[m];
+   $('#maInfo').innerHTML=m==='sodium'?'<b>Too dangerous to try!</b> Sodium reacts violently with dilute acid (book table, page 170).':m==='copper'?'<b>No reaction.</b> Copper is too unreactive to displace hydrogen from an acid.':`<b>${m} + ${an} → ${m} ${sn} + hydrogen</b><br><span class="tiny">${m==='magnesium'?'Lots of fizzing.':m==='zinc'?'Steady fizzing.':'Slower fizzing.'} The reaction becomes less vigorous down the series. (The bubbles here are a model.)</span>`;};
+  $$('[data-mam]').forEach(b=>b.onclick=()=>{m=b.dataset.mam;up();});$$('[data-maa]').forEach(b=>b.onclick=()=>{ac=b.dataset.maa;up();});
+  loop($('#maC'),()=>{const[g,W,H]=fit($('#maC'));g.clearRect(0,0,W,H);const x0=W/2-60;g.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--ink');g.lineWidth=2;g.strokeRect(x0,20,120,H-30);g.fillStyle='rgba(125,183,255,.2)';g.fillRect(x0+2,60,116,H-42);
+   if(m&&ac&&m!=='sodium'){g.fillStyle=m==='copper'?'#C87533':'#AEB6C2';g.fillRect(x0+40,H-40,40,14);if(rate>0&&!reduce&&Math.random()<rate*.9)P.push({x:x0+42+Math.random()*36,y:H-42,v:.8+Math.random()});}
+   if(m==='sodium'){g.fillStyle='#FF7A8E';g.font='bold 15px system-ui';g.textAlign='center';g.fillText('⚠ Do not try',W/2,H/2);}
+   P.forEach(p=>{p.y-=p.v;});P=P.filter(p=>p.y>60);g.fillStyle='rgba(255,255,255,.85)';P.forEach(p=>{g.beginPath();g.arc(p.x,p.y,2.5,0,7);g.fill();});});}
+ // procedure steppers
+ const ICON={
+  beaker:(c)=>`<path d="M60 40 L60 150 Q60 160 70 160 L130 160 Q140 160 140 150 L140 40" fill="rgba(255,255,255,.05)" stroke="var(--ink)" stroke-width="2"/><rect x="62" y="100" width="76" height="58" fill="${c}"/>`,
+  fizz:(c)=>ICON.beaker(c)+[0,1,2,3,4].map(i=>`<circle class="bub3" cx="${80+i*9}" cy="${140-(i%2)*10}" r="3" fill="#fff" style="animation-delay:${i*.3}s"/>`).join(''),
+  heat:(c)=>`<path d="M60 70 Q100 120 140 70Z" fill="${c}" stroke="var(--ink)"/><path d="M50 70 L150 70" stroke="var(--ink)" stroke-width="2"/><path d="M60 90 L50 165 M140 90 L150 165" stroke="var(--ink)" stroke-width="3"/><path class="flick5" d="M92 165 Q100 120 108 165Z" fill="#5FB4FF"/>`,
+  filter:(c)=>`<path d="M60 30 L140 30 L104 80 L104 100 L96 100 L96 80Z" fill="rgba(255,255,255,.1)" stroke="var(--ink)" stroke-width="2"/><path d="M70 36 L130 36 L100 74Z" fill="#555"/><path d="M80 110 L120 110 L140 165 L60 165Z" fill="rgba(255,255,255,.05)" stroke="var(--ink)" stroke-width="2"/><rect x="68" y="145" width="64" height="18" fill="${c}"/>`,
+  crystals:(c)=>`<path d="M50 80 Q100 140 150 80Z" fill="rgba(255,255,255,.08)" stroke="var(--ink)" stroke-width="2"/>${[0,1,2,3,4,5].map(i=>`<rect x="${70+i*10}" y="${92+(i%2)*6}" width="9" height="9" fill="${c}" transform="rotate(${i*15} ${74+i*10} ${96})"/>`).join('')}`,
+  burette:(c)=>`<rect x="94" y="10" width="12" height="110" fill="rgba(200,230,255,.5)" stroke="var(--ink)"/><path d="M80 130 L60 170 L140 170 L120 130Z" fill="${c}" stroke="var(--ink)"/>`};
+ const runProc=(id,steps)=>{const root=$('#'+id);if(!root)return;let i=0;const go=()=>{const[t,ic,c]=steps[i];$('.procSvg',root).innerHTML=ICON[ic](c);$('.procN',root).textContent=`Step ${i+1} of ${steps.length}`;$('.procT',root).innerHTML=t;};$('.procNext',root).onclick=()=>{i=Math.min(steps.length-1,i+1);go();};$('.procPrev',root).onclick=()=>{i=Math.max(0,i-1);go();};go();};
+ runProc('pz5',[['Pour about 50 cm³ of dilute sulfuric acid into a 250 cm³ beaker.','beaker','rgba(200,230,255,.35)'],['Add 1 to 5 g of zinc metal. It fizzes: hydrogen is given off.','fizz','rgba(200,230,255,.35)'],['Once the fizzing stops, pour the mixture into an evaporating dish.','beaker','rgba(220,235,255,.4)'],['Heat very gently until you see crystals forming at the edge. Careful: it may spit.','heat','rgba(220,235,255,.6)'],['Remove from the heat and leave for a few days to form crystals: crystallisation.','crystals','#E8F2FF']]);
+ runProc('pc5',[['Pour about 100 cm³ of dilute sulfuric acid into a 250 cm³ beaker and add black copper oxide powder.','beaker','rgba(40,40,40,.6)'],['Heat the mixture very gently, stirring all the time. Don\'t boil the acid.','heat','#3B3B3B'],['When the mixture turns blue, turn off the heat and let it cool.','beaker','#2F6FD6'],['Filter the mixture. The filtrate is copper sulfate solution.','filter','#3D7BE0'],['Heat the filtrate very gently in an evaporating basin until crystals form at the edge, then leave it for a few days to crystallise.','crystals','#3D7BE0']]);
+ runProc('pk5',[['Put 25 cm³ of hydrochloric acid in a small beaker.','beaker','rgba(200,230,255,.35)'],['Add a spatula of copper carbonate. It fizzes: carbon dioxide is given off.','fizz','#6FC7A8'],['Keep adding copper carbonate until it stops reacting and a little is left over (excess). Now all the acid has reacted.','beaker','#6FC7A8'],['Filter. The unreacted copper carbonate is trapped in the filter paper; copper chloride solution passes through.','filter','#5FC0A0'],['Heat the filtrate gently. Stop when crystals appear around the edge, then leave it to cool and crystallise.','crystals','#4FB890']]);
+ // titration
+ if($('#ti5')){let v=0;const END=12.4;const col=()=>v<END-.3?'#3D5BD9':v<=END+.3?'#4FC98A':'#E0773D';
+  const up=()=>{$('#tiVol').textContent=v.toFixed(1);$('#tiSol').setAttribute('fill',col());$('#tiAcid').setAttribute('height',Math.max(0,138-v*5));$('#tiAcid').setAttribute('y',20+Math.min(138,v*5));
+   $('#tiInfo').innerHTML=v<END-.3?'Still alkaline (blue). Keep adding acid slowly, swirling as you go.':v<=END+.3?'<b>Green: neutral!</b> Stop adding acid. sodium hydroxide + hydrochloric acid → sodium chloride + water.':'<b>Too much acid:</b> the solution is no longer neutral. The book asks what you could do to fix this (Question 6, page 192).';};
+  const drip=(d)=>{const dr=$('#tiDrop');dr.setAttribute('opacity',1);dr.setAttribute('cy',186);if(!reduce){dr.animate([{transform:'translateY(0)'},{transform:'translateY(50px)'}],{duration:350});}setTimeout(()=>dr.setAttribute('opacity',0),340);v=Math.min(30,v+d);up();};
+  $('#tiDrip').onclick=()=>drip(.1);$('#tiTen').onclick=()=>drip(1);$('#tiReset').onclick=()=>{v=0;up();};up();}
+ // atom count
+ if($('#ac5')){const E=[{n:'iron + sulfur',eq:'Fe + S → FeS',L:[['Fe'],['S']],R:[['Fe','S']]},{n:'magnesium + hydrochloric acid',eq:'Mg + 2HCl → MgCl₂ + H₂',L:[['Mg'],['H','Cl'],['H','Cl']],R:[['Cl','Mg','Cl'],['H','H']]},{n:'copper oxide + sulfuric acid',eq:'CuO + H₂SO₄ → CuSO₄ + H₂O',L:[['Cu','O'],['H','H','S','O','O','O','O']],R:[['Cu','S','O','O','O','O'],['H','O','H']]},{n:'potassium + water',eq:'2K + 2H₂O → 2KOH + H₂',L:[['K'],['K'],['H','O','H'],['H','O','H']],R:[['K','O','H'],['K','O','H'],['H','H']]}];
+  const CL={Fe:'#E07B39',S:'#E8D44D',Mg:'#4FC98A',H:'#EEEEEE',Cl:'#7FE08A',Cu:'#C87533',O:'#E5475E',K:'#8E5BD6'};
+  const draw=k=>{const e=E[k];$$('[data-ac]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.ac===k));$('#acEq').textContent=e.eq;
+   let x=10,s='';const mol=(m)=>{m.forEach((a,j)=>{s+=`<circle cx="${x+j*14}" cy="60" r="9" fill="${CL[a]}" stroke="#222"/><text x="${x+j*14}" y="${63}" text-anchor="middle" style="font-size:7px;font-weight:700;fill:#111">${a}</text>`;});x+=m.length*14+14;};
+   e.L.forEach(mol);s+=`<text x="${x}" y="65" style="font-size:20px">→</text>`;x+=30;e.R.forEach(mol);$('#acSvg').setAttribute('viewBox',`0 0 ${Math.max(420,x+10)} 120`);$('#acSvg').innerHTML=s;
+   const cnt=a=>{const c={};a.flat().forEach(z=>c[z]=(c[z]||0)+1);return c;};const l=cnt(e.L),r=cnt(e.R);
+   $('#acTab').innerHTML=`<tr><th>Element</th><th>Reactants</th><th>Products</th></tr>`+Object.keys(l).map(z=>`<tr><td>${z}</td><td>${l[z]}</td><td>${r[z]||0} ${l[z]===r[z]?'✓':''}</td></tr>`).join('');};
+  $('#acBtns').innerHTML=E.map((e,k)=>`<button class="btn" data-ac="${k}">${e.n}</button>`).join('');$$('[data-ac]').forEach(b=>b.onclick=()=>draw(+b.dataset.ac));draw(0);}
+ // mass flask
+ if($('#mf5')){let mode='closed',t=null;const set=()=>{clearInterval(t);t=null;$('#mfStop').setAttribute('opacity',mode==='closed'?1:0);$('#mfRead').textContent=mode==='closed'?'78.92 g':'250 g';$('#mfBub').innerHTML='';$('#mfGas').innerHTML='';
+   $('#mfInfo').innerHTML=mode==='closed'?'Stoppered flask with calcium carbonate and hydrochloric acid. The balance in the book shows 78.92 g.':'Open flask. Arun\'s results: 250 g at the start.';};
+  $$('[data-mf]').forEach(b=>b.onclick=()=>{mode=b.dataset.mf;$$('[data-mf]').forEach(x=>x.setAttribute('aria-pressed',x===b));set();});
+  $('#mfGo').onclick=()=>{set();$('#mfBub').innerHTML=[0,1,2,3,4,5].map(i=>`<circle class="bub3" cx="${120+i*12}" cy="${172-(i%2)*6}" r="3" fill="#fff" style="animation-delay:${i*.25}s"/>`).join('');
+   if(mode==='closed'){$('#mfInfo').innerHTML='<b>Fizzing, but the reading stays at 78.92 g.</b> Nothing can get in or out, and no atoms are gained or lost. Arun was right.';}
+   else{$('#mfGas').innerHTML=[0,1,2,3].map(i=>`<circle class="gas5" cx="${140+i*8}" cy="40" r="5" fill="rgba(255,255,255,.35)" style="animation-delay:${i*.4}s"/>`).join('');let s=0;t=setInterval(()=>{if(!document.getElementById('mfRead')){clearInterval(t);return;}s++;const m=250-43*Math.min(1,s/20);$('#mfRead').textContent=Math.round(m)+' g';if(s>=20){clearInterval(t);t=null;$('#mfInfo').innerHTML='<b>207 g after 10 minutes.</b> The carbon dioxide escaped into the air, so the balance could not measure it. The mass only <i>appears</i> to decrease. (The animation speeds up the 10 minutes.)';}},reduce?10:150);}};set();}
+ // crucible
+ if($('#cr5')){let lid=false;$('#crLidB').onclick=()=>{lid=!lid;$('#crLid').style.transform=lid?'translate(30px,-26px) rotate(-20deg)':'';$('#crLidB').textContent=lid?'Put the lid back':'Lift the lid';};
+  $('#crGo').onclick=()=>{$('#crGlow').setAttribute('opacity',.9);setTimeout(()=>{$('#crGlow').setAttribute('opacity',0);$('#crMg').setAttribute('opacity',0);$('#crAsh').setAttribute('opacity',1);$('#crBar').style.width='82%';$('#crInfo').innerHTML='<b>White ash: magnesium oxide.</b> Its mass is <b>more</b> than the magnesium at the start, because oxygen from the air has combined with it. (Bars compare sizes only; the book gives no values here.)';},reduce?50:1600);};}
+}
+
 /* =================== CHAPTER REGISTRY =================== */
 const CHAPTERS_DATA={
  1:{title:'Photosynthesis and the carbon cycle',pages:'8–47',cypPages:'45–47',cypNote:'Questions 1.2, 1.3 and 1.4 use a diagram or graph, so keep your book open at those pages.',topics:TOPICS1,kw:KEYWORDS1,cyp:CYP1,quiz:QUIZ1},
  2:{title:'Properties of materials',pages:'48–83',cypPages:'82–83',cypNote:'Questions 2.1, 2.4 and 2.5 use a table, a model or a diagram, so keep your book open at those pages.',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2},
  3:{title:'Forces and energy',pages:'84–141',cypPages:'139–141',cypNote:'Questions 3.9 and 3.10 use diagrams, so keep your book open at pages 140–141.',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3},
- 4:{title:'Maintaining life',pages:'142–167',cypPages:'166–167',cypNote:'Question 4.3 uses a diagram of Arun\'s two plants on page 166, so keep your book open there.',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4}};
+ 4:{title:'Maintaining life',pages:'142–167',cypPages:'166–167',cypNote:'Question 4.3 uses a diagram of Arun\'s two plants on page 166, so keep your book open there.',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4},
+ 5:{title:'Reactivity',pages:'168–205',cypPages:'204–205',cypNote:'Questions 5.3 and 5.4 refer to diagrams on page 205, so keep your book open there.',topics:TOPICS5,kw:KEYWORDS5,cyp:CYP5,quiz:QUIZ5}};
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
 function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPICS=CHD.topics;KEYWORDS=CHD.kw;CYP=CHD.cyp;QUIZ=CHD.quiz;S.ch=n;if(!S.sec[n])S.sec[n]=TOPICS[0].id;QZ=null;}
@@ -2437,6 +2929,7 @@ function initWidgets(){
  initWidgets2();
  try{initWidgets3();}catch(e){console.error(e);}
  try{initWidgets4();}catch(e){console.error(e);}
+ try{initWidgets5();}catch(e){console.error(e);}
 }
 
 /* =================== GALAXY: themes, rail, study-later, stickers, notes, fonts =================== */

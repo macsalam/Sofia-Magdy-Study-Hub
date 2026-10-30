@@ -436,6 +436,27 @@ body[data-font="2"] h1,body[data-font="2"] h2{letter-spacing:0;font-weight:700}
 .nut4{border:1px solid var(--line);color:var(--ink);font:inherit}
 @media (prefers-reduced-motion:reduce){.h2o4,.ion4,.bc4,.xw4,.fstep4{animation:none!important}}
 
+/* chapter 5 */
+.ladder5{display:grid;gap:4px;min-width:200px}
+.rung5{text-align:left;padding:7px 12px;border-radius:10px;border:1px solid var(--line);color:var(--ink);font:inherit;font-size:14px;background:linear-gradient(90deg,hsl(calc(10 + var(--k)*28) 80% 60% / .35),var(--surface));cursor:pointer}
+.rung5.sel,.rung5:hover{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.ogList{columns:3;column-gap:20px;min-height:24px;font-size:14px}
+@media (max-width:560px){.ogList{columns:2}}
+.shake5{animation:shake5 .35s}
+@keyframes shake5{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.dg5 td,.dg5 th{text-align:center}.dgc{min-width:48px}.dgc.ok5{border-color:var(--good);background:var(--good-soft)}.dgc.no5{border-color:var(--bad);background:var(--bad-soft)}
+.fup{cursor:pointer}.fup.sel,.fup:hover{filter:drop-shadow(0 0 6px var(--acc)) brightness(1.2)}
+.melt5{animation:melt5 2s ease-in infinite}
+@keyframes melt5{from{transform:scaleY(.2);transform-origin:top}to{transform:scaleY(1);transform-origin:top}}
+.glow5{animation:glow5 1.4s ease-in-out infinite alternate}
+@keyframes glow5{from{opacity:.6}to{opacity:1}}
+.spk5{animation:spk5 1.4s ease-out infinite}
+@keyframes spk5{from{transform:translate(0,0);opacity:1}to{transform:translate(var(--dx),var(--dy));opacity:0}}
+.flick5{animation:glow5 .3s ease-in-out infinite alternate}
+.gas5{animation:gas5 2s linear infinite}
+@keyframes gas5{from{transform:translateY(0);opacity:.8}to{transform:translateY(-36px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.melt5,.glow5,.spk5,.flick5,.gas5,.shake5{animation:none!important}}
+
 </style>
 
 <header class="top">
