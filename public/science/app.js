@@ -2757,13 +2757,430 @@ function initWidgets5(){
   $('#crGo').onclick=()=>{$('#crGlow').setAttribute('opacity',.9);setTimeout(()=>{$('#crGlow').setAttribute('opacity',0);$('#crMg').setAttribute('opacity',0);$('#crAsh').setAttribute('opacity',1);$('#crBar').style.width='82%';$('#crInfo').innerHTML='<b>White ash: magnesium oxide.</b> Its mass is <b>more</b> than the magnesium at the start, because oxygen from the air has combined with it. (Bars compare sizes only; the book gives no values here.)';},reduce?50:1600);};}
 }
 
+/* =================== CHAPTER 6: Sound and space =================== */
+const KEYWORDS6=[
+ {id:'amplitude',t:'amplitude',topic:'6.1',d:'The maximum distance that particles move forward or backward in a sound wave. On a waveform it is measured from zero to the peak, or from zero to the trough.'},
+ {id:'frequency',t:'frequency',topic:'6.1',d:'The number of complete vibrations each second, measured in hertz (Hz). 500 Hz means 500 vibrations every second.'},
+ {id:'loudness',t:'loudness',topic:'6.1',d:'How quiet or loud a sound appears. A larger amplitude gives a louder sound.'},
+ {id:'oscilloscope',t:'oscilloscope',topic:'6.1',d:'A machine that uses a microphone to detect sound and shows its waveform on a screen.'},
+ {id:'peak',t:'peak',topic:'6.1',d:'The highest point of a waveform.'},
+ {id:'pitch',t:'pitch',topic:'6.1',d:'How high or low a sound appears on a musical scale. A higher frequency gives a higher pitch.'},
+ {id:'trough',t:'trough',topic:'6.1',d:'The lowest point of a waveform.'},
+ {id:'waveform',t:'waveform',topic:'6.1',d:'A graph showing how the particles in a sound wave move forward and backward with time.'},
+ {id:'interference',t:'interference',topic:'6.2',d:'The effect produced when waves of the same type meet each other.'},
+ {id:'reinforce',t:'reinforce',topic:'6.2',d:'To make stronger. Waves reinforce when peaks meet peaks and troughs meet troughs; their amplitudes add up.'},
+ {id:'collision theory',t:'collision theory',topic:'6.3',d:'The theory (also called the giant impact hypothesis) that the Moon formed after a Mars-sized planet, Theia, collided with the young Earth.'},
+ {id:'nebulae',t:'nebulae (singular: nebula)',topic:'6.4',d:'Clouds of dust and gas in space, mostly hydrogen with a smaller quantity of helium.'},
+ {id:'northern hemisphere',t:'northern hemisphere',topic:'6.4',d:'The part of the Earth north of the equator. The Orion nebula is easy to see from here in winter.'},
+ {id:'southern hemisphere',t:'southern hemisphere',topic:'6.4',d:'The part of the Earth south of the equator. The Carina nebula is the easiest to see from here.'},
+ {id:'stellar nurseries',t:'stellar nurseries',topic:'6.4',d:'Areas in space where stars are formed. Some nebulae act as stellar nurseries.'},
+ {id:'jigsaw',t:'jigsaw',topic:'6.5',d:'A picture cut into interlocking pieces. The continents look as if they fit together like a giant jigsaw.'},
+ {id:'continental coasts',t:'continental coasts',topic:'6.5',d:'The edges of the continents. Their shapes fit together, which is evidence for tectonic plates.'},
+ {id:'fossil record',t:'fossil record',topic:'6.5',d:'The collection of thousands of fossils that give information about the time before humans were on Earth.'},
+ {id:'alignment',t:'alignment',topic:'6.5',d:'Lining up in a particular way, such as the direction magnetic crystals point in rocks.'}
+];
+
+const TOPICS6=[
+{
+ id:'6.1',title:'Loudness and pitch of sound',pages:'206–215',
+ goals:['Find out about the amplitude of a sound wave.','Find out about the frequency of a sound wave.','Learn how amplitude is linked to loudness.','Learn how frequency is related to pitch.','Learn how to recognise amplitude and frequency from a diagram of a sound wave (waveform).'],
+ hook:{q:'Describe how a sound wave travels through air, using ideas about particles. What is common to all objects that make sound?',a:'All objects that make sound are vibrating. The vibrations push and pull the air particles, so the particles move backwards and forwards, passing the vibration along as the sound wave travels forward.'},
+ big:'A bigger amplitude means a louder sound. A higher frequency (more vibrations each second) means a higher pitch.',
+ steps:[
+  {t:'Sound waves and waveforms',body:`<p>Sound is made when objects vibrate. As a sound wave travels forward through air, the air particles move <b>backwards and forwards</b>.</p>
+   <p>That movement is hard to draw, so we use a graph of how far the particles move forward and backward over time. Its shape is called a <span class="kw">waveform</span>.</p>
+   <ul><li>The highest point is the <span class="kw">peak</span>, and the lowest point is the <span class="kw">trough</span>.</li><li>The maximum distance the particles move forward or backward is the <span class="kw">amplitude</span>. You can measure it from zero to the peak, or from zero to the trough; both are the same.</li></ul>
+   <p class="note">Watch the air particles and the waveform together.</p>`,
+   extra:'airWave',
+   check:C('Which of these describes the amplitude of a sound wave?',['The total distance particles move forward and backward','The maximum distance particles move from their position when there is no wave','The number of vibrations each second','The direction the wave travels'],1,'Amplitude is measured from zero to the peak (or zero to the trough).')},
+  {t:'Loudness, pitch and the oscilloscope',body:`<p>The <span class="kw">loudness</span> of a sound depends on how much the object is vibrating (bigger vibrations, louder) and how far away it is (further away, quieter, because of energy dissipation). <b>As the amplitude increases, the loudness increases.</b></p>
+   <p>The speed of the vibrations is the number of complete vibrations per second, called the <span class="kw">frequency</span>. It is measured in <b>hertz (Hz)</b>: 500 Hz means 500 complete vibrations every second. <b>As the frequency increases, the <span class="kw">pitch</span> increases.</b> On a waveform, a higher frequency shows more waves in the same time.</p>
+   <p>An <span class="kw">oscilloscope</span> uses a microphone to detect sound and shows its waveform on a screen.</p>
+   <p class="note">Change the amplitude and frequency. Tap "Play" to hear it (keep your volume low).</p>`,
+   extra:'scope6',
+   check:C('Two sounds have the same amplitude, but one has more waves on the oscilloscope screen. What is different about it?',['It is louder','It has a higher pitch','It is quieter','Nothing'],1,'More waves in the same time means a higher frequency, so a higher pitch. Same amplitude means the same loudness.')},
+  {t:'Pitch and length',body:`<p>Hold a ruler at the edge of a desk and make it vibrate. Make the vibrating part <b>shorter</b>, and the pitch changes, because the vibrations get <b>faster</b>.</p>
+   <p>Usually, shorter vibrating objects make higher-pitch sounds than longer ones. On a <b>gayageum</b>, the strings are plucked, and pegs called bridges can be moved to change the length of string that vibrates: the shorter the string, the higher the pitch.</p>
+   <p class="note">Change the length of the vibrating part of the ruler. (The speeds here are slowed down so you can see them.)</p>`,
+   extra:'ruler6',
+   check:C('You make the vibrating part of a ruler shorter. What happens?',['It vibrates more slowly and the pitch goes down','It vibrates faster and the pitch goes up','The amplitude doubles','Nothing changes'],1,'Shorter vibrating objects vibrate faster, giving a higher pitch.')},
+  {t:'Notes on a piano',body:`<p>A piano makes sound when keys make strings inside it vibrate. The key at the left makes a note called A₀. After an interval of notes called an <b>octave</b>, there is another A note, A₁, and so on.</p>
+   <table class="dt"><tr><th>Note</th><th>A₀</th><th>A₁</th><th>A₂</th><th>A₃</th><th>A₄</th></tr><tr><td>Frequency (Hz)</td><td>27.5</td><td>55.0</td><td>110</td><td>220</td><td>440</td></tr></table>
+   <p class="note">Tap the A keys to hear them, then use the trend to predict A₅, A₆ and A₇.</p>`,
+   extra:'piano6',
+   check:C('What is the trend in the frequencies of the A notes?',['They go up by 27.5 Hz each time','They double each octave','They halve each octave','They stay the same'],1,'27.5 → 55 → 110 → 220 → 440: each one is double the one before.')},
+  {t:'Wave match game',body:`<p>Time to test your eye. A target waveform appears on the left screen. Adjust the amplitude and frequency on the right until your wave matches it, then lock it in.</p>
+   <p>Remember: amplitude is the height from the middle line to a peak, and frequency is how many waves fit across the screen.</p>`,
+   extra:'waveMatch',
+   check:C('How do you find the frequency of a vibrating ruler most accurately?',['Count the vibrations in 1 second','Count the complete vibrations in 10 seconds, then divide by 10','Measure the ruler length','Listen for the loudest sound'],1,'Counting for longer and dividing by 10 gives a more accurate result, as in the book\'s ruler investigation.')}
+ ],
+ mistakes:[
+  ['Amplitude is measured from the peak to the trough.','Amplitude is from zero (the middle line) to the peak, or zero to the trough.'],
+  ['A louder sound has a higher pitch.','Loudness depends on amplitude; pitch depends on frequency. They can change separately.'],
+  ['Hertz measures loudness.','Hertz (Hz) measures frequency: vibrations per second.']
+ ],
+ bq:[
+  {p:'p. 210',q:'(a) Describe the link between amplitude and the loudness of a wave. (b) Describe the link between frequency and the pitch of a wave.',a:'(a) As the amplitude increases, the loudness increases. (b) As the frequency increases, the pitch increases.'},
+  {p:'p. 210',q:'(a) Which describes the amplitude: A the maximum distance particles move from their position when there is no wave; B the total distance particles move forward and backward; C the number of times particles vibrate every second; D the direction particles move? (b) Which describes the frequency?',a:'(a) A. (b) C.'},
+  {p:'p. 210',q:'A waveform on an oscilloscope has four labels, A to D. Which letter represents the amplitude, and which letter shows a measurement that depends on the frequency?',a:'Look at the diagram on page 210. The amplitude is the arrow that goes from the middle line up to a peak. A measurement that depends on frequency is one of the arrows drawn sideways along the time axis, because frequency is about how many waves fit into a time.'},
+  {p:'p. 211',q:'Waveforms A and B, then C and D. Complete with increases, decreases or stays the same: (a) A to B, the amplitude…; (b) A to B, the loudness…; (c) C to D, the pitch…; (d) C to D, the loudness…; (e) C to D, the frequency…',a:'From the diagrams on page 211: (a) increases, (b) increases, (c) decreases, (d) stays the same, (e) decreases. Check against your book in case your diagrams are clearer than the scan.'},
+  {p:'p. 212',q:'Piano: (1) Describe the trend in the frequencies of the A notes. (2) Predict how pitch changes from left to right on the keys. (3) Predict the frequencies of A₅, A₆ and A₇.',a:'(1) The frequency doubles each octave. (2) The pitch increases from left to right. (3) Continuing the doubling: A₅ 880 Hz, A₆ 1760 Hz, A₇ 3520 Hz.'},
+  {p:'p. 213',q:'A piano pedal decreases the loudness of a note without changing the pitch. What does it do to (a) the amplitude and (b) the frequency of the string vibration?',a:'(a) It decreases the amplitude. (b) The frequency stays the same.'},
+  {p:'p. 214',q:'Vibrations in a ruler: name the independent variable, the dependent variable and two control variables.',a:'Independent: the mass taped to the end. Dependent: the frequency (from vibrations counted in 10 s). Control variables, for example: the length of ruler that vibrates and the ruler itself.'},
+  {p:'p. 214',q:'Guitar strings are all the same length but have different masses, and each makes a different note. Suggest how the frequency and pitch of a string depend on its mass.',a:'Use the trend from your own ruler results; the book does not print the answer. If more mass gave a lower frequency in your results, then heavier strings vibrate at a lower frequency and give lower-pitched notes.'}
+ ],
+ checklist:['I can describe what is meant by the amplitude of a sound wave.','I know how loudness of a sound depends on the amplitude of the sound wave.','I can describe what is meant by the frequency of a sound wave.','I know how the pitch of a sound depends on the frequency of the sound wave.','I can recognise changes in amplitude and frequency from a graph of the wave or an oscilloscope display.']
+},
+{
+ id:'6.2',title:'Interference of sound',pages:'216–223',
+ goals:['Find out how sound waves can reinforce each other to make louder sounds.','Find out how sound waves can cancel each other out to make no sound.'],
+ hook:{q:'Each person in a group draws a wave. Can you sort the waves from smallest to largest amplitude, then from smallest to largest frequency?',a:'Amplitude is the height from the middle to a peak; frequency is how many waves fit across the same width. In this topic you will see what happens when two waves meet.'},
+ big:'When waves meet, they interfere. Peaks meeting peaks reinforce (louder). Peaks meeting troughs cancel (no sound).',
+ steps:[
+  {t:'Interference',body:`<p>Water waves are a useful <b>analogy</b> for sound waves. The particles don't move in the same way, but the analogy helps explain how waves behave.</p>
+   <p>If you make two sets of water waves at the same frequency and amplitude, you see a pattern where they meet. The effect produced when waves meet each other is called <span class="kw">interference</span>.</p>
+   <p>Interference only happens between waves of the <b>same type</b>: sound waves interfere with sound waves, but not with water waves. It is easiest to detect when the waves have the same frequency and amplitude.</p>
+   <p class="note">Two sources make ripples. Bright areas are where the waves reinforce; dark areas are where they cancel.</p>`,
+   extra:'ripples6',
+   check:C('Can sound waves interfere with water waves?',['Yes, always','No, interference only happens between waves of the same type','Only if they have the same frequency','Only underwater'],1,'Sound waves interfere with sound waves; water waves with water waves.')},
+  {t:'Reinforce or cancel',body:`<p>Waves <span class="kw">reinforce</span> (make stronger) when they meet with <b>peaks together and troughs together</b>. Their amplitudes are added together, but the frequency does not change. A bigger amplitude means a <b>louder</b> sound.</p>
+   <p>Waves <b>cancel</b> when they meet with the peaks of one on the troughs of the other. Think of a peak as a positive amplitude and a trough as a negative one: 2 + (−2) = 0. The result is <b>no sound</b>. To cancel completely, the two waves must have the same frequency <b>and</b> the same amplitude.</p>
+   <p class="note">Slide the second wave and watch the sum.</p>`,
+   extra:'superpose6',
+   check:C('Two waves of 450 Hz, each with amplitude 0.5 mm, meet and reinforce. What is the new wave?',['450 Hz, 0.5 mm','900 Hz, 1.0 mm','450 Hz, 1.0 mm','900 Hz, 0.5 mm'],2,'Amplitudes add (0.5 + 0.5 = 1.0 mm); the frequency stays the same.')},
+  {t:'Noise-cancelling headphones',body:`<p>Noise-cancelling headphones make sound waves cancel. A small microphone picks up the sound from the surroundings. The headphones analyse it and create another sound wave with the <b>same amplitude and frequency</b>, but out of step with the original. The new wave cancels the sound from the surroundings.</p>
+   <p>At a concert with two loudspeakers, people in some places hear a particular pitch louder than usual, where the waves reinforce. But the sound is unlikely ever to cancel completely there, because it reflects off objects and people, adding many more waves to the pattern.</p>`,
+   vis:'headphones6',
+   check:C('What wave do noise-cancelling headphones produce?',['A louder copy of the noise','A wave with the same amplitude and frequency, out of step with the noise','A wave with double the frequency','No wave at all'],1,'Peaks meet troughs, so the two waves cancel.')},
+  {t:'Hearing waves reinforce',body:`<p>In the book's investigation, you hold a vibrating tuning fork over a plastic pipe standing in water. Moving the pipe up or down changes the length of pipe above the water. At one length the sound gets much <b>louder</b>: the sound reflected inside the pipe reinforces the sound from the fork.</p>
+   <p>You measure that length, then repeat with a tuning fork of a different pitch, and look for a trend linking frequency to length. The book asks you to use your trend to explain how wind instruments make different notes.</p>
+   <p class="note">Move the pipe to find the loudest point. (A model; the lengths are made up.)</p>`,
+   extra:'pipe6',
+   check:C('In the tuning fork investigation, why does the sound become louder at one pipe length?',['The fork vibrates faster','The reflected wave reinforces the wave from the fork','The water absorbs the sound','The pipe makes its own sound'],1,'Reflected sound meeting the original peak-to-peak reinforces it.')}
+ ],
+ mistakes:[
+  ['Two sounds together are always louder.','Only if they reinforce. If peaks meet troughs, they cancel.'],
+  ['Reinforcing changes the frequency.','Only the amplitude changes (it adds up). The frequency stays the same.'],
+  ['Any two waves can cancel completely.','They must have the same frequency and the same amplitude.']
+ ],
+ bq:[
+  {p:'p. 221',q:'(a) Which will always give a louder sound: A two waves cancel, B two waves reinforce, C two waves reflect, D two waves refract? (b) Which will always give no sound?',a:'(a) B. (b) A.'},
+  {p:'p. 221',q:'(a) Describe how two sound waves must meet in order to reinforce. (b) …in order to cancel.',a:'(a) With their peaks together and their troughs together. (b) With the peaks of one meeting the troughs of the other; for complete cancelling they must have the same frequency and amplitude.'},
+  {p:'p. 221',q:'Two waves before reinforcing: 450 Hz, amplitude 0.5 mm. Complete the frequency and amplitude of the one wave after reinforcing.',a:'Frequency 450 Hz; amplitude 1.0 mm.'},
+  {p:'p. 221',q:'Two sound waves have frequencies of 600 Hz. One has amplitude 0.25 mm. (a) State the amplitude of the other wave needed for them to cancel. (b) State the amplitude after they cancel completely.',a:'(a) 0.25 mm. (b) 0 (zero).'},
+  {p:'p. 222',q:'Water wave activity: (1) Why are both nails on the same piece of wood? (2) Complete: larger amplitude areas, the waves …; zero amplitude areas, the waves … .',a:'(1) So both make waves with the same frequency and the same amplitude. (2) reinforce … cancel.'},
+  {p:'p. 222',q:'(a) Suggest two sources of sound that produce waves of equal frequency and amplitude. (b) Why is it very difficult to make sound cancel completely, even in a quiet room?',a:'The book prints no answers. Reasoning: (a) for example, two identical loudspeakers playing the same note, or two identical tuning forks; (b) the sound reflects off the walls and objects, adding more waves, so it is unlikely only two identical waves meet (the same idea as the concert on page 221).'}
+ ],
+ checklist:['I know how sound waves reinforce.','I know what happens to the loudness of a sound when sound waves reinforce.','I know how sound waves cancel.','I know what happens to the loudness of a sound when sound waves cancel.']
+},
+{
+ id:'6.3',title:'Formation of the Moon',pages:'224–228',
+ goals:['Describe evidence for the collision theory for the formation of the Moon.'],
+ hook:{q:'How was the Solar System formed from a cloud of dust and gas in space?',a:'You met this in Stage 8: gravity pulled the dust and gas together to form the Sun and the planets. The Moon\'s story starts soon after that.'},
+ big:'The collision theory says a Mars-sized planet, Theia, hit the young Earth, and the Moon formed from the rocks and dust thrown out.',
+ steps:[
+  {t:'Where did the Moon come from?',body:`<p>In the early twentieth century, scientists thought the Moon formed by <b>splitting away</b> from the Earth soon after the Earth formed.</p>
+   <p>If that were correct, the Moon would still be slowly moving away from Earth. Accurate measurements show it <b>is</b>, at about <b>4 cm each year</b>. But these calculations could not completely confirm the splitting theory.</p>
+   <p>In <b>1974</b>, a different idea was suggested: the <span class="kw">collision theory</span>, also called the giant impact hypothesis. There is more evidence for it than for any other current theory.</p>`,
+   check:C('How fast is the Moon moving away from Earth, according to the book?',['About 4 cm each year','About 4 km each year','About 4 mm each century','It is moving closer'],0,'About 4 cm each year.')},
+  {t:'The giant impact',body:`<p>Relatively soon after the Solar System formed, a newly formed planet about the same size as <b>Mars</b> collided with the newly formed Earth. Scientists call it <b>Theia</b>.</p>
+   <p>The collision made rocks and dust break away from both planets. Earth was formed from the two planets joined together, and the Moon formed when the ring of rocks and dust was pulled together by <b>gravity</b>.</p>
+   <p class="note">Play the collision, step by step.</p>`,
+   extra:'impact6',
+   check:C('Which planet is closest in size to Theia?',['Mars','Earth','Neptune','Jupiter'],0,'Theia was about the same size as Mars.')},
+  {t:'Weighing the evidence',body:`<p>Scientists look at evidence on both sides. The book lists evidence that <b>supports</b> the collision theory and evidence that <b>contradicts</b> it.</p>
+   <p>One puzzle: if the Moon formed mostly from Theia, you would expect Moon rocks to be more like Theia's. In fact, their composition is very similar to Earth's.</p>
+   <p class="note">Sort each piece of evidence.</p>`,
+   extra:'evidence6',
+   check:C('Which of these supports the collision theory?',['Venus has no moon','Samples of Moon rock show its surface was once molten','The Earth\'s surface does not appear to have ever been molten','Moon rock should be more like Theia\'s'],1,'A molten surface fits a huge, hot collision.')}
+ ],
+ mistakes:[
+  ['The collision theory is proven fact.','It is the theory with the most evidence, but some evidence contradicts it.'],
+  ['The Moon came straight out of Earth with no other planet involved.','That was the older splitting theory. The collision theory involves Theia.'],
+  ['moon and Moon mean the same.','Moon (capital M) is Earth\'s; moon (small m) is any natural object orbiting another planet.']
+ ],
+ bq:[
+  {p:'p. 227',q:'Which planet is closest in size to Theia? A Mars, B Earth, C Neptune, D Jupiter.',a:'A, Mars.'},
+  {p:'p. 227',q:'Which could explain why rocks on the Earth and the Moon are so similar? A the Moon is mostly Theia\'s rocks and Earth has only a little; B Earth is mostly Theia\'s rocks and the Moon has only a little; C rocks from Theia and Earth were completely mixed during the collision.',a:'The book prints no answer. C fits best: if the rocks were completely mixed, Earth and Moon would have similar rocks. A and B would each make one of them different.'},
+  {p:'p. 227',q:'Mars\'s moons Phobos and Deimos may be captured asteroids. How would their rocks compare with Mars\'s rocks if they were (a) originally asteroids, (b) formed by a collision with Mars?',a:'Reasoning (no printed answer): (a) their rocks would be different from Mars\'s; (b) their rocks would be similar to Mars\'s, as Earth\'s and the Moon\'s are.'},
+  {p:'p. 227',q:'Collisions between planet-sized objects were common soon after the Solar System formed. Suggest why they are no longer common.',a:'A suggestion (no printed answer): most of the material has already come together into the planets, so there are far fewer large objects left to collide.'}
+ ],
+ checklist:['I know the collision theory for the formation of the Moon.','I know the evidence for the collision theory.']
+},
+{
+ id:'6.4',title:'Nebulae',pages:'229–232',
+ goals:['Discover that nebulae are clouds of dust and gas in space.','Learn how stars can form in nebulae.'],
+ hook:{q:'How were the planets in the Solar System formed? In what ways are planets and stars different, and the same?',a:'For example, stars give out their own light and heat; planets don\'t, and they orbit a star. Both formed from clouds of dust and gas pulled together by gravity, which is where this topic begins.'},
+ big:'Nebulae are huge clouds of dust and gas. In some of them, gravity pulls the material together so tightly that new stars form.',
+ steps:[
+  {t:'Clouds of dust and gas',body:`<p><span class="kw">Nebulae</span> (singular: <b>nebula</b>) are clouds of dust and gas in space. The gases are mostly <b>hydrogen</b>, with a smaller quantity of <b>helium</b>.</p>
+   <p>The particles are very far apart: a nebula the size of the Earth would have a mass of only a few kilograms! Most nebulae are very large; some are more than <b>10 000 times</b> bigger than the Solar System. Some form when giant stars reach the end of their life and explode, sending dust and gas over a wide area.</p>
+   <ul><li><span class="kw">Northern hemisphere</span>: the <b>Orion nebula</b> is one of the easiest to see, in winter, without a telescope.</li><li><span class="kw">Southern hemisphere</span>: the <b>Carina nebula</b> is the easiest to see, also without a telescope.</li></ul>`,
+   vis:'nebula6',
+   check:C('Which two gases are most commonly found in nebulae?',['Oxygen and nitrogen','Hydrogen and helium','Carbon dioxide and water vapour','Neon and argon'],1,'Mostly hydrogen, with a smaller quantity of helium.')},
+  {t:'Stellar nurseries',body:`<p>A <span class="kw">stellar nursery</span> is an area in space where stars are formed ("stellar" means to do with stars). <b>Some</b> types of nebulae act as stellar nurseries.</p>
+   <ol><li>The dust and gas start to collapse together under the force of <b>gravity</b>.</li><li>As more mass collects, the inward pull of gravity increases.</li><li>The pressure inside the new star becomes very large, and high pressure causes <b>heat</b>.</li><li>The heat can make atoms react with each other, so the new star gives out <b>heat and light</b>.</li></ol>
+   <p>Some young stars in the book's photograph are only half the mass of the Sun and have not yet reached their full brightness. Their light lights up the dust and gas around them.</p>
+   <p class="note">Drag the timeline to form a star.</p>`,
+   extra:'starForm6',
+   check:C('Which statement is correct?',['All nebulae act as stellar nurseries','Only some nebulae act as stellar nurseries','No nebulae ever act as stellar nurseries'],1,'Only some types of nebula are stellar nurseries.')},
+  {t:'How big?',body:`<p>Distances in space are often measured in <b>light years (ly)</b>, a unit of distance.</p>
+   <p>The book gives the diameter of the Solar System as <b>0.001 ly</b> and the diameter of the Orion nebula as <b>24 ly</b>.</p>
+   <p class="note">Work out how many times bigger the Orion nebula is, then check.</p>`,
+   extra:'scale6',
+   check:C('A light year is a unit of…',['Time','Distance','Brightness','Mass'],1,'The book calls it a unit of distance used in space.')}
+ ],
+ mistakes:[
+  ['A nebula is a single star.','A nebula is a huge cloud of dust and gas.'],
+  ['Nebulae are very dense.','The particles are very far apart; an Earth-sized piece would have a mass of only a few kilograms.'],
+  ['A light year is a length of time.','It is a unit of distance.']
+ ],
+ bq:[
+  {p:'p. 231',q:'(1a) Describe the features common to all nebulae. (1b) Describe the difference between a nebula and a galaxy.',a:'(1a) They are clouds of dust and gas in space, mostly hydrogen with some helium, with the particles very far apart. (1b) This topic does not describe galaxies; use your earlier work on galaxies (Stage 8) to compare them.'},
+  {p:'p. 231',q:'(2) Name the two gases most commonly found in nebulae. (3a) Describe what is meant by stellar nursery. (3b) Which is correct: A all nebulae, B only some nebulae, C no nebulae act as stellar nurseries?',a:'(2) Hydrogen and helium. (3a) An area in space where stars are formed. (3b) B.'},
+  {p:'p. 231',q:'Outline the process by which a new star forms.',a:'Dust and gas collapse together under gravity. As the mass grows, the inward pull of gravity increases, so the pressure inside becomes very large. The high pressure causes heat, which makes atoms react, and the new star gives out heat and light.'},
+  {p:'p. 231',q:'The Solar System is 0.001 ly across and the Orion nebula is 24 ly across. How many times bigger is the Orion nebula?',a:'24 ÷ 0.001 = 24 000 times.'},
+  {p:'p. 232',q:'Activity 6.4.1: find different types of nebula, design an information sheet, and find out what is different about the Hubble Space Telescope.',a:'A research activity, so there is no fixed answer. Use space agency websites and include at least one stellar nursery.'}
+ ],
+ checklist:['I know what nebulae are.','I know that stars can be formed in nebulae.']
+},
+{
+ id:'6.5',title:'Tectonics',pages:'233–240',
+ goals:['Discover how convection currents cause movement of tectonic plates.','Learn about the evidence we have for tectonic plates.'],
+ hook:{q:'Describe the structure of the Earth. How does the model of plate tectonics link to it? What events are more likely at plate boundaries?',a:'A solid rocky crust rests on a more fluid mantle, around a core. The crust is broken into tectonic plates, and earthquakes and volcanoes happen most often near plate boundaries.'},
+ big:'Convection currents in the mantle slowly drag the tectonic plates. Fitting coastlines, fossils and magnetic rocks are evidence that the plates move.',
+ steps:[
+  {t:'Convection in the mantle',body:`<p>The Earth's outer layer is the solid, rocky <b>crust</b>, resting on the more fluid <b>mantle</b>. The mantle is heated from the <b>inner core</b>, estimated at over <b>5000 °C</b>! The heat comes from thermal energy left over from the Earth's formation, friction inside the Earth, and the type of reactions in the rocks.</p>
+   <p>As in Chapter 3: the inner part of the mantle is heated, expands and becomes <b>less dense</b>, so it rises towards the crust, cools and sinks again. This makes <b>convection currents</b>.</p>
+   <p>The mantle is a very thick fluid, so the currents move very slowly. As they move underneath the crust, they pull the tectonic plates along at between <b>0.6 and 10 cm per year</b>.</p>`,
+   extra:'mantle6',
+   check:C('Why does hot mantle rise?',['It is denser than the cooler mantle','It expands and becomes less dense','The crust pulls it up','The core pushes it with a magnet'],1,'Heated fluid expands, becomes less dense and rises: convection.')},
+  {t:'A giant jigsaw',body:`<p>On a world map, the continents look as if they could fit together like pieces of a giant <span class="kw">jigsaw</span>. Their <span class="kw">continental coasts</span> fit together.</p>
+   <p>The hypothesis is that there was once only one large continent, which eventually separated. Many scientists call it <b>Pangaea</b> and think it existed between <b>335 and 175 million years ago</b>; around 175 million years ago it started to break apart.</p>
+   <p class="note">Move the timeline to see South America and Africa separate. (Simplified shapes.)</p>`,
+   extra:'pangaea6',
+   check:C('Africa and South America are about 5000 km apart and separated about 140 million years ago. What is their average speed of separation?',['About 3.6 cm per year','About 36 km per year','About 0.36 mm per year','About 140 cm per year'],0,'5000 km = 500 000 000 cm; 500 000 000 ÷ 140 000 000 ≈ 3.6 cm per year.')},
+  {t:'Fossils and magnetic rocks',body:`<p>The <span class="kw">fossil record</span> gives more evidence. Fossils of <b>Mesosaurus</b>, a crocodile-like reptile that lived about 275 million years ago at coasts and in shallow water, are found in Africa and South America, in parts that fit together. It is not likely they crossed the 5000 km-wide Atlantic. Fossils of the plant <b>Glossopteris</b>, 300 million years old, are found in Antarctica, India, Australia, Africa and South America.</p>
+   <p>The Earth's magnetic field has swapped direction almost 200 times in the last 100 million years. Magnetic crystals in molten rock line up with the field, and when the rock solidifies they keep that <span class="kw">alignment</span>.</p>
+   <p>At <b>mid-oceanic ridges</b>, magma comes up from the mantle and solidifies into new rock, pushing the continents apart. Crystals at the ridge point north, like today's field; rocks further away have the opposite alignment, showing they are much older.</p>
+   <p class="note">Watch new rock form at the ridge as the magnetic field flips.</p>`,
+   extra:'ridge6',
+   check:C('Why do Mesosaurus fossils in Africa and South America support the idea of moving plates?',['Mesosaurus could swim 5000 km','The continents were joined when it lived, so it lived across both','Fossils move by themselves','It was found everywhere on Earth'],1,'It lived at coasts and in shallow water, so it was unlikely to cross an ocean. The land must have been joined.')},
+  {t:'Earthquakes and volcanoes',body:`<p>If the hypothesis of moving tectonic plates is correct, we would expect more <b>earthquakes and volcanoes</b> at the plate boundaries. This is indeed the case: most recorded earthquakes and volcanoes are close to the boundaries, though some are not.</p>
+   <p class="note">Tap a plate boundary type to see what happens there. (A simplified model.)</p>`,
+   extra:'quakes6',
+   check:C('Where do most recorded earthquakes and volcanoes occur?',['In the middle of plates','Close to tectonic plate boundaries','Only at the poles','Randomly with no pattern'],1,'Most are close to plate boundaries, which supports the tectonic plates model.')}
+ ],
+ mistakes:[
+  ['Tectonic plates move fast enough to see.','They move between 0.6 and 10 cm per year.'],
+  ['The mantle is liquid like water.','It is a very thick fluid, so convection currents in it move very slowly.'],
+  ['All earthquakes happen at plate boundaries.','Most do, but the book\'s map also shows some away from the boundaries.']
+ ],
+ bq:[
+  {p:'p. 237',q:'(1) Describe what makes convection currents in the Earth\'s mantle. (2) Describe what is meant by the term tectonic plate.',a:'(1) The inner mantle is heated by the core; the hot fluid expands, becomes less dense and rises, then cools near the crust and sinks again. (2) One of the large pieces that make up the Earth\'s crust, pulled along by the mantle\'s convection currents.'},
+  {p:'p. 237',q:'(3) The continents appear to fit together like a jigsaw. Explain how this is evidence for tectonic plates. (4) How do (a) the fossil record and (b) the alignment of magnetic materials provide evidence?',a:'(3) If the coasts fit, the continents could once have been joined in one large continent that separated as the plates moved. (4a) The same fossils (Mesosaurus, Glossopteris) are found on continents now far apart, so the continents were once joined. (4b) Rock at mid-ocean ridges points north while rock further away has the opposite alignment, showing new rock forms at the ridges and pushes the plates apart.'},
+  {p:'p. 237',q:'Scientists think the Earth\'s magnetic field has reversed 183 times in 83 million years. Calculate the average time between reversals.',a:'83 000 000 ÷ 183 ≈ 454 000 years (about 450 000 years).'},
+  {p:'p. 237',q:'Use the map to discuss the statement "Earthquakes and volcanoes always occur at tectonic plate boundaries."',a:'Most recorded earthquakes and volcanoes on the map are close to plate boundaries, which supports the idea, but some are away from the boundaries, so "always" is not correct.'},
+  {p:'p. 238',q:'Pangaea: Africa and South America are about 5000 km apart and separated about 140 million years ago. Calculate the average speed of separation in cm per year.',a:'5000 km = 500 000 000 cm. 500 000 000 ÷ 140 000 000 ≈ 3.6 cm per year.'}
+ ],
+ checklist:['I understand what makes tectonic plates move.','I understand what evidence exists for tectonic plates.']
+}
+];
+
+const CYP6=[
+ {p:'6.1',m:1,q:'A graph shows how particles in a sound wave move with time, with four labelled arrows A to D (see page 241). Which measurement shows the amplitude?',a:'The arrow drawn from the middle line up to a peak. In the book\'s diagram this is B.'},
+ {p:'6.2',m:3,q:'Describe what happens to a sound when (a) the amplitude increases, (b) the frequency increases, (c) the number of waves per second increases. All other variables stay constant.',a:'(a) It gets louder. (b) The pitch gets higher. (c) The pitch gets higher (waves per second is the frequency).'},
+ {p:'6.3',m:2,q:'Four waveforms A to D on an oscilloscope (see page 241). Write the letter of (a) the sound with the highest pitch, (b) the quietest sound with the lowest pitch.',a:'From the diagram: (a) B, which has the most waves across the screen; (b) C, which has the smallest amplitude and the fewest waves.'},
+ {p:'6.4',m:6,q:'Draw diagrams to show how two sound waves of equal frequency and amplitude can (a) meet each other to reinforce, (b) meet each other to cancel.',a:'(a) Two identical waves lined up peak to peak and trough to trough; the result is a wave with the same frequency and double the amplitude. (b) Two identical waves with the peaks of one lined up with the troughs of the other; the result is a flat line (zero amplitude, no sound).'},
+ {p:'6.5',m:6,q:'(a) Describe the events in the collision theory. [4] (b) Describe two pieces of evidence that support it. [2]',a:'(a) Soon after the Solar System formed, a newly formed planet about the size of Mars (Theia) collided with the newly formed Earth. Rocks and dust broke away from both. Earth formed from the two planets joined together, and the Moon formed when the ring of rocks and dust was pulled together by gravity. (b) Any two from: the Moon is less dense than Earth; Moon rock samples show its surface was once molten; the Moon has a small iron core like Earth\'s; similar collisions outside the Solar System cause rings of rock and dust; it fits how the Solar System formed; Earth and Moon rocks have the same composition.'},
+ {p:'6.6',m:6,q:'(a) Explain what is meant by (i) nebula, (ii) stellar nursery. (b) When stars first form, they are harder to see than older stars at the same distance. Suggest two reasons.',a:'(a)(i) A cloud of dust and gas in space, mostly hydrogen with a smaller amount of helium. (ii) An area in space where stars are formed (some nebulae act as stellar nurseries). (b) From page 231: young stars have not yet reached their full brightness, and they are inside the cloud of dust and gas. (The book does not print an answer; these follow from its description.)'},
+ {p:'6.7',m:3,q:'Describe how each provides evidence for tectonic plates: (a) the shapes of the present-day continents, (b) the fossil record, (c) the alignment of magnetic materials in rocks.',a:'(a) The continental coasts fit together like a jigsaw, suggesting they were once one continent. (b) The same fossils (Mesosaurus, Glossopteris) are found on continents now far apart. (c) Rocks at mid-ocean ridges point north while older rocks further away have the opposite alignment, showing new rock forms there and pushes the plates apart.'}
+];
+
+const QUIZ6=[
+ C('All objects that make sound are…',['Hot','Vibrating','Metal','Moving forward'],1,'Sound is made when objects vibrate.'),
+ C('The highest point of a waveform is the…',['Trough','Peak','Amplitude','Frequency'],1,'Peak = top, trough = bottom.'),
+ C('A larger amplitude gives a…',['Higher pitch','Louder sound','Quieter sound','Lower pitch'],1,'Amplitude links to loudness.'),
+ C('Frequency is measured in…',['Decibels','Hertz (Hz)','Metres','Seconds'],1,'Hz = vibrations per second.'),
+ C('A frequency of 500 Hz means…',['500 waves per minute','500 complete vibrations every second','A loudness of 500','A wave 500 m long'],1,'Every second.'),
+ C('Shorter vibrating objects usually make…',['Lower-pitch sounds','Higher-pitch sounds','Louder sounds','No sound'],1,'They vibrate faster.'),
+ C('What does an oscilloscope use to detect sound?',['A thermometer','A microphone','A magnet','A lens'],1,'It shows the waveform on a screen.'),
+ C('A₄ is 440 Hz. What is A₃?',['880 Hz','220 Hz','440 Hz','110 Hz'],1,'Each octave down halves the frequency.'),
+ C('Waves reinforce when…',['Peaks meet troughs','Peaks meet peaks and troughs meet troughs','They are different types','Their frequencies differ'],1,'Amplitudes add.'),
+ C('When two waves cancel completely, the result is…',['A louder sound','No sound','A higher pitch','Double the frequency'],1,'2 + (−2) = 0.'),
+ C('Interference is easiest to detect when the waves have…',['Different frequencies','The same frequency and amplitude','Different types','No amplitude'],1,'Same frequency and amplitude.'),
+ C('What is the name of the planet that may have hit the young Earth?',['Theia','Gaia','Phobos','Deimos'],0,'Theia, about the size of Mars.'),
+ C('When was the collision theory suggested?',['1874','1974','2004','1774'],1,'In 1974.'),
+ C('Which is evidence AGAINST the collision theory?',['The Moon has a small iron core','Venus has no moon','Moon rock was once molten','The Moon is less dense than Earth'],1,'Collisions were common, so Venus might be expected to have a moon too.'),
+ C('Nebulae are mostly made of…',['Oxygen and nitrogen','Hydrogen and helium','Iron and nickel','Water and ice'],1,'Mostly hydrogen, some helium.'),
+ C('What pulls dust and gas together to form a star?',['Magnetism','Gravity','Friction','Sound'],1,'Gravity.'),
+ C('How fast do tectonic plates move?',['0.6 to 10 cm per year','0.6 to 10 km per year','1 metre per day','They don\'t move'],0,'Very slowly.'),
+ C('What drives the movement of tectonic plates?',['Wind','Convection currents in the mantle','Ocean tides','The Moon'],1,'Mantle convection pulls the plates along.'),
+ C('Mesosaurus fossils are found in…',['Africa and South America','Only Asia','The Moon','Antarctica only'],0,'Evidence the continents were joined.'),
+ C('Pangaea started to break apart about…',['175 million years ago','175 thousand years ago','17.5 million years ago','1.75 billion years ago'],0,'About 175 million years ago.')
+];
+
+/* =================== CHAPTER 6 VISUALS =================== */
+Object.assign(VIS,{
+headphones6(){const w=(x,y,ph,c)=>{let d=`M${x} ${y}`;for(let i=0;i<=60;i++){d+=` L${x+i*2} ${y+Math.sin(i/60*Math.PI*4+ph)*14}`;}return `<path d="${d}" fill="none" stroke="${c}" stroke-width="3"/>`;};
+ return `<div class="vis"><svg viewBox="0 0 420 210" role="img" aria-label="Noise-cancelling headphones: a wave out of step cancels the noise">
+ <path d="M120 90 Q210 -10 300 90" fill="none" stroke="#2A2A33" stroke-width="12"/><rect x="96" y="80" width="40" height="80" rx="16" fill="#2A2A33"/><rect x="284" y="80" width="40" height="80" rx="16" fill="#2A2A33"/>
+ ${w(10,120,0,'#FF7A8E')}${w(150,120,Math.PI,'#5FD4F4')}<path d="M300 120 L410 120" stroke="#9FE3B8" stroke-width="3"/>
+ <circle cx="140" cy="150" r="5" fill="#FFD36E"/><text x="10" y="200" class="small">noise (red) + headphones' wave (blue, out of step) → silence (green line)</text>
+ <text x="120" y="176" class="small">microphone</text></svg><p class="cap">Redrawn from the idea on page 220.</p></div>`},
+nebula6(){return `<div class="vis"><canvas id="nb6" class="trough" style="height:220px;background:#0B0820" aria-label="A glowing nebula"></canvas>
+ <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))"><div class="card" style="padding:10px;gap:4px"><b>Orion nebula</b><span class="tiny">Northern hemisphere, visible in winter without a telescope.</span></div><div class="card" style="padding:10px;gap:4px"><b>Carina nebula</b><span class="tiny">Southern hemisphere, the easiest there; no telescope needed.</span></div><div class="card" style="padding:10px;gap:4px"><b>Huge but thin</b><span class="tiny">Some are over 10 000 times bigger than the Solar System.</span></div></div>
+ <p class="cap">An artistic animation, not a photograph.</p></div>`}
+});
+
+/* =================== CHAPTER 6 INTERACTIVE EXTRAS =================== */
+Object.assign(EXTRA,{
+airWave(){return `<div class="vis"><canvas id="aw6" class="trough" style="height:260px" aria-label="Air particles and waveform"></canvas><p class="cap">Top: air particles moving backwards and forwards as the wave passes. Bottom: the waveform, with the peak, trough and amplitude labelled.</p></div>`},
+scope6(){return `<div class="vis" id="sc6"><canvas id="scC" class="trough" style="height:200px;background:#0E1A12" aria-label="Oscilloscope screen"></canvas>
+ <div class="calcgrid" style="align-items:start"><div style="display:grid;gap:6px"><label class="tiny" for="scA">Amplitude (loudness)</label><input type="range" id="scA" min="5" max="100" value="50"><label class="tiny" for="scF">Frequency (pitch): <b id="scFv">220</b> Hz</label><input type="range" id="scF" min="110" max="880" step="10" value="220"></div>
+ <div style="display:grid;gap:6px"><button class="btn primary" id="scPlay">▶ Play</button><div class="infobox" id="scInfo"></div></div></div></div>`},
+ruler6(){return `<div class="vis"><canvas id="ru6" class="trough" style="height:200px" aria-label="Ruler vibrating at the edge of a desk"></canvas><div class="row" style="justify-content:center"><label class="tiny" for="ruL">Length of the vibrating part</label><input type="range" id="ruL" min="30" max="100" value="80" style="flex:1;max-width:280px"></div><div class="infobox" id="ruInfo"></div></div>`},
+piano6(){const A=[['A₀',27.5],['A₁',55],['A₂',110],['A₃',220],['A₄',440]];
+ return `<div class="vis" id="pi6"><div class="keys6">${Array.from({length:36},(_,i)=>{const a=i%7===0?A[i/7]:null;return `<button class="key6 ${a?'a':''}" ${a?`data-pf="${a[1]}" aria-label="${a[0]} ${a[1]} Hz"`:'tabindex="-1" aria-hidden="true"'}>${a?`<span>${a[0]}</span>`:''}</button>`;}).join('')}</div>
+ <div class="infobox" id="piInfo">Tap a labelled key to hear its A note.</div>
+ <div class="row" style="justify-content:center">${['A₅','A₆','A₇'].map((n,i)=>`<label class="tiny">${n} <input type="number" class="piIn" data-pa="${[880,1760,3520][i]}" style="width:80px;padding:5px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)"> Hz</label>`).join('')}<button class="btn" id="piCheck">Check</button></div><div class="tiny" id="piRes" style="text-align:center"></div></div>`},
+waveMatch(){return `<div class="vis" id="wm6"><div class="row" style="justify-content:space-between"><span class="chip" id="wmRound">Round 1 of 5</span><span class="chip" id="wmScore">Score: 0</span><button class="btn" id="wmNew">New game</button></div>
+ <div class="calcgrid"><div><div class="tiny">Target</div><canvas id="wmT" class="trough" style="height:130px;background:#0E1A12"></canvas></div><div><div class="tiny">Your wave</div><canvas id="wmY" class="trough" style="height:130px;background:#0E1A12"></canvas></div></div>
+ <div class="calcgrid"><div style="display:grid;gap:4px"><label class="tiny" for="wmA">Amplitude</label><input type="range" id="wmA" min="1" max="5" value="3"></div><div style="display:grid;gap:4px"><label class="tiny" for="wmF">Waves across the screen</label><input type="range" id="wmF" min="1" max="8" value="4"></div></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="wmLock">Lock it in</button></div><div class="infobox" id="wmInfo">Match the target's amplitude and frequency.</div></div>`},
+ripples6(){return `<div class="vis"><canvas id="rp6" class="trough" style="height:260px" aria-label="Two-source interference pattern"></canvas><div class="row" style="justify-content:center"><label class="tiny" for="rpD">Distance between the sources</label><input type="range" id="rpD" min="20" max="120" value="60" style="flex:1;max-width:260px"></div></div>`},
+superpose6(){return `<div class="vis"><canvas id="sp6" class="trough" style="height:260px" aria-label="Two waves and their sum"></canvas>
+ <div class="row" style="justify-content:center"><button class="btn" data-sp6="0">Peaks together</button><button class="btn" data-sp6="180">Peak meets trough</button><label class="tiny" for="spP">Shift wave 2</label><input type="range" id="spP" min="0" max="360" value="0" style="flex:1;max-width:220px"></div><div class="infobox" id="spInfo"></div></div>`},
+pipe6(){return `<div class="vis"><div class="calcgrid"><svg viewBox="0 0 160 280" style="width:160px;margin:0" aria-label="Tuning fork over a pipe in water"><rect x="30" y="120" width="100" height="150" fill="rgba(125,183,255,.3)" stroke="var(--ink)"/><g id="ppG"><rect x="62" y="40" width="36" height="220" fill="rgba(255,255,255,.12)" stroke="var(--ink)" stroke-width="2"/></g><path d="M70 10 L70 30 M90 10 L90 30 M70 30 Q80 40 90 30" stroke="#C9CDD3" stroke-width="4" fill="none"/></svg>
+ <div style="display:grid;gap:8px"><label class="tiny" for="ppR">Raise or lower the pipe</label><input type="range" id="ppR" min="0" max="100" value="20"><div class="tiny">Loudness</div><span class="ebar"><i id="ppBar"></i></span><div class="infobox" id="ppInfo">Move the pipe slowly and listen for the loudest point.</div></div></div></div>`},
+impact6(){return `<div class="vis"><canvas id="im6" class="trough" style="height:240px;background:#0B0820" aria-label="Theia colliding with Earth"></canvas><div class="row" style="justify-content:center"><button class="btn" id="imPrev">◀</button><span class="chip" id="imN">1 / 4</span><button class="btn primary" id="imNext">▶</button></div><div class="infobox" id="imInfo"></div><p class="cap">An animation of the book's four-stage diagram, not to scale.</p></div>`},
+evidence6(){const S=[['The Moon is less dense than the Earth','s'],['Samples of Moon rock show its surface was once molten','s'],['The Moon has a small iron core, similar to the Earth','s'],['Similar collisions outside the Solar System cause rings of rock and dust','s'],['It fits the theory of how the Solar System formed','s'],['The rocks on the Earth and the Moon have the same composition','s'],['The Earth\'s surface does not appear ever to have been molten','c'],['Venus has no moon','c'],['Moon rock should be more like Theia\'s, but is more like Earth\'s','c']];
+ return `<div class="vis"><div class="sort">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="s">Supports</button><button class="btn" data-v="c">Contradicts</button></span></div>`).join('')}</div></div>`},
+starForm6(){return `<div class="vis"><canvas id="sf6" class="trough" style="height:240px;background:#0B0820" aria-label="A star forming in a nebula"></canvas><div class="row" style="justify-content:center"><label class="tiny" for="sfT">Time</label><input type="range" id="sfT" min="0" max="100" value="0" style="flex:1;max-width:320px"></div><div class="infobox" id="sfInfo"></div></div>`},
+scale6(){return `<div class="vis"><svg viewBox="0 0 420 90" aria-label="Scale comparison"><rect x="10" y="30" width="400" height="26" rx="6" fill="#B48CFF" opacity=".5"/><text x="210" y="48" text-anchor="middle" style="font-weight:700">Orion nebula: 24 ly</text><rect x="10" y="64" width="2" height="12" fill="#FFD36E"/><text x="18" y="76" class="small">Solar System: 0.001 ly (far too small to see at this scale)</text></svg>
+ <div class="row" style="justify-content:center"><label class="tiny" for="scIn">How many times bigger?</label><input type="number" id="scIn" style="width:120px;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)"><button class="btn primary" id="scGo">Check</button></div><div class="infobox" id="scOut">Divide 24 by 0.001.</div></div>`},
+mantle6(){return `<div class="vis"><canvas id="mt6" class="trough" style="height:240px" aria-label="Convection currents in the mantle moving plates"></canvas><p class="cap">Simplified and greatly sped up. Red = hotter, less dense mantle rising; blue = cooler mantle sinking.</p></div>`},
+pangaea6(){return `<div class="vis"><svg viewBox="0 0 420 240" id="pgSvg" aria-label="South America and Africa separating" style="background:#16314F;border-radius:12px"><path id="pgRidge" d="M210 10 L210 230" stroke="#FFB347" stroke-dasharray="4 4" opacity="0"/>
+ <g id="pgSA"><path d="M150 40 L196 50 L205 80 L200 110 L182 140 L165 175 L150 215 L140 210 L138 170 L130 130 L118 95 L125 60Z" fill="#9FD47A" stroke="#2E5A1E"/><text x="150" y="115" text-anchor="middle" class="small" style="fill:#132">S. America</text></g>
+ <g id="pgAF"><path d="M218 30 L270 25 L300 50 L312 85 L300 120 L285 150 L270 190 L255 200 L245 170 L232 130 L222 105 L214 80 L216 52Z" fill="#E8C47A" stroke="#6A4A1E"/><text x="262" y="100" text-anchor="middle" class="small" style="fill:#321">Africa</text></g></svg>
+ <div class="row" style="justify-content:center"><label class="tiny" for="pgR">Time</label><input type="range" id="pgR" min="0" max="140" value="0" style="flex:1;max-width:300px"><b class="tiny" id="pgT">140 million years ago</b></div>
+ <p class="cap">Simplified shapes, not a real map. The book gives about 5000 km of separation in about 140 million years.</p></div>`},
+ridge6(){return `<div class="vis"><canvas id="rg6" class="trough" style="height:220px" aria-label="Magnetic stripes forming at a mid-ocean ridge"></canvas><div class="row" style="justify-content:center"><button class="btn primary" id="rgGo">Start</button><span class="chip" id="rgField">Field: points north</span></div><p class="cap">A simplified model: each stripe is new rock; its colour shows which way its crystals point.</p></div>`},
+quakes6(){const B={apart:['Plates moving apart','At mid-ocean ridges, magma rises and solidifies into new rock, pushing the plates apart.'],together:['Plates moving together','Where plates push towards each other, earthquakes and volcanoes are common.'],past:['Plates sliding past','Where plates slide past each other, earthquakes are common.']};
+ return `<div class="vis" id="qk6"><div class="row" style="justify-content:center">${Object.entries(B).map(([k,[t]])=>`<button class="btn" data-qk="${k}">${t}</button>`).join('')}</div><canvas id="qkC" class="trough" style="height:180px" aria-label="Plate boundary"></canvas><div class="infobox" id="qkInfo">The book says most recorded earthquakes and volcanoes occur close to plate boundaries.</div>
+ <p class="cap">The book's map shows where earthquakes and volcanoes happen; the descriptions of the three boundary types are a simplified model to picture why.</p></div>`}
+});
+
+/* =================== CHAPTER 6 WIDGET INIT =================== */
+function initWidgets6(){
+ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const dpr=Math.min(2,devicePixelRatio||1);
+ const fit=cv=>{const W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==Math.round(W*dpr)){cv.width=W*dpr;cv.height=H*dpr;}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return[g,W,H];};
+ const loop=(cv,fn)=>{const f=t=>{if(!document.body.contains(cv))return;fn(t);requestAnimationFrame(f);};requestAnimationFrame(f);};
+ let AC=null;const tone=(f,vol=.08,dur=1)=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.value=0;o.connect(g);g.connect(AC.destination);const t=AC.currentTime;g.gain.linearRampToValueAtTime(vol,t+.03);g.gain.linearRampToValueAtTime(0,t+dur);o.start(t);o.stop(t+dur+.05);}catch(e){}};
+ const wave=(g,W,H,amp,cycles,ph,col,lw=2.5)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();for(let x=0;x<=W;x+=2){const y=H/2-Math.sin(x/W*cycles*Math.PI*2+ph)*amp;x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();};
+ const grid=(g,W,H)=>{g.strokeStyle='rgba(124,255,176,.15)';g.lineWidth=1;for(let x=0;x<W;x+=W/10){g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke();}for(let y=0;y<H;y+=H/6){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();}};
+
+ // air wave
+ if($('#aw6')){const cv=$('#aw6');loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const ph=reduce?0:t/600;const top=70;
+   g.fillStyle='#6E7782';g.fillRect(8,top-30,18,60);for(let i=0;i<14;i++)for(let j=0;j<5;j++){const x0=40+i*((W-60)/14)+j%2*6,y=top-24+j*12;const dx=Math.sin(ph-i*.7)*8;g.fillStyle=css('--acc2');g.beginPath();g.arc(x0+dx,y,3.5,0,7);g.fill();}
+   const y0=H-80,amp=45;g.strokeStyle=css('--line');g.beginPath();g.moveTo(30,y0);g.lineTo(W-10,y0);g.stroke();g.strokeStyle=css('--muted');g.beginPath();g.moveTo(30,y0-60);g.lineTo(30,y0+60);g.stroke();
+   g.strokeStyle='#FF7A8E';g.lineWidth=2.5;g.beginPath();for(let x=30;x<=W-10;x+=2){const y=y0-Math.sin((x-30)/(W-40)*Math.PI*6-ph)*amp;x>30?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();
+   g.fillStyle=css('--ink');g.font='11px system-ui';g.fillText('forward',34,y0-50);g.fillText('backward',34,y0+56);g.fillText('time →',W-50,y0+14);
+   const per=(W-40)/3,base=30+((Math.PI/2+ph)/(Math.PI*6))*(W-40);let px=base%per;while(px<W*.4)px+=per;const tx=px+per/2;
+   g.strokeStyle='#FFD36E';g.lineWidth=2;g.beginPath();g.moveTo(px,y0);g.lineTo(px,y0-amp);g.stroke();g.fillStyle='#FFD36E';g.fillText('amplitude',px+5,y0-amp/2);
+   g.fillStyle=css('--ink');g.beginPath();g.arc(px,y0-amp,4,0,7);g.fill();g.fillText('peak',px-12,y0-amp-8);if(tx<W-20){g.beginPath();g.arc(tx,y0+amp,4,0,7);g.fill();g.fillText('trough',tx-16,y0+amp+16);}});}
+ // scope
+ if($('#sc6')){const cv=$('#scC');const A=$('#scA'),F=$('#scF');const info=()=>{$('#scFv').textContent=F.value;$('#scInfo').innerHTML=`${+A.value>60?'Large':+A.value>30?'Medium':'Small'} amplitude → ${+A.value>60?'loud':+A.value>30?'medium':'quiet'}.<br>${F.value} Hz → ${F.value} vibrations per second (${+F.value>500?'high':+F.value>250?'medium':'low'} pitch).`;};A.oninput=info;F.oninput=info;info();
+  $('#scPlay').onclick=()=>tone(+F.value,.02+(+A.value/100)*.12,1.2);
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);grid(g,W,H);wave(g,W,H,(+A.value/100)*(H/2-8),(+F.value/110),reduce?0:-t/300,'#7CFFB0');});}
+ // ruler
+ if($('#ru6')){const cv=$('#ru6'),L=$('#ruL');const info=()=>{const l=+L.value;$('#ruInfo').innerHTML=l<55?'<b>Short:</b> it vibrates faster, so the pitch is higher.':l<80?'<b>Medium:</b> medium speed of vibration and pitch.':'<b>Long:</b> it vibrates more slowly, so the pitch is lower.';};L.oninput=info;info();
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const desk=W*.35;g.fillStyle='#8A5A3A';g.fillRect(0,H/2,desk,H/2);const len=(+L.value/100)*(W-desk-20);const f=900/len;const a=reduce?0:Math.sin(t/1000*f*2)*28*(len/(W-desk));
+   g.strokeStyle='#C9CDD3';g.lineWidth=6;g.beginPath();g.moveTo(desk-80,H/2-3);g.lineTo(desk,H/2-3);g.quadraticCurveTo(desk+len*.6,H/2-3+a*.4,desk+len,H/2-3+a);g.stroke();g.fillStyle='#E6B897';g.fillRect(desk-70,H/2-18,40,14);});}
+ // piano
+ if($('#pi6')){$$('.key6.a').forEach(k=>k.onclick=()=>{const f=+k.dataset.pf;tone(f,.08,1.2);$$('.key6').forEach(x=>x.classList.toggle('on',x===k));$('#piInfo').innerHTML=`<b>${k.textContent}: ${f} Hz.</b> ${f<100?'(Very low notes can be hard to hear on small speakers.)':''}`;});
+  $('#piCheck').onclick=()=>{let ok=0;$$('.piIn').forEach(i=>{const r=Math.abs(+i.value-+i.dataset.pa)<1;i.style.borderColor=r?'var(--good)':'var(--bad)';if(r)ok++;});$('#piRes').innerHTML=ok===3?'<b>All correct!</b> 880, 1760 and 3520 Hz: the frequency doubles each octave.':`${ok} of 3 correct. Hint: double the one before.`;};}
+ // wave match game
+ if($('#wm6')){let round=1,score=0,tg;const nt=()=>{tg={a:1+Math.floor(Math.random()*5),f:1+Math.floor(Math.random()*8)};};
+  const draw=()=>{[[$('#wmT'),tg.a,tg.f],[$('#wmY'),+$('#wmA').value,+$('#wmF').value]].forEach(([cv,a,f])=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);grid(g,W,H);wave(g,W,H,a/5*(H/2-6),f,0,'#7CFFB0');});};
+  const start=()=>{round=1;score=0;nt();$('#wmRound').textContent='Round 1 of 5';$('#wmScore').textContent='Score: 0';$('#wmInfo').textContent='Match the target\'s amplitude and frequency.';$('#wmLock').disabled=false;draw();};
+  $('#wmA').oninput=draw;$('#wmF').oninput=draw;
+  $('#wmLock').onclick=()=>{const da=Math.abs(+$('#wmA').value-tg.a),df=Math.abs(+$('#wmF').value-tg.f);const pts=(da===0?1:0)+(df===0?1:0);score+=pts;$('#wmScore').textContent='Score: '+score;
+   $('#wmInfo').innerHTML=pts===2?'<b>Perfect match!</b> +2':`${da?'Amplitude '+(+$('#wmA').value>tg.a?'too big':'too small')+'. ':'Amplitude right. '}${df?'Frequency '+(+$('#wmF').value>tg.f?'too high':'too low')+'.':'Frequency right.'} +${pts}`;
+   if(round>=5){$('#wmInfo').innerHTML+=` <b>Game over: ${score} / 10.</b>`;$('#wmLock').disabled=true;return;}round++;$('#wmRound').textContent=`Round ${round} of 5`;nt();setTimeout(draw,reduce?0:700);};
+  $('#wmNew').onclick=start;start();setTimeout(draw,50);}
+ // ripples
+ if($('#rp6')){const cv=$('#rp6');let img=null,lastD=-1,lastW=0;loop(cv,t=>{const[g,W,H]=fit(cv);const d=+$('#rpD').value;const k=.32;
+   if(d!==lastD||W!==lastW){lastD=d;lastW=W;const w=Math.floor(W/3),h=Math.floor(H/3);img=g.createImageData(w,h);const s1x=w/2-d/6,s2x=w/2+d/6;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const r1=Math.hypot(x-s1x,y-6),r2=Math.hypot(x-s2x,y-6);const A=Math.abs(Math.cos((r1-r2)*k*3/2));const v=Math.round(30+A*200);const i=(y*w+x)*4;img.data[i]=v*.35;img.data[i+1]=v*.75;img.data[i+2]=v;img.data[i+3]=255;}}
+   const off=document.createElement('canvas');off.width=img.width;off.height=img.height;off.getContext('2d').putImageData(img,0,0);g.imageSmoothingEnabled=true;g.drawImage(off,0,0,W,H);
+   g.fillStyle='#FFD36E';[W/2-d/2,W/2+d/2].forEach(x=>{g.beginPath();g.arc(x,18,6,0,7);g.fill();});
+   if(!reduce){g.strokeStyle='rgba(255,255,255,.25)';[W/2-d/2,W/2+d/2].forEach(x=>{for(let r=(t/40)%30;r<H*1.4;r+=30){g.beginPath();g.arc(x,18,r,0,Math.PI);g.stroke();}});}});}
+ // superposition
+ if($('#sp6')){const cv=$('#sp6'),P=$('#spP');const info=()=>{const p=+P.value;const amp=Math.abs(2*Math.cos(p/360*Math.PI));$('#spInfo').innerHTML=p%360===0?'<b>Reinforce:</b> peaks meet peaks. Amplitudes add: the result is double the amplitude, with the same frequency. Louder.':p===180?'<b>Cancel:</b> peaks meet troughs. 2 + (−2) = 0. No sound.':`Partly out of step: the result has ${amp.toFixed(1)}× one wave's amplitude.`;};P.oninput=info;$$('[data-sp6]').forEach(b=>b.onclick=()=>{P.value=b.dataset.sp6;info();});info();
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const ph=reduce?0:t/500,p=+P.value/180*Math.PI,h=H/3,a=h/2-8;
+   const row=(i,fn,c,lbl)=>{g.save();g.translate(0,i*h);g.strokeStyle=css('--line');g.beginPath();g.moveTo(0,h/2);g.lineTo(W,h/2);g.stroke();g.strokeStyle=c;g.lineWidth=2.5;g.beginPath();for(let x=0;x<=W;x+=2){const y=h/2-fn(x/W*Math.PI*6-ph)*a/ (i===2?2:1);x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.fillStyle=c;g.font='11px system-ui';g.fillText(lbl,6,12);g.restore();};
+   row(0,x=>Math.sin(x),'#FF7A8E','wave 1');row(1,x=>Math.sin(x+p),'#5FD4F4','wave 2');row(2,x=>Math.sin(x)+Math.sin(x+p),'#9FE3B8','wave 1 + wave 2 (half scale)');});}
+ // pipe
+ if($('#ppR')){const r=$('#ppR');const up=()=>{const v=+r.value;$('#ppG').setAttribute('transform',`translate(0 ${-v*.8})`);const L=v;const loud=Math.exp(-Math.pow((L-62)/7,2));$('#ppBar').style.width=(8+loud*92)+'%';$('#ppInfo').innerHTML=loud>.85?'<b>Loudest!</b> Here the reflected sound reinforces the sound from the fork. You would now measure the length of pipe above the water.':'Keep moving the pipe slowly.';};r.oninput=up;up();}
+ // impact
+ if($('#im6')){const cv=$('#im6');let s=0,t0=0;const T=['Theia, about the size of Mars, heads towards the newly formed Earth.','Impact! Rocks and dust break away from both planets.','The rocks and dust form a ring around the Earth, which is now made from both planets joined together.','Gravity pulls the rocks and dust together to form the Moon.'];
+  const go=()=>{$('#imN').textContent=`${s+1} / 4`;$('#imInfo').textContent=T[s];t0=performance.now();};$('#imNext').onclick=()=>{s=Math.min(3,s+1);go();};$('#imPrev').onclick=()=>{s=Math.max(0,s-1);go();};go();
+  const deb=Array.from({length:90},()=>({a:Math.random()*Math.PI*2,r:60+Math.random()*30}));
+  loop(cv,now=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const k=reduce?1:Math.min(1,(now-t0)/1500);const ex=W/2,ey=H/2;
+   const earth=(r)=>{const gr=g.createRadialGradient(ex-r/3,ey-r/3,r/5,ex,ey,r);gr.addColorStop(0,'#C9A27A');gr.addColorStop(1,'#6E4A30');g.fillStyle=gr;g.beginPath();g.arc(ex,ey,r,0,7);g.fill();};
+   if(s===0){earth(40);g.fillStyle='#9A8A80';g.beginPath();g.arc(ex-160+k*90,ey-60+k*35,22,0,7);g.fill();g.fillStyle=css('--ink');g.font='12px system-ui';g.fillText('Theia',ex-170+k*90,ey-90+k*35);g.fillText('Earth',ex-14,ey+60);}
+   if(s===1){earth(42);g.fillStyle=`rgba(255,${150+k*80},60,${1-k*.5})`;g.beginPath();g.arc(ex-30,ey-20,20+k*30,0,7);g.fill();deb.forEach(d=>{g.fillStyle='#BBA';g.fillRect(ex-30+Math.cos(d.a)*k*d.r*.6,ey-20+Math.sin(d.a)*k*d.r*.6,2,2);});}
+   if(s===2){earth(44);deb.forEach(d=>{const a=d.a+(reduce?0:now/3000);g.fillStyle='#CCB';g.fillRect(ex+Math.cos(a)*d.r*1.2,ey+Math.sin(a)*d.r*.35,2,2);});}
+   if(s===3){earth(44);const a=reduce?0:now/2500;g.strokeStyle='rgba(95,212,244,.5)';g.beginPath();g.ellipse(ex,ey,100,30,0,0,7);g.stroke();deb.slice(0,Math.round(90*(1-k))).forEach(d=>{g.fillStyle='#CCB';g.fillRect(ex+Math.cos(d.a+a)*d.r*1.2,ey+Math.sin(d.a+a)*d.r*.35,2,2);});g.fillStyle='#DDD';g.beginPath();g.arc(ex+Math.cos(a)*100,ey+Math.sin(a)*30,4+k*8,0,7);g.fill();g.fillStyle=css('--ink');g.font='12px system-ui';g.fillText('Moon',ex+Math.cos(a)*100+14,ey+Math.sin(a)*30);}});}
+ // nebula
+ if($('#nb6')){const cv=$('#nb6');const P=Array.from({length:500},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.4,c:Math.random()}));
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.fillStyle='#0B0820';g.fillRect(0,0,W,H);[['#B048C8',.35,.45,.5],['#4F6FD4',.6,.5,.45],['#FF7AC2',.5,.35,.3]].forEach(([c,x,y,r],i)=>{const gr=g.createRadialGradient(W*x,H*y,0,W*x,H*y,W*r*(1+.04*Math.sin(t/2000+i)));gr.addColorStop(0,c+'88');gr.addColorStop(1,'transparent');g.fillStyle=gr;g.fillRect(0,0,W,H);});
+   P.forEach(p=>{g.fillStyle=`rgba(255,255,255,${.4+.6*Math.abs(Math.sin(t/900+p.c*9))})`;g.fillRect(p.x*W,p.y*H,p.r+.4,p.r+.4);});});}
+ // star formation
+ if($('#sf6')){const cv=$('#sf6'),T=$('#sfT');const P=Array.from({length:260},()=>{const a=Math.random()*Math.PI*2,r=40+Math.random()*120;return{a,r};});
+  const info=()=>{const v=+T.value;$('#sfInfo').innerHTML=v<25?'<b>1.</b> Dust and gas start to collapse together under gravity.':v<50?'<b>2.</b> As more mass collects, the inward pull of gravity increases.':v<80?'<b>3.</b> The pressure inside becomes very large, and the high pressure causes heat.':'<b>4.</b> The heat makes atoms react: the new star gives out heat and light, lighting up the dust and gas.';};T.oninput=info;info();
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.fillStyle='#0B0820';g.fillRect(0,0,W,H);const k=+T.value/100,cx=W/2,cy=H/2;
+   P.forEach(p=>{const r=p.r*(1-k*.85),a=p.a+(reduce?0:t/4000)*(1+k*3);g.fillStyle=`rgba(200,170,255,${.5+k*.3})`;g.fillRect(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.7,1.6,1.6);});
+   const glow=Math.max(0,(k-.45)/.55);if(glow>0){const gr=g.createRadialGradient(cx,cy,0,cx,cy,20+glow*70);gr.addColorStop(0,`rgba(255,240,200,${glow})`);gr.addColorStop(1,'transparent');g.fillStyle=gr;g.fillRect(0,0,W,H);}
+   if(k>.8){g.fillStyle='#FFF6D8';g.beginPath();g.arc(cx,cy,6+4*Math.sin(t/300),0,7);g.fill();}});}
+ // scale
+ if($('#scGo')){$('#scGo').onclick=()=>{const v=+$('#scIn').value;$('#scOut').innerHTML=v===24000?'<b>Correct: 24 000 times bigger.</b> 24 ÷ 0.001 = 24 000.':'Not quite. Dividing by 0.001 is the same as multiplying by 1000.';};}
+ // mantle
+ if($('#mt6')){const cv=$('#mt6');const P=Array.from({length:120},(_,i)=>({u:Math.random(),c:i%2}));
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);g.fillStyle='#7A3A1A';g.fillRect(0,40,W,H-70);g.fillStyle='#FFB347';g.fillRect(0,H-30,W,30);g.fillStyle='#1D1937';g.font='11px system-ui';g.fillText('core (very hot)',8,H-10);
+   const sh=reduce?0:(t/60)%W;[[0,W/2,1],[W/2,W,-1]].forEach(([x0,x1,d])=>{g.fillStyle='#6A7A5A';g.fillRect(x0+2,8,x1-x0-4,30);g.fillStyle='#fff';g.fillText(d>0?'← plate':'plate →',(x0+x1)/2-20,28);});
+   P.forEach(p=>{if(!reduce)p.u=(p.u+.0015)%1;const cell=p.c,cx=cell?W*.75:W*.25,rx=W*.2,ry=(H-80)/2.6,cy=40+(H-70)/2;const a=p.u*Math.PI*2*(cell?1:-1);const x=cx+Math.cos(a)*rx,y=cy+Math.sin(a)*ry;const hot=cell?Math.cos(a)<0:Math.cos(a)>0;
+    g.fillStyle=hot?'#FF6B4A':'#5FB4FF';g.beginPath();g.arc(x,y,3,0,7);g.fill();});
+   g.fillStyle=css('--ink');g.fillText('mantle',8,58);});}
+ // pangaea
+ if($('#pgR')){const r=$('#pgR');const up=()=>{const v=+r.value;const off=v/140*55;$('#pgSA').setAttribute('transform',`translate(${-off} 0) rotate(${-v/140*8} 170 120)`);$('#pgAF').setAttribute('transform',`translate(${off} 0)`);$('#pgRidge').setAttribute('opacity',v>5?1:0);$('#pgT').textContent=v===140?'today':`${140-v} million years ago`;};r.oninput=up;up();}
+ // ridge
+ if($('#rg6')){const cv=$('#rg6');let run=false,t0=0;$('#rgGo').onclick=()=>{run=true;t0=performance.now();};
+  loop(cv,now=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const age=run?Math.min(60,reduce?60:(now-t0)/400):0;const n=Math.min(12,Math.floor(age/5));const sw=W/2/13;const fieldN=Math.floor(age/5)%2===0;
+   $('#rgField').textContent='Field: points '+(fieldN?'north':'south');
+   for(let i=0;i<=n;i++){const col=((n-i)%2===0)?'#5FB4FF':'#FF7A8E';const x=i*sw;g.fillStyle=col;g.fillRect(W/2+x,40,sw-2,H-80);g.fillRect(W/2-x-sw+2,40,sw-2,H-80);}
+   g.fillStyle='#FFB347';g.fillRect(W/2-3,30,6,H-60);g.fillStyle=css('--ink');g.font='11px system-ui';g.fillText('mid-ocean ridge: magma rises',W/2+8,26);g.fillText('older rock ←',8,H-14);g.fillText('→ older rock',W-80,H-14);
+   g.fillStyle='#5FB4FF';g.fillRect(8,10,10,10);g.fillStyle=css('--ink');g.fillText('points north',22,19);g.fillStyle='#FF7A8E';g.fillRect(100,10,10,10);g.fillStyle=css('--ink');g.fillText('points south',114,19);});}
+ // quakes
+ if($('#qk6')){const cv=$('#qkC');let mode=null;const B={apart:'Plates moving apart: at mid-ocean ridges, magma rises and solidifies into new rock, pushing the plates apart.',together:'Plates pushing towards each other: earthquakes and volcanoes are common.',past:'Plates sliding past each other: earthquakes are common.'};
+  $$('[data-qk]').forEach(b=>b.onclick=()=>{mode=b.dataset.qk;$$('[data-qk]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('#qkInfo').textContent=B[mode]+' Most recorded earthquakes and volcanoes are close to plate boundaries (book map, page 237).';});
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const s=reduce?0:Math.sin(t/600)*6;const shake=mode&&!reduce?(Math.random()-.5)*3:0;
+   let lx=0,rx=0,ly=0,ry=0;if(mode==='apart'){lx=-Math.abs(s);rx=Math.abs(s);}if(mode==='together'){lx=Math.abs(s);rx=-Math.abs(s);}if(mode==='past'){ly=s;ry=-s;}
+   g.fillStyle='#6A7A5A';g.fillRect(10+lx+shake,50+ly,W/2-14,60);g.fillStyle='#7A6A5A';g.fillRect(W/2+4+rx-shake,50+ry,W/2-14,60);
+   if(mode==='apart'){g.fillStyle='#FFB347';g.fillRect(W/2-4,50,8,60);}if(mode==='together'){g.fillStyle='#FF6B4A';g.beginPath();g.moveTo(W/2-20,50);g.lineTo(W/2,20);g.lineTo(W/2+20,50);g.fill();}
+   g.fillStyle=css('--ink');g.font='11px system-ui';g.fillText('plate',20,130);g.fillText('plate',W-50,130);});}
+}
+
 /* =================== CHAPTER REGISTRY =================== */
 const CHAPTERS_DATA={
  1:{title:'Photosynthesis and the carbon cycle',pages:'8–47',cypPages:'45–47',cypNote:'Questions 1.2, 1.3 and 1.4 use a diagram or graph, so keep your book open at those pages.',topics:TOPICS1,kw:KEYWORDS1,cyp:CYP1,quiz:QUIZ1},
  2:{title:'Properties of materials',pages:'48–83',cypPages:'82–83',cypNote:'Questions 2.1, 2.4 and 2.5 use a table, a model or a diagram, so keep your book open at those pages.',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2},
  3:{title:'Forces and energy',pages:'84–141',cypPages:'139–141',cypNote:'Questions 3.9 and 3.10 use diagrams, so keep your book open at pages 140–141.',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3},
  4:{title:'Maintaining life',pages:'142–167',cypPages:'166–167',cypNote:'Question 4.3 uses a diagram of Arun\'s two plants on page 166, so keep your book open there.',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4},
- 5:{title:'Reactivity',pages:'168–205',cypPages:'204–205',cypNote:'Questions 5.3 and 5.4 refer to diagrams on page 205, so keep your book open there.',topics:TOPICS5,kw:KEYWORDS5,cyp:CYP5,quiz:QUIZ5}};
+ 5:{title:'Reactivity',pages:'168–205',cypPages:'204–205',cypNote:'Questions 5.3 and 5.4 refer to diagrams on page 205, so keep your book open there.',topics:TOPICS5,kw:KEYWORDS5,cyp:CYP5,quiz:QUIZ5},
+ 6:{title:'Sound and space',pages:'206–242',cypPages:'241–242',cypNote:'Questions 6.1 and 6.3 use waveform diagrams on page 241, so keep your book open there.',topics:TOPICS6,kw:KEYWORDS6,cyp:CYP6,quiz:QUIZ6}};
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
 function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPICS=CHD.topics;KEYWORDS=CHD.kw;CYP=CHD.cyp;QUIZ=CHD.quiz;S.ch=n;if(!S.sec[n])S.sec[n]=TOPICS[0].id;QZ=null;}
@@ -2930,6 +3347,7 @@ function initWidgets(){
  try{initWidgets3();}catch(e){console.error(e);}
  try{initWidgets4();}catch(e){console.error(e);}
  try{initWidgets5();}catch(e){console.error(e);}
+ try{initWidgets6();}catch(e){console.error(e);}
 }
 
 /* =================== GALAXY: themes, rail, study-later, stickers, notes, fonts =================== */
