@@ -635,6 +635,434 @@ const QUIZ2=[
 
 CHAPTERS_DATA[2]={title:'Expressions and formulae',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2,cypNote:'The online course does not show marks for these questions.'};
 
+/* =================== CHAPTER 3 CONTENT (Decimals, percentages and rounding) =================== */
+const COURSE_PIC='<p class="tiny">This question uses a picture in the online course. Open the same question there to see it.</p>';
+const TOPICS3=[
+{id:'3.0',title:'Warm-up: Getting started',src:'Chapter 3 Introduction',
+ goals:['remember how × 0.1 and ÷ 0.1 work','remember percentage increases and decreases'],
+ hook:{q:'The fastest growing bamboo grows 0.9 m in a day. Is that more or less than 1 metre?',a:'Less: 0.9 is nine tenths of a metre. This chapter is about decimals like this, percentages and rounding.'},
+ big:'Multiplying by 0.1 is the same as dividing by 10. Dividing by 0.1 is the same as multiplying by 10.',
+ steps:[
+ {t:'× 0.1 means ÷ 10',refresh:true,body:`<p>0.1 is one tenth. Taking one tenth of something is the same as dividing it by 10.</p>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>80 × 0.1 = 8 &nbsp;&nbsp; 325 × 0.1 = 32.5</p><p>600 × 0.01 = 6 &nbsp;&nbsp; 85 × 0.01 = 0.85</p></div>
+  <div class="plain"><span class="kicker">In plain words</span><p>× 0.1 → ÷ 10. &nbsp; × 0.01 → ÷ 100.</p></div>`,
+  vis:'tenth',check:C('What is 85 × 0.01?',['8.5','0.85','850','0.085'],1,'× 0.01 is ÷ 100: the digits move two places right. 85 → 0.85.')},
+ {t:'÷ 0.1 means × 10',refresh:true,body:`<p>How many tenths fit into 9? Ten in each whole, so 90. Dividing by 0.1 makes the number <b>bigger</b>.</p>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>9 ÷ 0.1 = 90 &nbsp;&nbsp; 62.5 ÷ 0.1 = 625</p><p>7 ÷ 0.01 = 700 &nbsp;&nbsp; 0.32 ÷ 0.01 = 32</p></div>`,
+  vis:'tenthdiv',check:C('What is 7 ÷ 0.01?',['0.07','70','700','0.7'],2,'÷ 0.01 is × 100: 7 → 700.')},
+ {t:'Percentage changes with a multiplier',refresh:true,body:`<p>The whole amount is 100%.</p>
+  <ul><li>Increase by 15%: you now have 115% = 1.15 of it. Multiply by <b>1.15</b>.</li><li>Decrease by 20%: you have 80% = 0.8 of it. Multiply by <b>0.8</b>.</li></ul>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>Increase $300 by 15%: 300 × 1.15 = $345</p><p>Decrease $300 by 20%: 300 × 0.8 = $240</p></div>`,
+  vis:'mult',check:C('What do you multiply by to increase an amount by 15%?',['0.15','1.5','1.15','0.85'],2,'100% + 15% = 115% = 1.15.')}
+ ],
+ mistakes:[['9 ÷ 0.1 = 0.9','Dividing by 0.1 makes it bigger: 9 ÷ 0.1 = 90.'],['Increase by 15%: multiply by 0.15','× 0.15 gives just the 15%. To get the new total, multiply by 1.15.']],
+ bq:[
+  Q('Getting started · Question 1','Work out'+subs([['a','80 × 0.1'],['b','325 × 0.1'],['c','600 × 0.01'],['d','85 × 0.01'],['e','9 ÷ 0.1'],['f','62.5 ÷ 0.1'],['g','7 ÷ 0.01'],['h','0.32 ÷ 0.01']]),subs([['a','8'],['b','32.5'],['c','6'],['d','0.85'],['e','90'],['f','625'],['g','700'],['h','32']])),
+  Q('Getting started · Question 2','Which card, A 96, B 9.6, C 960 or D 0.096, gives the correct answer to 0.08 × 120? Show your working.','B (9.6)'),
+  Q('Getting started · Question 3','Work out'+subs([['a','46.2 ÷ 3'],['b','128 ÷ 0.2']]),subs([['a','15.4'],['b','640']])),
+  Q('Getting started · Question 4',subs([['a','Increase $300 by 15%'],['b','Decrease $300 by 20%']]),subs([['a','$345'],['b','$240']])),
+  Q('Getting started · Question 5','Use a calculator to work out the area of a circle with radius 4.5 cm. Give your answer correct to three significant figures.','63.6 cm<sup>2</sup> (3 s.f.)')
+ ],checklist:[]},
+
+{id:'3.1',title:'Multiplying and dividing by powers of 10',src:'Section 3.1',
+ goals:['multiply and divide numbers by 10 to the power of any positive or negative number'],
+ hook:{q:'Is 3.2 × 10<sup>−2</sup> bigger or smaller than 3.2?',a:'Smaller. 10<sup>−2</sup> is one hundredth, so 3.2 × 10<sup>−2</sup> = 3.2 ÷ 100 = 0.032.'},
+ big:'× 10 to a positive power makes a number bigger. × 10 to a negative power makes it smaller. Dividing does the opposite.',
+ steps:[
+ {t:'The powers of 10 ladder',body:`<p>Every place value column is a power of 10:</p>
+  <div class="ex"><p>1000 = 10<sup>3</sup> &nbsp; 100 = 10<sup>2</sup> &nbsp; 10 = 10<sup>1</sup> &nbsp; 1 = 10<sup>0</sup></p><p>${F(1,10)} = 10<sup>${MI}1</sup> &nbsp; ${F(1,100)} = 10<sup>${MI}2</sup> &nbsp; ${F(1,1000)} = 10<sup>${MI}3</sup></p></div>
+  <div class="plain"><span class="kicker">From the book</span><p>You can write 0.1 as ${F(1,10)} or 10<sup>${MI}1</sup>, and 0.01 as ${F(1,100)} or 10<sup>${MI}2</sup>.</p></div>`,
+  vis:'ladder10',check:C('Which is the same as 0.001?',['10<sup>3</sup>','10<sup>−3</sup>','10<sup>−2</sup>','−1000'],1,`0.001 = ${F(1,1000)} = 10<sup>−3</sup>.`)},
+ {t:'Multiplying by a power of 10',body:`<p>Multiplying by 10<sup>3</sup> is × 1000: digits move 3 places left.</p>
+  <p>Multiplying by 10<sup>${MI}3</sup> is × ${F(1,1000)}, which is ÷ 1000: digits move 3 places right.</p>
+  <div class="ex"><span class="kicker">Exercise 3.1, Question 2</span><p>3.2 × 10<sup>2</sup> = 3.2 × 100 = 320</p><p>3.2 × 10<sup>${MI}2</sup> = 3.2 ÷ 100 = 0.032</p></div>`,
+  vis:'pow10',check:C('Work out 8.5 × 10<sup>−2</sup>.',['850','0.85','0.085','8.5'],2,'× 10⁻² is ÷ 100: 8.5 → 0.085.')},
+ {t:'Dividing by a power of 10',body:`<p>Dividing by 10<sup>3</sup> is ÷ 1000: smaller.</p>
+  <p>Dividing by 10<sup>${MI}2</sup> means dividing by ${F(1,100)}, which is the same as <b>× 100</b>: bigger.</p>
+  <div class="ex"><span class="kicker">Exercise 3.1, Question 8</span><p>3.2 ÷ 10<sup>3</sup> = 3.2 ÷ 1000 = 0.0032</p><p>3.2 ÷ 10<sup>${MI}2</sup> = 3.2 × 100 = 320</p></div>
+  <div class="plain"><span class="kicker">Shortcut</span><p>÷ 10<sup>${MI}2</sup> is the same as × 10<sup>2</sup>.</p></div>`,
+  vis:'pow10div',check:C('Work out 0.07 ÷ 10<sup>−3</sup>.',['0.00007','70','7','0.7'],1,'÷ 10⁻³ is × 1000: 0.07 → 70.')},
+ {t:'Worked example 3.1',body:`<p>Always start by writing the power of 10 as an ordinary number.</p>
+  <div class="ex"><span class="kicker">Worked example 3.1</span><p>a 2.5 × 10<sup>3</sup>: 10<sup>3</sup> = 1000, so 2.5 × 1000 = 2500</p><p>b 12 × 10<sup>${MI}2</sup>: 10<sup>${MI}2</sup> = ${F(1,100)}, so 12 × ${F(1,100)} = 12 ÷ 100 = 0.12</p><p>c 365 ÷ 10<sup>4</sup>: 10<sup>4</sup> = 10 000, so 365 ÷ 10 000 = 0.0365</p><p>d 0.45 ÷ 10<sup>${MI}3</sup>: 10<sup>${MI}3</sup> = ${F(1,1000)}, so 0.45 ÷ ${F(1,1000)} = 0.45 × 1000 = 450</p></div>`,
+  vis:'pow10',check:C('Work out 12 × 10<sup>−2</sup>.',['1200','0.12','−1200','1.2'],1,'10⁻² = 1/100, so 12 × 1/100 = 12 ÷ 100 = 0.12.')},
+ {t:'Bigger or smaller?',body:`<p>Arun and Zara noticed these rules, and the book asks you to check them:</p>
+  <div class="scrollx"><table class="dt"><tr><th></th><th>positive power</th><th>power 0</th><th>negative power</th></tr><tr><th>×</th><td>bigger</td><td>the same</td><td>smaller</td></tr><tr><th>÷</th><td>smaller</td><td>the same</td><td>bigger</td></tr></table></div>
+  <p>Play the sorting game to practise.</p>`,
+  vis:'bigsmall',check:C('Is 4.76 ÷ 10<sup>−4</sup> bigger or smaller than 4.76?',['Bigger','Smaller','The same'],0,'Dividing by a negative power makes it bigger: 4.76 ÷ 10⁻⁴ = 47 600.')},
+ {t:'Many ways to make the same number',body:`<p>Different calculations can give the same answer. In the book's spider diagram, all of these equal 8:</p>
+  <div class="ex"><p>0.8 × 10<sup>1</sup> &nbsp; 8 ÷ 10<sup>0</sup> &nbsp; 80 × 10<sup>${MI}1</sup> &nbsp; 0.08 ÷ 10<sup>${MI}2</sup> &nbsp; 0.008 × 10<sup>3</sup> &nbsp; 800 ÷ 10<sup>2</sup></p></div>
+  <p>Find the missing powers yourself.</p>`,
+  vis:'spider',check:C('0.32 × 10<sup>□</sup> = 0.32. What is the missing power?',['1','0','−1','2'],1,'10⁰ = 1, and multiplying by 1 changes nothing.')}
+ ],
+ mistakes:[['3.2 × 10⁻² = −320','A negative power doesn\'t make the answer negative. It makes it smaller: 0.032.'],['3.2 ÷ 10⁻² = 0.032','Dividing by a negative power makes it bigger: 320.']],
+ bq:[
+  Q('Exercise 3.1 · Question 1','Match each decimal with the correct fraction and power of 10. The first one has been done for you: a, D and ii.<br>Decimals: a 0.1 &nbsp; b 0.001 &nbsp; c 0.000 01 &nbsp; d 0.01 &nbsp; e 0.0001<br>Fractions: A '+F(1,1000)+' &nbsp; B '+F(1,'10 000')+' &nbsp; C '+F(1,100)+' &nbsp; D '+F(1,10)+' &nbsp; E '+F(1,'100 000')+'<br>Powers: i 10<sup>−2</sup> &nbsp; ii 10<sup>−1</sup> &nbsp; iii 10<sup>−4</sup> &nbsp; iv 10<sup>−5</sup> &nbsp; v 10<sup>−3</sup><p class="tiny">The decimals here are worked out from the course\'s answer.</p>','a, D and ii; b, A and v; c, E and iv; d, C and i; e, B and iii'),
+  Q('Exercise 3.1 · Question 2','Copy and complete'+subs([['a','3.2 × 10<sup>3</sup> = 3.2 × 1000'],['b','3.2 × 10<sup>2</sup> = 3.2 × 100'],['c','3.2 × 10<sup>1</sup>'],['d','3.2 × 10<sup>0</sup> = 3.2 × 1'],['e','3.2 × 10<sup>−1</sup> = 3.2 ÷ 10'],['f','3.2 × 10<sup>−2</sup> = 3.2 ÷ 100'],['g','3.2 × 10<sup>−3</sup>'],['h','3.2 × 10<sup>−4</sup>']]),subs([['a','3200'],['b','320'],['c','3.2 × 10 = 32'],['d','3.2'],['e','0.32'],['f','0.032'],['g','3.2 ÷ 1000 = 0.0032'],['h','3.2 ÷ 10 000 = 0.000 32']])),
+  Q('Exercise 3.1 · Question 3','Arun says: "When you multiply 3.2 by 10 to a negative power, the answer is always smaller than 3.2."'+subs([['a','Is Arun correct? Use specialising to explain.'],['b','Complete: i × 10 to a negative power → always ……… than the start &nbsp; ii × 10 to the power zero → always ……… as the start &nbsp; iii × 10 to a positive power → always ……… than the start']]),subs([['a','Yes. Your own explanation.'],['b','i smaller &nbsp; ii the same &nbsp; iii greater']])),
+  Q('Exercise 3.1 · Question 4','Work out'+subs([['a','13 × 10<sup>2</sup>'],['b','7.8 × 10<sup>3</sup>'],['c','24 × 10'],['d','8.55 × 10<sup>4</sup>'],['e','6.5 × 10<sup>1</sup>'],['f','0.08 × 10<sup>5</sup>'],['g','17 × 10<sup>0</sup>'],['h','8 × 10<sup>−1</sup>'],['i','8.5 × 10<sup>−2</sup>'],['j','4500 × 10<sup>−4</sup>'],['k','32 × 10<sup>−3</sup>'],['l','125 × 10<sup>−2</sup>']]),subs([['a','1300'],['b','7800'],['c','240'],['d','85 500'],['e','65'],['f','8000'],['g','17'],['h','0.8'],['i','0.085'],['j','0.45'],['k','0.032'],['l','1.25']])),
+  Q('Exercise 3.1 · Question 5','Copy and complete'+subs([['a','320 ÷ 10<sup>3</sup> = 320 ÷ 1000'],['b','320 ÷ 10<sup>2</sup> = 320 ÷ 100'],['c','320 ÷ 10<sup>1</sup>'],['d','320 ÷ 10<sup>0</sup> = 320 ÷ 1']]),subs([['a','0.32'],['b','3.2'],['c','320 ÷ 10 = 32'],['d','320']])),
+  Q('Exercise 3.1 · Question 6','Work out'+subs([['a','27 ÷ 10'],['b','450 ÷ 10<sup>3</sup>'],['c','36 ÷ 10<sup>2</sup>'],['d','170 ÷ 10<sup>4</sup>'],['e','0.8 ÷ 10<sup>1</sup>'],['f','2480 ÷ 10<sup>5</sup>'],['g','9 ÷ 10<sup>0</sup>'],['h','0.25 ÷ 10<sup>2</sup>']]),subs([['a','2.7'],['b','0.45'],['c','0.36'],['d','0.017'],['e','0.08'],['f','0.0248'],['g','9'],['h','0.0025']])),
+  Q('Exercise 3.1 · Question 7 (Think like a mathematician)',`Cesar and Domonique work out 2.6 ÷ 10<sup>−2</sup>.${work([`Cesar: 10<sup>−2</sup> = ${F(1,'10<sup>2</sup>')} = ${F(1,100)}, so 2.6 ÷ ${F(1,100)} = 2.6 × ${F(100,1)} = 2.6 × 100 = 260`,`Domonique: 2.6 = ${F(26,10)} = 26 × 10<sup>−1</sup>, so 26 × 10<sup>−1</sup> ÷ 10<sup>−2</sup> = 26 × 10<sup>−1 − −2</sup> = 26 × 10<sup>1</sup> = 260`])}`+subs([['b','Use both methods to work out &nbsp;i 6.8 ÷ 10<sup>−3</sup> &nbsp; ii 0.07 ÷ 10<sup>−4</sup>'],['c','Whose method do you prefer? Explain why.'],['d','Can you think of a better method to divide a decimal by 10 to a negative power?']]),subs([['b','i 6800 &nbsp; ii 700'],['c','Your own answer.'],['d','Your own answer. For example: ÷ 10<sup>−x</sup> is the same as × 10<sup>x</sup>, so 2.6 ÷ 10<sup>−2</sup> = 2.6 × 10<sup>2</sup>.']])),
+  Q('Exercise 3.1 · Question 8','Copy and complete'+subs([['a','3.2 ÷ 10<sup>3</sup> = 3.2 ÷ 1000'],['b','3.2 ÷ 10<sup>2</sup> = 3.2 ÷ 100'],['c','3.2 ÷ 10<sup>1</sup>'],['d','3.2 ÷ 10<sup>0</sup> = 3.2 ÷ 1'],['e','3.2 ÷ 10<sup>−1</sup> = 3.2 × 10'],['f','3.2 ÷ 10<sup>−2</sup> = 3.2 × 100'],['g','3.2 ÷ 10<sup>−3</sup>'],['h','3.2 ÷ 10<sup>−4</sup>']]),subs([['a','0.0032'],['b','0.032'],['c','3.2 ÷ 10 = 0.32'],['d','3.2'],['e','32'],['f','320'],['g','3.2 × 1000 = 3200'],['h','3.2 × 10 000 = 32 000']])),
+  Q('Exercise 3.1 · Question 9','Zara says: "When you divide 3.2 by 10 to a negative power, the answer is always greater than 3.2."'+subs([['a','Is Zara correct? Use specialising to explain.'],['b','Complete: i ÷ 10 to a negative power → always ……… &nbsp; ii ÷ 10 to the power zero → always ……… &nbsp; iii ÷ 10 to a positive power → always ………']]),subs([['a','Yes. Your own explanation.'],['b','i greater &nbsp; ii the same &nbsp; iii smaller']])),
+  Q('Exercise 3.1 · Question 10','Work out'+subs([['a','0.25 ÷ 10<sup>−1</sup>'],['b','4.76 ÷ 10<sup>−4</sup>'],['c','0.07 ÷ 10<sup>−3</sup>'],['d','0.085 ÷ 10<sup>−2</sup>']]),subs([['a','2.5'],['b','47 600'],['c','70'],['d','8.5']])),
+  Q('Exercise 3.1 · Question 11','Secret code. Work out each calculation, then write its letter above the matching number in the code table.<br>Code box: 0.6 × 10<sup>2</sup> = S &nbsp; 0.06 ÷ 10<sup>−1</sup> = A &nbsp; 60 × 10<sup>−3</sup> = H &nbsp; 0.33 × 10<sup>0</sup> = Y &nbsp; 300 ÷ 10<sup>4</sup> = C &nbsp; 0.3 ÷ 10<sup>−3</sup> = T &nbsp; 60 × 10<sup>−1</sup> = L &nbsp; 600 ÷ 10<sup>0</sup> = R &nbsp; 33 ÷ 10<sup>1</sup> = O &nbsp; 300 × 10<sup>−3</sup> = N &nbsp; 3300 × 10<sup>−2</sup> = E &nbsp; 300 ÷ 10<sup>2</sup> = D<br>Code table (words separated by |): <span class="m" style="white-space:normal">3 3.3 | 0.3 3.3 300 | 300 33 6 6 | 0.6 0.3 0.33 3.3 0.3 33 | 300 0.06 33 | 60 33 0.03 600 33 300 !</span>','The course does not print the message. Work out every calculation in the code box, then decode it yourself.'),
+  Q('Exercise 3.1 · Question 12 (Think like a mathematician)',subs([['a','Work out &nbsp;i 4 × 10<sup>2</sup> &nbsp; ii 4 × 10<sup>1</sup> &nbsp; iii 4 × 10<sup>0</sup> &nbsp; iv 4 × 10<sup>−1</sup> &nbsp; v 4 × 10<sup>−2</sup> &nbsp; vi 4 × 10<sup>−3</sup>'],['b','When you multiply by 10<sup>−4</sup>, is the answer larger or smaller than when you multiply by 10<sup>−3</sup>?'],['c','Complete: When you multiply a number by 10<sup>x</sup>, the smaller the power, the ……… the answer.'],['d','Work out &nbsp;i 12 ÷ 10<sup>2</sup> &nbsp; ii 12 ÷ 10<sup>1</sup> &nbsp; iii 12 ÷ 10<sup>0</sup> &nbsp; iv 12 ÷ 10<sup>−1</sup> &nbsp; v 12 ÷ 10<sup>−2</sup> &nbsp; vi 12 ÷ 10<sup>−3</sup>'],['e','When you divide by 10<sup>−4</sup>, is the answer larger or smaller than when you divide by 10<sup>−3</sup>?'],['f','Complete: When you divide a number by 10<sup>x</sup>, the smaller the power, the ……… the answer.']]),subs([['a','i 400 &nbsp; ii 40 &nbsp; iii 4 &nbsp; iv 0.4 &nbsp; v 0.04 &nbsp; vi 0.004'],['b','Smaller'],['c','smaller'],['d','i 0.12 &nbsp; ii 1.2 &nbsp; iii 12 &nbsp; iv 120 &nbsp; v 1200 &nbsp; vi 12 000'],['e','Larger'],['f','larger']])),
+  Q('Exercise 3.1 · Question 13','Find the missing power in each calculation. All the calculations in each part give the answer shown.'+subs([['a','Answer 8: &nbsp;0.8 × 10<sup>□</sup> &nbsp; 8 ÷ 10<sup>□</sup> &nbsp; 80 × 10<sup>□</sup> &nbsp; 0.08 ÷ 10<sup>□</sup> &nbsp; 0.008 × 10<sup>□</sup> &nbsp; 800 ÷ 10<sup>□</sup>'],['b','Answer 0.32: &nbsp;32 ÷ 10<sup>□</sup> &nbsp; 0.32 × 10<sup>□</sup> &nbsp; 3.2 ÷ 10<sup>□</sup> &nbsp; 320 ÷ 10<sup>□</sup> &nbsp; 32 × 10<sup>□</sup> &nbsp; 3.2 × 10<sup>□</sup>']]),subs([['a','0.8 × 10<sup>1</sup>, 8 ÷ 10<sup>0</sup>, 80 × 10<sup>−1</sup>, 0.08 ÷ 10<sup>−2</sup>, 0.008 × 10<sup>3</sup>, 800 ÷ 10<sup>2</sup>'],['b','32 ÷ 10<sup>2</sup>, 0.32 × 10<sup>0</sup>, 3.2 ÷ 10<sup>1</sup>, 320 ÷ 10<sup>3</sup>, 32 × 10<sup>−2</sup>, 3.2 × 10<sup>−1</sup>']]))
+ ],checklist:['I can multiply by 10 to a positive or negative power.','I can divide by 10 to a positive or negative power.','I can say whether the answer will be bigger or smaller.']},
+
+{id:'3.2',title:'Multiplying and dividing decimals',src:'Section 3.2',
+ goals:['estimate, multiply and divide decimals by integers and decimals'],
+ hook:{q:'Is 0.08 × 0.2 bigger or smaller than 0.08?',a:'Smaller. Multiplying by a number between 0 and 1 makes things smaller: 0.08 × 0.2 = 0.016.'},
+ big:'Use place value to turn a decimal calculation into an easier whole-number one, then put the decimal point back.',
+ steps:[
+ {t:'Multiplying decimals: count the decimal places',body:`<p>Do the calculation without the decimal points, then put back as many decimal places as there were altogether.</p>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 2</span><p>0.08 × 0.2: first 8 × 2 = 16</p><p>8 × 0.2 = 1.6</p><p>0.08 × 0.2 = 0.016 &nbsp;(2 + 1 = 3 decimal places)</p></div>`,
+  vis:'dpcount',check:C('Work out 0.4 × 0.007.',['0.028','0.0028','2.8','0.28'],1,'4 × 7 = 28. There are 1 + 3 = 4 decimal places, so 0.0028.')},
+ {t:'Worked example 3.2',body:`<div class="ex"><span class="kicker">Worked example 3.2</span><p>a 12 × 0.6: 12 × 6 = 72, and 72 is 10 times too big, so 7.2</p><p>b 0.3 × 0.15: 3 × 15 = 45 → 0.3 × 15 = 4.5 → 0.3 × 0.15 = 0.045</p><p>c −16 ÷ 0.4 = ${F('−16 × 10','0.4 × 10')} = ${F('−160',4)} = −40</p><p>d 9.6 ÷ −0.12 = ${F('9.6 × 100','−0.12 × 100')} = ${F(960,'−12')} = −80</p><p>e ${F('36 × 0.5','0.2 × 4.5')}: top ½ × 36 = 18, bottom 2 × 4.5 = 9 so 0.2 × 4.5 = 0.9, then ${F(18,0.9)} = ${F(180,9)} = 2</p></div>
+  <div class="plain"><span class="kicker">In plain words</span><p>Write a division as a fraction, then multiply the top and bottom by 10 or 100 to get rid of the decimal. This makes an equivalent calculation.</p></div>`,
+  vis:'eqdiv',check:C('Work out −16 ÷ 0.4.',['−4','−40','40','−0.4'],1,'× 10 top and bottom: −160 ÷ 4 = −40.')},
+ {t:'Negative decimals: same sign rules',body:`<p>The sign rules from Foundations still work with decimals:</p>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 1</span><p>8 × −0.7 = −5.6 &nbsp; (different signs)</p><p>−0.4 × −15 = 6 &nbsp; (same signs)</p></div>`,
+  vis:'signs',check:C('Work out −0.6 × 9.',['5.4','−5.4','−54','0.54'],1,'6 × 9 = 54, so 0.6 × 9 = 5.4. Different signs, so −5.4.')},
+ {t:'Dividing by a decimal: make it a whole number',body:`<p>Multiply <b>both</b> numbers by the same power of 10 until you are dividing by a whole number. This is an <span class="kw">equivalent calculation</span>: the answer doesn't change.</p>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 5</span><p>0.81 ÷ 0.09 = ${F('0.81 × 100','0.09 × 100')} = ${F(81,9)} = 9</p><p>6.4 ÷ 0.004 = ${F('6.4 × 1000','0.004 × 1000')} = ${F(6400,4)} = 1600</p></div>`,
+  vis:'eqdiv',check:C('Work out 4 ÷ 0.2.',['0.8','2','20','8'],2,'× 10 both: 40 ÷ 2 = 20.')},
+ {t:'Bigger or smaller?',body:`<ul><li>Multiply by a number between 0 and 1 → the answer is <b>smaller</b>.</li><li>Divide by a number between 0 and 1 → the answer is <b>bigger</b>.</li></ul>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 8</span><p>5.729 × 0.62 &gt; 5.729 is <b>false</b>. 4.332 ÷ 0.95 &gt; 4.332 is <b>true</b>.</p></div>`,
+  vis:'scaler',check:C('Is 12.664 × 1.002 smaller than 12.664?',['Yes','No'],1,'1.002 is more than 1, so the answer is a little bigger. The statement is false.')},
+ {t:'Fractions with decimals top and bottom',body:`<p>Work out the top and the bottom separately, then divide.</p>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 9 (Hassan's mistake)</span><p>${F('24 × 0.25','0.2 × 0.6')}: top = ¼ of 24 = 6</p><p>Bottom: 0.2 × 0.6 = 0.12 (Hassan wrote 1.2, which is wrong)</p><p>6 ÷ 0.12 = 600 ÷ 12 = 50</p></div>`,
+  vis:'fraccalc',check:C('What is 0.2 × 0.6?',['1.2','0.12','0.012','12'],1,'2 × 6 = 12, and there are two decimal places: 0.12.')},
+ {t:'Estimate first',body:`<p>Round each number to one significant figure to get a quick estimate, so you can tell if your answer is sensible.</p>
+  <div class="ex"><span class="kicker">Exercise 3.2, Question 14</span><p>4.35 × 27.5 ≈ 4 × 30 = 120. Accurate answer: 119.625</p><p>11.78 ÷ 0.19 ≈ 10 ÷ 0.2 = 50. Accurate answer: 62</p></div>`,
+  vis:'estimate',check:C('Estimate 4.35 × 27.5.',['12','120','1200','30'],1,'4.35 ≈ 4 and 27.5 ≈ 30, so about 4 × 30 = 120.')}
+ ],
+ mistakes:[['0.08 × 0.2 = 0.16','Count the decimal places: 2 + 1 = 3, so 0.016.'],['4 ÷ 0.2 = 0.8','Dividing by a number less than 1 makes it bigger: 20.'],['0.2 × 0.6 = 1.2','0.2 × 0.6 = 0.12.']],
+ bq:[
+  Q('Exercise 3.2 · Question 1','Work out mentally'+subs([['a','8 × 0.2'],['b','8 × −0.7'],['c','−0.6 × 9'],['d','−0.4 × −15'],['e','6 × 0.05'],['f','−22 × 0.03'],['g','0.12 × 30'],['h','0.11 × −4']]),subs([['a','1.6'],['b','−5.6'],['c','−5.4'],['d','6'],['e','0.3'],['f','−0.66'],['g','3.6'],['h','−0.44']])),
+  Q('Exercise 3.2 · Question 2','Copy and complete'+subs([['a','0.08 × 0.2: &nbsp;8 × 2 = … &nbsp; 8 × 0.2 = … &nbsp; 0.08 × 0.2 = …'],['b','0.4 × 0.007: &nbsp;4 × 7 = … &nbsp; 4 × 0.007 = … &nbsp; 0.4 × 0.007 = …']]),subs([['a','16, 1.6, 0.016'],['b','28, 0.028, 0.0028']])),
+  Q('Exercise 3.2 · Question 3','Sort these cards into groups that have the same answer.<br>A 3 × 0.05 &nbsp; B 30 × 0.05 &nbsp; C 0.3 × 0.05 &nbsp; D 0.005 × 3 &nbsp; E 500 × 0.03 &nbsp; F 5 × 0.03 &nbsp; G 0.3 × 5 &nbsp; H 0.3 × 0.5 &nbsp; I 0.003 × 5 &nbsp; J 0.005 × 30 &nbsp; K 0.03 × 0.5 &nbsp; L 0.5 × 3','C, D, I, K (0.015); A, F, H, J (0.15); B, G, L (1.5); E (15)'),
+  Q('Exercise 3.2 · Question 4','Work out mentally'+subs([['a','4 ÷ 0.2'],['b','−25 ÷ 0.5'],['c','12 ÷ −0.4'],['d','−60 ÷ −0.1'],['e','2 ÷ 0.05'],['f','28 ÷ −0.07'],['g','−24 ÷ −0.12'],['h','−45 ÷ 0.15']]),subs([['a','20'],['b','−50'],['c','−30'],['d','600'],['e','40'],['f','−400'],['g','200'],['h','−300']])),
+  Q('Exercise 3.2 · Question 5','Copy and complete'+subs([['a',`0.81 ÷ 0.09 = ${F('0.81 × 100','0.09 × 100')} = ${F(81,'□')} = □`],['b',`6.4 ÷ 0.004 = ${F('6.4 × 1000','0.004 × 1000')} = ${F('□','□')} = □`]]),subs([['a',`${F(81,9)} = 9`],['b',`${F(6400,4)} = 1600`]])),
+  Q('Exercise 3.2 · Question 6','Which answer is correct, A, B, C or D?'+subs([['a','0.8 ÷ 0.02 = &nbsp;A 0.04 &nbsp; B 0.4 &nbsp; C 4 &nbsp; D 40'],['b','4.5 ÷ 0.5 = &nbsp;A 0.9 &nbsp; B 9 &nbsp; C 90 &nbsp; D 900'],['c','0.09 ÷ 0.003 = &nbsp;A 0.3 &nbsp; B 3 &nbsp; C 30 &nbsp; D 300'],['d','3.6 ÷ 0.006 = &nbsp;A 0.6 &nbsp; B 6 &nbsp; C 60 &nbsp; D 600']]),subs([['a','D'],['b','B'],['c','C'],['d','D']])),
+  Q('Exercise 3.2 · Question 7 (Think like a mathematician)',subs([['a','Work out mentally 8 × 0.1, 8 × 0.3, 8 × 0.5, 8 × 0.7, 8 × 0.9, 8 × 1.1'],['b','i Multiplying by 0.8: larger or smaller than multiplying by 0.7? &nbsp; ii Multiplying by a decimal between 0 and 1: larger or smaller than the start?'],['c','Work out mentally 12 ÷ 0.2, 12 ÷ 0.4, 12 ÷ 0.6, 12 ÷ 0.8, 12 ÷ 1.0, 12 ÷ 1.2'],['d','i Dividing by 0.7: larger or smaller than dividing by 0.6? &nbsp; ii Dividing by a decimal between 0 and 1: larger or smaller than the start?']]),subs([['a','0.8, 2.4, 4, 5.6, 7.2, 8.8'],['b','i Larger &nbsp; ii Smaller'],['c','60, 30, 20, 15, 12, 10'],['d','i Smaller &nbsp; ii Larger']])),
+  Q('Exercise 3.2 · Question 8','Write True or False. Don\'t work them out: use Question 7.'+subs([['a','5.729 × 0.62 &gt; 5.729'],['b','4.332 ÷ 0.95 &gt; 4.332'],['c','12.664 × 1.002 &lt; 12.664'],['d','45.19 ÷ 1.45 &lt; 45.19']]),subs([['a','False'],['b','True'],['c','False'],['d','True']])),
+  Q('Exercise 3.2 · Question 9',`Hassan's homework: work out ${F('24 × 0.25','0.2 × 0.6')}. He writes: numerator = ¼ of 24 = 6, denominator = 0.2 × 0.6 = 1.2, and 6 ÷ 1.2 = 60 ÷ 12 = 5. Is Hassan correct? Explain and show your working.`,'He has made a mistake. The denominator is 0.12, not 1.2: he wrote it with only one decimal place. The answer is 50.'),
+  Q('Exercise 3.2 · Question 10','Work out'+subs([['a',F('48 × 0.5','0.04 × 3')],['b',F('120 × 0.3','0.2 × 1.5')],['c',F('84 × 0.25','35 × 0.002')],['d',F('120 × 0.4 × 0.1','0.8 × 0.15')]]),subs([['a','200'],['b','120'],['c','300'],['d','40']])),
+  Q('Exercise 3.2 · Question 11',`Match each question card with an answer card.<br>A −6 × −8 × 0.5 &nbsp; B 0.3 × −4 × 20 &nbsp; C −6 × −2 × −0.02 &nbsp; D ${F('12 × 0.04','−0.2')} &nbsp; E ${F('1.44','20 × 0.3')} &nbsp; F ${F('−320 × 0.6','−80')}<br>Answers: i 2.4 &nbsp; ii 0.024 &nbsp; iii 0.24 &nbsp; iv 24 &nbsp; v −24 &nbsp; vi −0.24 &nbsp; vii −2.4`+subs([['b','There is one answer card left over. Write a question card for it.']]),subs([['a','A and iv, B and v, C and vi, D and vii, E and iii, F and i'],['b','Your own answer that gives 0.024, for example 0.03 × 400 × 0.002']])),
+  Q('Exercise 3.2 · Question 12 (Think like a mathematician)','Here is a calculation: 28 × 0.57 = 15.96. What other calculations can you deduce from it?','Your own answers. For example: 28 × 0.057 = 1.596, 2.8 × 0.57 = 1.596, 28 × 5.7 = 159.6, 2.8 × 5.7 = 15.96, 15.96 ÷ 0.57 = 28, 159.6 ÷ 0.57 = 280, 15.96 ÷ 28 = 0.57, 15.96 ÷ 280 = 0.057'),
+  Q('Exercise 3.2 · Question 13',subs([['a','Work out 123 × 57.'],['b','Use part a to write the answers: &nbsp;i 12.3 × 57 &nbsp; ii 123 × 5.7 &nbsp; iii 12.3 × 5.7 &nbsp; iv 1.23 × 5.7 &nbsp; v 12.3 × 0.57 &nbsp; vi 0.123 × 0.57']]),subs([['a','7011'],['b','i 701.1 &nbsp; ii 701.1 &nbsp; iii 70.11 &nbsp; iv 7.011 &nbsp; v 7.011 &nbsp; vi 0.070 11']])),
+  Q('Exercise 3.2 · Question 14',`Hugo works out 0.23 × 37.8. Estimate: round 0.23 to 0.2 and 37.8 to 40, so 0.2 × 40 = 8. Answer: 378 × 20 = 7560, 378 × 3 = 1134, 7560 + 1134 = 8694, so 0.23 × 37.8 = 8694 ÷ 1000 = 8.694, which is close to 8.`+subs([['a','Critique Hugo\'s methods.'],['b','Can you improve them?'],['c',`Estimate and work out: &nbsp;i 4.35 × 27.5 &nbsp; ii 11.78 ÷ 0.19 &nbsp; iii ${F('64 × 3.6','0.012')}`]]),subs([['a','Your own answer.'],['b','Your own answer.'],['c',`i estimate 4 × 30 = 120, accurate 119.625 &nbsp; ii estimate 10 ÷ 0.2 = 50, accurate 62 &nbsp; iii estimate ${F('60 × 4','0.01')} = 24 000, accurate 19 200`]])),
+  Q('Exercise 3.2 · Question 15','A rectangle has a width of 0.38 m and an area of 0.171 m<sup>2</sup>.'+subs([['a','Estimate the length of the rectangle.'],['b','Work out the length.'],['c','Compare parts a and b. Do you think part b is correct?']]),subs([['a','0.2 ÷ 0.4 = 0.5 m'],['b','0.45 m'],['c','Your own answer.']]))
+ ],checklist:['I can multiply decimals by counting decimal places.','I can divide by a decimal using an equivalent calculation.','I can estimate to check my answers.']},
+
+{id:'3.3',title:'Compound percentages',src:'Section 3.3',
+ goals:['use and understand compound percentages'],
+ hook:{q:'A $800 coin goes up 10%, then down 10%. Is it back to $800?',a:'No, it is worth $792. The 10% decrease is taken from the bigger amount, $880, so it takes away more than the increase added. Sofia was right.'},
+ big:'Turn each percentage change into a multiplier, then multiply by them one after the other.',
+ steps:[
+ {t:'Every percentage change has a multiplier',body:`<ul><li>Increase: add the percentage to 100%. +20% → 120% → <b>× 1.2</b></li><li>Decrease: take it away from 100%. −20% → 80% → <b>× 0.8</b></li></ul>
+  <div class="ex"><span class="kicker">From the book</span><p>$300 increased by 20%: 300 × 1.2 = $360</p><p>$300 decreased by 20%: 300 × 0.8 = $240</p></div>`,
+  vis:'mult',check:C('What is the multiplier for a 15% decrease?',['1.15','0.15','0.85','0.75'],2,'100% − 15% = 85% = 0.85.')},
+ {t:'Compound change: one after another',body:`<p>A <span class="kw">compound percentage</span> change is one change followed by another. Use the new amount for the second change.</p>
+  <div class="ex"><span class="kicker">Exercise 3.3, Question 1</span><p>$200 increased by 10%, then by 15%:</p><p>200 × 1.1 = 220, then 220 × 1.15 = $253</p></div>`,
+  vis:'compound',check:C('$200 decreased by 10%, then by 15%. What is the final amount?',['$150','$153','$170','$180'],1,'200 × 0.9 = 180, then 180 × 0.85 = 153.')},
+ {t:'Worked example 3.3: a car loses value',body:`<div class="ex"><span class="kicker">Worked example 3.3</span><p>A new car is worth $12 000. It loses 20% in the first year and 15% in the second year.</p><p>Year 1: 100% − 20% = 80% = 0.8 → 12 000 × 0.8 = $9600</p><p>Year 2: 100% − 15% = 85% = 0.85 → 9600 × 0.85 = $8160</p></div>`,
+  vis:'compound',check:C('In Worked example 3.3, which amount is the 15% taken from?',['$12 000','$9600','$8160'],1,'The second decrease is taken from the value at the end of the first year, $9600.')},
+ {t:'Up then down is not the same',body:`<p>The second percentage is taken from a different amount, so the changes don't cancel out.</p>
+  <div class="ex"><span class="kicker">Exercise 3.3, Question 2</span><p>$800 + 10% = $880, then $880 − 10% = $792</p><p>The order doesn't matter: $800 − 10% = $720, then + 10% = $792 too.</p></div>`,
+  vis:'compound2',check:C('60 increased by 20%, then decreased by 20%. What do you get?',['60','57.6','62.4','48'],1,'60 × 1.2 = 72, then 72 × 0.8 = 57.6.')},
+ {t:'Combine the multipliers',body:`<p>You can multiply the multipliers together first (Mari's method):</p>
+  <div class="ex"><span class="kicker">Exercise 3.3, Question 4</span><p>Anil: 50 × 1.2 = 60, then 60 × 1.1 = 66</p><p>Raj: 50 × 1.2 × 1.1 = 66</p><p>Mari: 1.2 × 1.1 = 1.32, then 50 × 1.32 = 66</p></div>`,
+  vis:'combine',check:C('A ticket goes up 7%, then 5%. What is the combined multiplier?',['1.12','1.1235','0.1235','1.035'],1,'1.07 × 1.05 = 1.1235. This is Exercise 3.3, Question 6.')},
+ {t:'The same change every year',body:`<p>If the same percentage is added every year, use a power.</p>
+  <div class="ex"><span class="kicker">Exercise 3.3, Question 10</span><p>$5000 earning 4% a year: after 2 years 5000 × 1.04 × 1.04 = 5000 × 1.04<sup>2</sup></p><p>After n years: 5000 × 1.04<sup>n</sup></p></div>
+  <div class="ex"><span class="kicker">Exercise 3.3, Question 11</span><p>A town of 10 000 shrinking by 10% a year: after n years 10 000 × 0.9<sup>n</sup></p></div>`,
+  vis:'growth',check:C('What does 10 000 × 0.9<sup>5</sup> represent?',['The population after 5 years','5 people leaving','A 5% decrease'],0,'Each year is × 0.9, so the power 5 means 5 years.')}
+ ],
+ mistakes:[['+10% then −10% gets you back to the start','The second change is taken from a different amount. $800 → $880 → $792.'],['+20% then +10% is +30%','Combine the multipliers: 1.2 × 1.1 = 1.32, which is +32%.'],['A 4% increase each year is 5000 × 1.04 × n','Use a power: 5000 × 1.04ⁿ.']],
+ bq:[
+  Q('Exercise 3.3 · Question 1','Copy and complete the workings.'+subs([['a','$200 increased by 10%, then increased by 15%: 200 × 1.1 = 220 → 220 × 1.15 = $…'],['b','$200 decreased by 10%, then decreased by 15%: 200 × 0.9 = … → … × … = $…'],['c','$200 increased by 20%, then decreased by 5%: 200 × … = … → … × … = $…']]),subs([['a','$253'],['b','200 × 0.9 = $180, 180 × 0.85 = $153'],['c','200 × 1.2 = $240, 240 × 0.95 = $228']])),
+  Q('Exercise 3.3 · Question 2 (Think like a mathematician)','A gold coin is worth $800. Its value goes up 10%, then down 10%. Marcus: "I think the value will still be $800." Sofia: "I think it will be less than $800."'+subs([['a','Who do you think is correct?'],['b','Work out who is correct. Explain the other person\'s mistake.'],['c','If it goes down 10% first, then up 10%, will it be more or less than $800? Check by working it out.']]),subs([['a','Your own choice, with a reason.'],['b','Sofia is correct. 10% of $800 is $80, so it goes up to $880. 10% of $880 is $88, so it goes down to $792.'],['c','Less than $800: $800 − $80 = $720, then $720 + $72 = $792.']])),
+  Q('Exercise 3.3 · Question 3',subs([['a','Work out: &nbsp;i 60 increased by 20%, then decreased by 20% &nbsp; ii 60 decreased by 20%, then increased by 20%'],['b','Which sign, &lt;, &gt; or =, goes between i and ii?'],['c','Without calculating, which sign goes in each? &nbsp;i 72 −15% then +15% □ 72 +15% then −15% &nbsp; ii 140 +8% then −8% □ 140 −8% then +8%']]),subs([['a','i 57.6 &nbsp; ii 57.6'],['b','='],['c','i = &nbsp; ii =']])),
+  Q('Exercise 3.3 · Question 4 (Think like a mathematician)','Anil, Raj and Mari work out 50 increased by 20%, then by 10%. Anil: 50 × 1.2 = 60, then 60 × 1.1 = 66. Raj: 50 × 1.2 × 1.1 = 66. Mari: multiplier 1.2 × 1.1 = 1.32, then 50 × 1.32 = 66. Discuss the differences, and whose method is easiest with and without a calculator.','Answers will vary.'),
+  Q('Exercise 3.3 · Question 5','Use a calculator.'+subs([['a','Use Raj\'s method: &nbsp;i 120 +25% then +30% &nbsp; ii 40 +15% then +40%'],['b','Use Mari\'s method: &nbsp;i 400 +50% then +5% &nbsp; ii 90 +12% then +8%']]),subs([['a','i 195 &nbsp; ii 64.4'],['b','i 630 &nbsp; ii 108.864']])),
+  Q('Exercise 3.3 · Question 6','In 2018 GoRail increased the cost of a ticket by 7%. In 2019 it increased it by 5%.'+subs([['a','Work out the multiplier for the compound increase.'],['b','In 2017 Mari bought a ticket for $60. How much will it cost in 2019?']]),subs([['a','1.1235'],['b','$67.41']])),
+  Q('Exercise 3.3 · Question 7',subs([['a','Use Raj\'s method: &nbsp;i 100 −10% then −20% &nbsp; ii 80 −25% then −12%'],['b','Use Mari\'s method: &nbsp;i 600 −50% then −5% &nbsp; ii 76 −30% then −9%']]),subs([['a','i 72 &nbsp; ii 52.8'],['b','i 285 &nbsp; ii 48.412']])),
+  Q('Exercise 3.3 · Question 8','A motorbike loses 18% of its value in the first year and 12% in the second year.'+subs([['a','Work out the multiplier for the compound decrease.'],['b','Mari pays $6400. What is it worth after two years?']]),subs([['a','0.7216'],['b','$4618.24']])),
+  Q('Exercise 3.3 · Question 9','Match each multiplier to a percentage change.<br>A 20% increase then 10% decrease &nbsp; B 18% increase then 30% decrease &nbsp; C 12% decrease then 20% increase &nbsp; D 40% decrease then 35% increase &nbsp; E 15% increase then 32% decrease &nbsp; F 5% decrease then 8% increase<br>Multipliers: i 1.056 &nbsp; ii 0.782 &nbsp; iii 1.08 &nbsp; iv 0.826 &nbsp; v 1.026'+subs([['b','Work out the multiplier for the card left over.']]),subs([['a','A and iii, B and iv, C and i, E and ii, F and v'],['b','D and 0.81']])),
+  Q('Exercise 3.3 · Question 10','An investor puts $5000 in an account that adds 4% a year. Year 1: 5000 × 1.04 = $5200.00. Year 2: 5000 × 1.04 × 1.04 = $5408.00. Year 3: $5624.32. Year 4: $5849.29. Year 5: $6083.26. Zara says you could write 5000 × 1.04<sup>2</sup> instead of 5000 × 1.04 × 1.04.'+subs([['a','Is Zara correct?'],['b','What could the investor write for year 3?'],['c','For year 4?'],['d','5000 × 1.04<sup>8</sup>: how many years?'],['e','Write calculations for &nbsp;i 12 years &nbsp; ii 20 years &nbsp; iii n years'],['f','After how many years will they have more than $9000?']]),subs([['a','Yes: 1.04 × 1.04 = 1.04<sup>2</sup>'],['b','5000 × 1.04<sup>3</sup>'],['c','5000 × 1.04<sup>4</sup>'],['d','8 years: the power is the number of years'],['e','i 5000 × 1.04<sup>12</sup> &nbsp; ii 5000 × 1.04<sup>20</sup> &nbsp; iii 5000 × 1.04<sup>n</sup>'],['f','15 years']])),
+  Q('Exercise 3.3 · Question 11','A town has 10 000 people. The population is predicted to fall by 10% a year.'+subs([['a','Write a calculation for the population after &nbsp;i 1 year &nbsp; ii 2 years &nbsp; iii 3 years'],['b','What does 10 000 × 0.9<sup>5</sup> represent?'],['c','What does 10 000 × 0.9<sup>10</sup> represent?'],['d','After how many years does it first fall below 6000?'],['e','Write a calculation for n years.']]),subs([['a','i 10 000 × 0.9 &nbsp; ii 10 000 × 0.9<sup>2</sup> &nbsp; iii 10 000 × 0.9<sup>3</sup>'],['b','The population after 5 years'],['c','The population after 10 years'],['d','Five years: 10 000 × 0.9<sup>4</sup> = 6561 and 10 000 × 0.9<sup>5</sup> = 5904.9'],['e','10 000 × 0.9<sup>n</sup>']]))
+ ],checklist:['I can write a percentage change as a multiplier.','I can work out a compound percentage change.','I can use a power for the same change repeated many times.']},
+
+{id:'3.4',title:'Understanding upper and lower bounds',src:'Section 3.4',
+ goals:['work out upper and lower bounds'],
+ hook:{q:'A stadium held 104 000 fans, to the nearest 1000. What is the smallest number it could really have been?',a:'103 500. That is the lower bound. The greatest whole number of fans that rounds to 104 000 is 104 499, the upper bound.'},
+ big:'A rounded number could have been anything from half a step below to half a step above it.',
+ steps:[
+ {t:'Rounding: a quick reminder',refresh:true,body:`<p>To round to the nearest 10, look at the units digit: 5 or more rounds up, 4 or less rounds down.</p>
+  <div class="ex"><p>34 → 30 &nbsp; 35 → 40 &nbsp; 25 → 30</p></div>
+  <p>So the whole numbers that round to 30 are 25, 26, … , 34.</p>`,
+  vis:'roundline',check:C('Which number does NOT round to 30 to the nearest 10?',['25','29','34','35'],3,'35 rounds up to 40.')},
+ {t:'Lower and upper bounds',body:`<p>The <span class="kw">lower bound</span> is the smallest value that rounds to the number. The <span class="kw">upper bound</span> is the largest.</p>
+  <div class="ex"><span class="kicker">Exercise 3.4, Question 1</span><p>Whole numbers rounded to the nearest 10 that give 90: 85, 86, … , 94</p><p>Lower bound 85, upper bound 94</p></div>`,
+  vis:'bounds',check:C('Whole numbers round to 270 (nearest 10). What is the lower bound?',['260','265','269','275'],1,'265 is the smallest whole number that rounds to 270.')},
+ {t:'Worked example 3.4',body:`<div class="ex"><span class="kicker">Worked example 3.4</span><p>A whole number is rounded to the nearest 10. The answer is 80.</p><p>It could be 75, 76, 77, 78, 79, 80, 81, 82, 83 or 84.</p><p>Lower bound 75: the smallest whole number that rounds up to 80.</p><p>Upper bound 84: the largest whole number that rounds down to 80.</p></div>`,
+  vis:'bounds',check:C('A whole number rounds to 80 (nearest 10). Which number is NOT possible?',['75','79','84','85'],3,'85 rounds up to 90.')},
+ {t:'Decimals: write the range as an inequality',body:`<p>When the number can be a decimal, there is no single "largest" value below the next step: 8.49, 8.499, 8.4999 all round to 8. So we write the range as an inequality:</p>
+  <div class="bigm">7.5 ⩽ x &lt; 8.5</div>
+  <p>7.5 is included (closed circle). 8.5 is not, because 8.5 rounds up to 9 (open circle).</p>`,
+  vis:'bounds2',check:C('A decimal rounds to 12 (nearest whole number). Which inequality is right?',['11.5 ⩽ x < 12.5','11.5 < x ⩽ 12.5','11 ⩽ x < 13','11.5 ⩽ x ⩽ 12.4'],0,'Half a step below is 11.5 (included). Half a step above is 12.5 (not included).')},
+ {t:'The rule: half the accuracy either side',body:`<p>Go <b>half of the rounding step</b> below and above:</p>
+  <ul><li>nearest whole number → ± 0.5</li><li>nearest 10 → ± 5</li><li>nearest 100 → ± 50</li></ul>
+  <div class="ex"><span class="kicker">Exercise 3.4, Question 8</span><p>Rounded to the nearest 100 gives 4700: 4650 ⩽ x &lt; 4750</p></div>`,
+  vis:'bounds2',check:C('A number rounds to 6300 (nearest 10). What is the range?',['6250 ⩽ x < 6350','6295 ⩽ x < 6305','6299.5 ⩽ x < 6300.5','6200 ⩽ x < 6400'],1,'Nearest 10 means ± 5: 6295 ⩽ x < 6305.')},
+ {t:'Bounds in real life',body:`<div class="ex"><span class="kicker">Exercise 3.4, Question 10</span><p>A pond's circumference is 1560 cm, to the nearest 10 cm.</p><p>Lower bound 1555 cm, upper bound 1565 cm: 1555 ⩽ x &lt; 1565</p></div>
+  <div class="ex"><span class="kicker">Exercise 3.4, Question 11</span><p>A mean height of 172 cm, to the nearest cm: 171.5 ⩽ x &lt; 172.5</p></div>`,
+  check:C('A pitch is 7200 m², to the nearest 100 m². What is the lower bound?',['7100 m²','7150 m²','7195 m²','7250 m²'],1,'Half of 100 is 50, so 7200 − 50 = 7150. This is Check your progress, Question 5.')}
+ ],
+ mistakes:[['Rounded to 8, the upper bound is 8.4','8.45 also rounds to 8. Write 7.5 ⩽ x < 8.5.'],['Rounded to the nearest 100, the bounds are ± 100','Use half the step: ± 50.']],
+ bq:[
+  Q('Exercise 3.4 · Question 1','These whole numbers have been rounded to the nearest 10. For each, write i the numbers that round to it, ii the lower bound, iii the upper bound.'+subs([['a','30'],['b','90'],['c','270'],['d','850']]),subs([['a','i 25 to 34 &nbsp; ii 25 &nbsp; iii 34'],['b','i 85 to 94 &nbsp; ii 85 &nbsp; iii 94'],['c','i 265 to 274 &nbsp; ii 265 &nbsp; iii 274'],['d','i 845 to 854 &nbsp; ii 845 &nbsp; iii 854']])),
+  Q('Exercise 3.4 · Question 2','A number with one decimal place rounds to 12 (nearest whole number).'+subs([['a','List the one-decimal-place numbers that round to 12, starting 11.5, 11.6, 11.7, …'],['b','The lower bound is …'],['c','The upper bound is …']]),subs([['a','11.5, 11.6, 11.7, 11.8, 11.9, 12.0, 12.1, 12.2, 12.3, 12.4'],['b','11.5'],['c','12.4']])),
+  Q('Exercise 3.4 · Question 3','Aashi\'s homework: "Increase $42 by ■%. Round your answer to the nearest whole number." Solution: 42 × ■ = ■ = $55. The number she rounded has one decimal place.'+subs([['a','Write &nbsp;i the one-decimal-place numbers that round to 55 &nbsp; ii the lower bound &nbsp; iii the upper bound'],['b','The question is "Increase $42 by 30%". What numbers are covered?']]),subs([['a','i 54.5 to 55.4 &nbsp; ii 54.5 &nbsp; iii 55.4'],['b','42 × 1.3 = 54.6 = $55']])),
+  Q('Exercise 3.4 · Question 4 (Think like a mathematician)','A decimal number rounds to 8 (nearest whole number). Arun: "I think the lower bound is 7.5 and the upper bound is 8.4." Zara: "I agree with the lower bound, but disagree with the upper bound."'+subs([['a','Do you agree with the lower bound of 7.5?'],['b','What do you think the upper bound is?']]),'Answers will vary. (The next questions show how to write the range: 7.5 ⩽ x &lt; 8.5.)'),
+  Q('Exercise 3.4 · Question 5 (Think like a mathematician)','Sofia: "I would write the range of values that round to 8 as 7.5 ⩽ x ⩽ 8.49999…" Marcus: "I would write it as 7.5 ⩽ x &lt; 8.5."'+subs([['a','Whose inequality do you prefer? Explain why.'],['b','Can you think of another way?']]),'Answers will vary. Question 6 uses Marcus\'s way, for example 3.5 ⩽ x &lt; 4.5.'),
+  Q('Exercise 3.4 · Question 6','A decimal number is rounded to the nearest whole number. Write an inequality for the possible values when the answer is'+subs([['a','4'],['b','12'],['c','356'],['d','670']]),subs([['a','3.5 ⩽ x &lt; 4.5'],['b','11.5 ⩽ x &lt; 12.5'],['c','355.5 ⩽ x &lt; 356.5'],['d','669.5 ⩽ x &lt; 670.5']])),
+  Q('Exercise 3.4 · Question 7','A decimal number is rounded to the nearest ten. Complete the inequality when the answer is'+subs([['a','20: 15 ⩽ x &lt; …'],['b','340: … ⩽ x &lt; 345'],['c','4750'],['d','6300']]),subs([['a','15 ⩽ x &lt; 25'],['b','335 ⩽ x &lt; 345'],['c','4745 ⩽ x &lt; 4755'],['d','6295 ⩽ x &lt; 6305']])),
+  Q('Exercise 3.4 · Question 8','A decimal number is rounded to the nearest hundred. Complete the inequality when the answer is'+subs([['a','300: 250 ⩽ x &lt; …'],['b','1900: … ⩽ x &lt; 1950'],['c','4700'],['d','8000']]),subs([['a','250 ⩽ x &lt; 350'],['b','1850 ⩽ x &lt; 1950'],['c','4650 ⩽ x &lt; 4750'],['d','7950 ⩽ x &lt; 8050']])),
+  Q('Exercise 3.4 · Question 9 (Think like a mathematician)',subs([['a','Complete: rounding to the nearest i whole number, ii ten, iii hundred, the bounds are … below and above the rounded number.'],['b','Describe a general rule for the bounds of a rounded number.']]),subs([['a','i 0.5 &nbsp; ii 5 &nbsp; iii 50'],['b','The bounds are always half of the degree of accuracy below and above.']])),
+  Q('Exercise 3.4 · Question 10','Vihaan works out the circumference of a pond to be 1560 cm, to the nearest 10 cm.'+subs([['a','Write i the lower bound, ii the upper bound.'],['b','Write an inequality for the circumference.']]),subs([['a','i 1555 cm &nbsp; ii 1565 cm'],['b','1555 cm ⩽ x &lt; 1565 cm']])),
+  Q('Exercise 3.4 · Question 11','Saarya works out the mean height of a netball team to be 172 cm, to the nearest centimetre.'+subs([['a','Write i the lower bound, ii the upper bound.'],['b','Write an inequality for the mean height.']]),subs([['a','i 171.5 cm &nbsp; ii 172.5 cm'],['b','171.5 cm ⩽ x &lt; 172.5 cm']])),
+  Q('Exercise 3.4 · Question 12','Match each range card with a degree of accuracy and a rounded number.<br>Ranges: A 1550 ⩽ x &lt; 1650 &nbsp; B 550 ⩽ x &lt; 650 &nbsp; C 55 ⩽ x &lt; 65 &nbsp; D 15.5 ⩽ x &lt; 16.5 &nbsp; E 155 ⩽ x &lt; 165 &nbsp; F 164.5 ⩽ x &lt; 165.5<br>Accuracy: i nearest 100 &nbsp; ii nearest 10 &nbsp; iii nearest 1<br>Rounded numbers: a 16 &nbsp; b 60 &nbsp; c 160 &nbsp; d 165 &nbsp; e 1600 &nbsp; f 600','A, i and e; B, i and f; C, ii and b; D, iii and a; E, ii and c; F, iii and d')
+ ],checklist:['I can find the lower and upper bounds of a rounded number.','I can write the range as an inequality.']}
+];
+
+const KEYWORDS3=[
+ {id:'k31',topic:'3.2',t:'equivalent calculation',d:'A different calculation with the same answer, like 0.81 ÷ 0.09 = 81 ÷ 9.'},
+ {id:'k32',topic:'3.3',t:'compound percentage',d:'One percentage change followed by another.'},
+ {id:'k33',topic:'3.3',t:'multiplier',d:'The number you multiply by for a percentage change: +20% is × 1.2, −20% is × 0.8.'},
+ {id:'k34',topic:'3.4',t:'lower bound',d:'The smallest value that rounds to a given number.'},
+ {id:'k35',topic:'3.4',t:'upper bound',d:'The largest value that rounds to a given number. For decimals it is the value the range goes up to but does not include.'}
+];
+const CYP3=[
+ {p:'1',q:'Work out'+subs([['a','7.45 × 10<sup>4</sup>'],['b','12 × 10<sup>0</sup>'],['c','46 × 10<sup>−3</sup>'],['d','5.9 × 10<sup>1</sup>'],['e','7280 ÷ 10<sup>5</sup>'],['f','0.5 ÷ 10<sup>−1</sup>'],['g','0.037 ÷ 10<sup>−3</sup>'],['h','18 ÷ 10<sup>0</sup>']]),a:subs([['a','74 500'],['b','12'],['c','0.046'],['d','59'],['e','0.0728'],['f','5'],['g','37'],['h','18']])},
+ {p:'2',q:'Work out'+subs([['a','8 × −0.2'],['b','0.12 × 30'],['c','−0.4 × 0.007'],['d','−60 ÷ −0.1'],['e','6 ÷ 0.02'],['f','0.81 ÷ 0.09'],['g','−3 × −5 × 0.5'],['h',F('1.32','30 × 0.4')]]),a:subs([['a','−1.6'],['b','3.6'],['c','−0.0028'],['d','600'],['e','300'],['f','9'],['g','7.5'],['h','0.11']])},
+ {p:'3',q:'Use your calculator to work out the final value after $240 is increased by 30%, then decreased by 15%.',a:'$265.20'},
+ {p:'4',q:'A painting is worth $20 000. Its value is predicted to rise by 8% a year.'+subs([['a','Write a calculation for its value after i 1 year, ii 2 years, iii 3 years.'],['b','What does $20 000 × 1.08<sup>5</sup> represent?'],['c','What does $20 000 × 1.08<sup>20</sup> represent?'],['d','After how many years does it first go above $30 000?'],['e','Write a calculation for n years.']]),a:subs([['a','i 20 000 × 1.08 &nbsp; ii 20 000 × 1.08<sup>2</sup> &nbsp; iii 20 000 × 1.08<sup>3</sup>'],['b','Its value after 5 years'],['c','Its value after 20 years'],['d','6 years: 20 000 × 1.08<sup>5</sup> = 29 386.56… and 20 000 × 1.08<sup>6</sup> = 31 737.49…'],['e','20 000 × 1.08<sup>n</sup>']])},
+ {p:'5',q:'Alexi works out the area of a soccer pitch to be 7200 m<sup>2</sup>, to the nearest 100 m<sup>2</sup>.'+subs([['a','Write i the lower bound, ii the upper bound.'],['b','Write the range of values the area could have.']]),a:subs([['a','i 7150 m<sup>2</sup> &nbsp; ii 7250 m<sup>2</sup>'],['b','7150 m<sup>2</sup> ⩽ x &lt; 7250 m<sup>2</sup>']])}
+];
+const QUIZ3=[
+ C('Work out 3.2 × 10<sup>3</sup>.',['32','320','3200','0.0032'],2,'× 1000.'),
+ C('Work out 3.2 × 10<sup>−1</sup>.',['32','0.32','−32','0.032'],1,'× 10⁻¹ is ÷ 10.'),
+ C('Work out 320 ÷ 10<sup>2</sup>.',['3.2','32','0.32','32 000'],0,'÷ 100.'),
+ C('Work out 3.2 ÷ 10<sup>−2</sup>.',['0.032','320','32','−320'],1,'÷ 10⁻² is × 100.'),
+ C('Work out 0.08 × 0.2.',['0.16','0.016','1.6','0.0016'],1,'8 × 2 = 16, three decimal places.'),
+ C('Work out −25 ÷ 0.5.',['−50','50','−12.5','12.5'],0,'25 ÷ 0.5 = 50, different signs.'),
+ C('Work out 0.09 ÷ 0.003.',['3','30','0.3','300'],1,'× 1000 both: 90 ÷ 3 = 30.'),
+ C('Is 4.332 ÷ 0.95 bigger than 4.332?',['Yes','No'],0,'Dividing by a number less than 1 makes it bigger.'),
+ C('What is the multiplier for a 20% decrease?',['0.2','1.2','0.8','0.02'],2,'100% − 20% = 80%.'),
+ C('$200 increased by 20%, then decreased by 5%. Final value?',['$230','$228','$240','$190'],1,'200 × 1.2 = 240, × 0.95 = 228.'),
+ C('Combined multiplier for +20% then +10%?',['1.3','1.32','0.32','1.02'],1,'1.2 × 1.1 = 1.32.'),
+ C('5000 × 1.04<sup>8</sup> means the money after how many years?',['4','8','5000','1.04'],1,'The power is the number of years.'),
+ C('Whole numbers rounded to the nearest 10 give 850. Upper bound?',['855','854','860','849'],1,'845 to 854 round to 850.'),
+ C('A decimal rounds to 356 (nearest whole number). Range?',['355 ⩽ x < 357','355.5 ⩽ x < 356.5','355.5 < x ⩽ 356.5','356 ⩽ x < 357'],1,'± 0.5, lower bound included.'),
+ C('Rounded to the nearest 100, a number is 8000. Lower bound?',['7900','7950','7995','7999'],1,'Half of 100 is 50.')
+];
+CHAPTERS_DATA[3]={title:'Decimals, percentages and rounding',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3,cypNote:'The online course does not show marks for these questions.'};
+
+/* =================== CHAPTER 4 CONTENT (Equations and inequalities) =================== */
+const TOPICS4=[
+{id:'4.0',title:'Warm-up: Getting started',src:'Chapter 4 Introduction',
+ goals:['remember how to solve a simple equation','remember what the inequality signs mean'],
+ hook:{q:'The Rhind Papyrus was written in Egypt in 1650 BCE. It lists 84 practical problems and their solutions. Did the Ancient Egyptians use letters like x to solve them?',a:'No. Algebra was not known in Egypt then, so they wrote problems and solutions in words. In this chapter you use algebra, which makes them much easier to solve.'},
+ big:'An equation is a balance. Do the same thing to both sides and it stays balanced.',
+ steps:[
+ {t:'Solve by undoing',refresh:true,body:`<p>Undo the operations in reverse order. Whatever you do to one side, do to the other.</p>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>3x + 7 = 22</p><p>3x = 15 &nbsp;(take 7 from both sides)</p><p>x = 5 &nbsp;(divide both sides by 3)</p></div>`,
+  vis:'balance',check:C('Solve 2x − 8 = 10.',['x = 1','x = 9','x = 18','x = 4'],1,'Add 8: 2x = 18. Divide by 2: x = 9.')},
+ {t:'Letters on both sides',refresh:true,body:`<p>First get all the letters on one side.</p>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>2y + 2 = y + 27</p><p>y + 2 = 27 &nbsp;(take y from both sides)</p><p>y = 25</p></div>`,
+  vis:'balance2',check:C('Solve y ÷ 5 + 3 = 8.',['y = 1','y = 25','y = 55','y = 5'],1,'Take 3: y ÷ 5 = 5. Multiply by 5: y = 25.')},
+ {t:'Inequality signs',refresh:true,body:`<div class="scrollx"><table class="dt"><tr><th>&lt;</th><td>less than</td></tr><tr><th>⩽</th><td>less than or equal to</td></tr><tr><th>&gt;</th><td>greater than</td></tr><tr><th>⩾</th><td>greater than or equal to</td></tr></table></div>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>4 &lt; y ⩽ 7 with y a whole number: y can be 5, 6 or 7.</p><p>4 is not allowed (&lt;), but 7 is (⩽).</p></div>`,
+  vis:'ineqline4',check:C('For 4 < y ⩽ 7, what is the smallest whole number y can be?',['4','5','6','7'],1,'y must be more than 4, so the smallest whole number is 5.')}
+ ],
+ mistakes:[['3x + 7 = 22, so 3x = 29','Undo + 7 by taking 7 away: 3x = 15.'],['4 < y means y can be 4','< means strictly less than, so 4 is not included.']],
+ bq:[
+  Q('Getting started · Question 1','Solve'+subs([['a','3x + 7 = 22'],['b','2x − 8 = 10'],['c',F('y',5)+' + 3 = 8'],['d','2y + 2 = y + 27']]),subs([['a','x = 5'],['b','x = 9'],['c','y = 25'],['d','y = 25']])),
+  Q('Getting started · Question 2','y is an integer and 4 &lt; y ⩽ 7.'+subs([['a','What is the smallest value y can be?'],['b','What is the largest value y can be?'],['c','Write all the values y can be.']]),subs([['a','5'],['b','7'],['c','5, 6, 7']])),
+  Q('Getting started · Question 3','Copy and complete these equivalent inequalities.'+subs([['a','x &gt; 5 is equivalent to 2x &gt; …'],['b','x &lt; 9 is equivalent to … x &lt; 36'],['c','y ⩾ 8 is equivalent to y + 5 ⩾ …'],['d','y ⩽ −6 is equivalent to y − 5 ⩽ …']]),subs([['a','2x &gt; 10'],['b','4x &lt; 36'],['c','y + 5 ⩾ 13'],['d','y − 5 ⩽ −11']]))
+ ],checklist:[]},
+
+{id:'4.1',title:'Constructing and solving equations',src:'Section 4.1',
+ goals:['construct and solve equations, including ones with fractions and brackets'],
+ hook:{q:'In 10 years\' time, Adeline will be twice as old as she was 6 years ago. How can an equation tell you her age?',a:'Call her age A. In 10 years she is A + 10. Six years ago she was A − 6. The book says A + 10 = 2(A − 6), which gives A = 22.'},
+ big:'Turn the words into an equation, then solve it step by step, and check the answer in the original.',
+ steps:[
+ {t:'Expand brackets first',body:`<p>Multiply everything inside the bracket by the number outside.</p>
+  <div class="ex"><span class="kicker">Exercise 4.1, Question 1</span><p>5(3 − 2x) = 9</p><p>15 − 10x = 9</p><p>−10x = −6</p><p>x = ${F(6,10)} = ${F(3,5)}</p></div>`,
+  vis:'solver',check:C('Expand 2(x + 12).',['2x + 12','2x + 24','x + 24','2x + 14'],1,'2 × x = 2x and 2 × 12 = 24.')},
+ {t:'Unknown on both sides',body:`<p>Move the smaller number of x's to the other side, so you don't get negatives.</p>
+  <div class="ex"><span class="kicker">Exercise 4.1, Question 3</span><p>2(x + 12) = 4x − 6</p><p>2x + 24 = 4x − 6</p><p>24 = 2x − 6 &nbsp;(take 2x from both sides)</p><p>30 = 2x, so x = 15</p></div>`,
+  vis:'solver2',check:C('Solve 10(x − 4) = 5x + 25.',['x = 13','x = 3','x = 6.5','x = 1.3'],0,'10x − 40 = 5x + 25, so 5x = 65 and x = 13. This is Exercise 4.1, Question 5.')},
+ {t:'Spot the mistakes',body:`<p>Shen solved 2(x + 8) = 3(6 − x). The book shows three mistakes he made:</p>
+  <ul><li>he didn't multiply the 8 by 2</li><li>−3x on one side should become +3x on the other</li><li>+8 should become −8 on the other side</li></ul>
+  <div class="ex"><span class="kicker">Correct solution</span><p>2x + 16 = 18 − 3x</p><p>5x + 16 = 18</p><p>5x = 2, so x = 0.4</p><p>Check: 2(0.4 + 8) = 16.8 and 3(6 − 0.4) = 16.8 ✓</p></div>`,
+  check:C('When a term moves to the other side of the equation, what happens to its sign?',['It stays the same','It changes','It becomes ×'],1,'Taking −3x to the other side means adding 3x to both sides, so it becomes +3x.')},
+ {t:'The unknown on the bottom of a fraction',body:`<p>Multiply both sides by the bottom first, to get the unknown out of the fraction.</p>
+  <div class="ex"><span class="kicker">Exercise 4.1, Question 6</span><p>${F(42,'c')} = 7</p><p>42 = 7c &nbsp;(multiply both sides by c)</p><p>c = 6</p></div>
+  <div class="ex"><span class="kicker">Exercise 4.1, Question 6c</span><p>${F(21,'e + 2')} = 7 → 21 = 7(e + 2) → 21 = 7e + 14 → e = 1</p></div>`,
+  vis:'fracsolve',check:C('Solve 12 ÷ d = 15.',['d = 3','d = 4/5','d = 5/4','d = 180'],1,'12 = 15d, so d = 12/15 = 4/5.')},
+ {t:'Worked example 4.1: words into equations',body:`<p>Call the unknown number a letter, then follow the words one step at a time.</p>
+  <div class="ex"><span class="kicker">Worked example 4.1a</span><p>Xavier thinks of a number. He doubles it, then adds 3. Then he doubles the result. The answer is 70.</p><p>Call the number x. Double it and add 3: 2x + 3</p><p>2(2x + 3) = 70</p><p>2x + 3 = 35 &nbsp;(divide both sides by 2)</p><p>2x = 32 &nbsp;(subtract 3)</p><p>x = 16</p></div>
+  <div class="ex"><span class="kicker">Worked example 4.1b</span><p>120 sweets are shared between some children. Each child gets 8 sweets.</p><p>Call the number of children c: ${F(120,'c')} = 8</p><p>120 = 8c &nbsp;(multiply by c)</p><p>c = 15 &nbsp;(divide by 8)</p></div>`,
+  check:C('Xavier: 2(2x + 3) = 70. What is the first step in the book?',['Subtract 3','Divide both sides by 2','Multiply by 2'],1,'Dividing by 2 gives 2x + 3 = 35.')},
+ {t:'Build the equation from words or a shape',body:`<p>Write each length or amount using the letter, then use the fact you are given.</p>
+  <div class="ex"><span class="kicker">Exercise 4.1, Question 10</span><p>A triangle has sides 2(x + 3), 7x − 5 and 5(7 − x). The perimeter is 48.</p><p>2x + 6 + 7x − 5 + 35 − 5x = 48</p><p>4x + 36 = 48, so x = 3</p><p>Sides: 12, 16 and 20</p></div>`,
+  vis:'triangle4',check:C('A pie chart is split into equal sectors of 24°. Which equation finds the number of sectors x?',['360x = 24','24x = 360','x ÷ 360 = 24','24 ÷ x = 360'],1,'x sectors of 24° make 360°, so 24x = 360 and x = 15. (360 ÷ x = 24 also works.)')}
+ ],
+ mistakes:[['2(x + 8) = 2x + 8','Multiply both terms: 2x + 16.'],['42 ÷ c = 7, so c = 42 × 7','Multiply both sides by c: 42 = 7c, so c = 6.'],['Forgetting to check','Put your answer back into the original equation: both sides should match.']],
+ bq:[
+  Q('Exercise 4.1 · Question 1','Solve'+subs([['a','8x − 14 = −30'],['b','5(3 − 2x) = 9'],['c',F('2y',3)+' − 5 = 11'],['d','6y + 7 = 22 − 3y']]),subs([['a','x = −2'],['b','x = '+F(3,5)],['c','y = 24'],['d','y = '+MX(1,2,3)]])),
+  Q('Exercise 4.1 · Question 2','Solve these equations.'+subs([['a','2x + 14 = −8'],['b','−2x + 8 = 14'],['c','12 − 2y = 4'],['d','−4 = 12 − 2y'],['e','a − 15 = 4a + 3'],['f','5 + 3a = −3 − 5a'],['g','3x + 6 = 20 − 4x'],['h','z + 11 = 35 − 5z']]),subs([['a','x = −11'],['b','x = −3'],['c','y = 4'],['d','y = 8'],['e','a = −6'],['f','a = −1'],['g','x = 2'],['h','z = 4']])),
+  Q('Exercise 4.1 · Question 3','Solve 2(x + 12) = 4x − 6 using two different methods.','x = 15 with both methods'),
+  Q('Exercise 4.1 · Question 4 (Think like a mathematician)','This is part of Shen\'s homework.'+work(['Solve the equation 2(x + 8) = 3(6 − x)','2x + 8 = 18 − 3x','−x + 8 = 18','x = 26'])+subs([['a','How can you use the answer to show that Shen\'s working is incorrect?'],['b','Work through Shen\'s solution. Explain all the mistakes he has made.'],['c','Work out the correct answer, and show how to check it.']]),subs([['a','He didn\'t multiply the 8 by 2. −3x should become +3x on the other side. +8 should become −8 on the other side.'],['b','2x + 16 = 18 − 3x, 5x = 2, x = 0.4'],['c','2(0.4 + 8) = 16.8 and 3(6 − 0.4) = 16.8']])),
+  Q('Exercise 4.1 · Question 5','Solve 10(x − 4) = 5x + 25.','x = 13'),
+  Q('Exercise 4.1 · Question 6','Solve'+subs([['a',F(42,'c')+' = 7'],['b',F(12,'d')+' = 15'],['c',F(21,'e + 2')+' = 7']]),subs([['a','c = 6'],['b','d = '+F(4,5)],['c','e = 1']])),
+  Q('Exercise 4.1 · Question 7','Solve these equations. Check each answer by substituting it back into the equation.'+subs([['a',F(81,'a')+' = 3'],['b',F(9,'b')+' = 21'],['c',F(32,'c + 5')+' = 4'],['d',F(10,'d − 9')+' = 5']]),subs([['a','a = 27'],['b','b = '+F(3,7)],['c','c = 3'],['d','d = 11']])),
+  Q('Exercise 4.1 · Question 8 (Think like a mathematician)','Steffan and Heidi solve '+F(17,'c + 2')+' = 3 in different ways.'+work(['Steffan: 17 = 3(c + 2) → '+F(17,3)+' = c + 2 → '+MX(5,2,3)+' = c + 2 → '+MX(5,2,3)+' − 2 = c → c = '+MX(3,2,3),'Heidi: 17 = 3(c + 2) → 17 = 3c + 6 → 17 − 6 = 3c → 11 = 3c → '+F(11,3)+' = c → c = '+MX(3,2,3)])+'Critique their methods, then use your favourite method to solve'+subs([['a',F(9,'x − 12')+' = 4'],['b',F(2,'7 − x')+' = 5'],['c',F(8,'x + 1')+' = 10']]),subs([['a','x = '+MX(14,1,4)],['b','x = '+MX(6,3,5)],['c','x = −'+F(1,5)]])),
+  Q('Exercise 4.1 · Question 9','In 10 years\' time Adeline will be twice as old as she was 6 years ago. Call her age now A.'+subs([['a','Write expressions for her age in 10 years and 6 years ago.'],['b','Write an equation.'],['c','Solve it to find her age.']]),subs([['a','A + 10 and A − 6'],['b','A + 10 = 2(A − 6)'],['c','A = 22']])),
+  Q('Exercise 4.1 · Question 10','A triangle has sides 2(x + 3), 7x − 5 and 5(7 − x). The perimeter is 48. Work out x and the length of each side.','4x + 36 = 48, so x = 3. The sides are 12, 16 and 20.'),
+  Q('Exercise 4.1 · Question 11','An equilateral triangle has sides of 3a cm. A rectangle is (a + 7) cm by (a + 3) cm. They have equal perimeters.'+subs([['a','Write an equation to show this.'],['b','Solve the equation.'],['c','Find the lengths of the sides of the shapes.']]),'9a = 4a + 20, so a = 4. The triangle\'s sides are 12. The rectangle is 7 by 11.'),
+  Q('Exercise 4.1 · Question 12','A pie chart is divided into equal sectors of 24°. x is the number of sectors.'+subs([['a','Which equations are correct? &nbsp;A 360x = 24 &nbsp; B '+F(360,'x')+' = 24 &nbsp; C '+F('x',360)+' = 24 &nbsp; D 24x = 360 &nbsp; E '+F(24,'x')+' = 360'],['b','Solve all five equations.'],['c','How many sectors are there?']]),subs([['a','B and D'],['b','A '+F(1,15)+' &nbsp; B 15 &nbsp; C 8640 &nbsp; D 15 &nbsp; E '+F(1,15)],['c','15']])),
+  Q('Exercise 4.1 · Question 13','Show that '+F(85,'y')+' = 5 and '+F(152,'y + 2')+' = 8 have the same solution.','Both give y = 17.'),
+  Q('Exercise 4.1 · Question 14','The two equal angles in an isosceles triangle are 54° and ('+F(270,'x − 4')+')°.'+subs([['a','Write an equation to represent the situation.'],['b','Solve it to find x.'],['c','Work out all three angles.']]),'54 = '+F(270,'x − 4')+', so x = 9. The angles are 54°, 54° and 72°.'),
+  Q('Exercise 4.1 · Question 15',subs([['a','Write a problem to represent each equation. &nbsp;i x + 2(x + 1) + 3(x + 2) + 4(x + 3) = 80 &nbsp; ii 6(3a − 4) = 3(4a − 3) &nbsp; iii '+F(180,'x − 5')+' = 15'],['b','Solve the equations in part a.']]),subs([['a','Your own problems.'],['b','i x = 6 &nbsp; ii a = 2.5 &nbsp; iii x = 17']]))
+ ],checklist:['I can expand brackets and solve.','I can solve with the unknown on both sides.','I can solve when the unknown is on the bottom of a fraction.','I can write an equation from a problem.']},
+
+{id:'4.2',title:'Simultaneous equations',src:'Section 4.2',
+ goals:['solve two equations with two unknowns using a graph, substitution or elimination'],
+ hook:{q:'Two numbers add to 37. Their difference is 13. What are they?',a:'25 and 12. Two facts and two unknowns: these are simultaneous equations, x + y = 37 and x − y = 13.'},
+ big:'Simultaneous equations are two equations that are both true at once. The answer is the one pair of values that fits both.',
+ steps:[
+ {t:'Where two lines cross',body:`<p>Every point on a straight line fits its equation. The point where two lines <b>cross</b> fits both, so it is the solution.</p>
+  <div class="ex"><span class="kicker">Exercise 4.2, Question 5</span><p>y = 3x + 1 and y = x + 9 cross at (4, 13).</p><p>So x = 4, y = 13.</p></div>`,
+  vis:'intersect',check:C('Two lines cross at (2, 6). What is the solution?',['x = 6, y = 2','x = 2, y = 6','x = 8','x = 2, y = 2'],1,'The point is (x, y), so x = 2 and y = 6.')},
+ {t:'Substitution: when both say "y ="',body:`<p>If both equations start "y =", the right-hand sides must be equal.</p>
+  <div class="ex"><span class="kicker">Worked example 4.2</span><p>y = 3x + 1 and y = x + 9</p><p>Step 1: 3x + 1 = x + 9, so 2x = 8 and x = 4</p><p>Step 2: y = 3 × 4 + 1 = 13</p><p>Step 3: check in the other equation: y = 4 + 9 = 13 ✓</p><p>Step 4: x = 4, y = 13</p></div>`,
+  vis:'substep',check:C('y = 3x and y = x + 4. What is x?',['1','2','4','6'],1,'3x = x + 4, so 2x = 4 and x = 2. Then y = 6.')},
+ {t:'Substitution: put one into the other',body:`<p>If only one equation is "y = …", swap that expression in for y in the other equation.</p>
+  <div class="ex"><span class="kicker">Exercise 4.2, Question 10</span><p>y = 3(x + 5) and 2x + y = 0</p><p>2x + 3(x + 5) = 0</p><p>5x + 15 = 0, so x = −3</p><p>y = 3(−3 + 5) = 6</p></div>`,
+  vis:'substep',check:C('y = 3x + 1 and 5x = y + 3. Put y = 3x + 1 into the second. What is x?',['1','2','7','4'],1,'5x = 3x + 1 + 3, so 2x = 4 and x = 2. Then y = 7.')},
+ {t:'Elimination: add or subtract',body:`<p>Line the equations up. If one letter has the <b>same number</b> in front in both, add or subtract to make it disappear.</p>
+  <ul><li>same signs → <b>subtract</b></li><li>opposite signs → <b>add</b></li></ul>
+  <div class="ex"><span class="kicker">Exercise 4.2, Question 11</span><p>2x + y = 50 and x − y = 4</p><p>Add: 3x = 54, so x = 18</p><p>18 − y = 4, so y = 14</p></div>`,
+  vis:'elim',check:C('x + 4y = 41 and x + 2y = 23. What do you do to remove x?',['Add','Subtract','Multiply'],1,'Both have +x (same signs), so subtract: 2y = 18, y = 9, then x = 5.')},
+ {t:'Always check in both',body:`<p>Put your x and y into <b>both</b> original equations. If either one doesn't work, look for a mistake.</p>
+  <div class="ex"><span class="kicker">Exercise 4.2, Question 10</span><p>Sofia's answer x = −3, y = 6: 6 = 3(−3 + 5) ✓ and 2(−3) + 6 = 0 ✓</p><p>Zara had the signs the wrong way round.</p></div>`,
+  check:C('Does x = 3, y = 6 fit 2x + y = 0?',['Yes','No'],1,'2 × 3 + 6 = 12, not 0. (x = −3, y = 6 works.)')}
+ ],
+ mistakes:[['Finding x and stopping','You need both values: put x back in to find y.'],['Adding when the signs are the same','Same signs → subtract. Opposite signs → add.'],['Checking in only one equation','The pair must fit both equations.']],
+ bq:[
+  Q('Exercise 4.2 · Question 1','Solve y = 5x − 3 and y = 2x + 15. Check your answer.','x = 6, y = 27. Check: 5 × 6 − 3 = 27 and 2 × 6 + 15 = 27'),
+  Q('Exercise 4.2 · Question 2','Solve the simultaneous equations y = 2x − 1 and y = x + 4.','x = 5, y = 9'),
+  Q('Exercise 4.2 · Question 3','Solve the simultaneous equations y = x + 9 and y = 3x + 1.','x = 4, y = 13'),
+  Q('Exercise 4.2 · Question 4','Solve the simultaneous equations y = 9 − 2x and y = x − 12.','x = 7, y = −5'),
+  Q('Exercise 4.2 · Question 5','Complete the tables of values for x = 0, 3, 6, draw both graphs, and find where they cross.'+subs([['a','y = 3x + 1'],['b','y = x + 9']]),subs([['a','1, 10, 19'],['b','9, 12, 15'],['c','They cross at (4, 13), so x = 4, y = 13']])),
+  Q('Exercise 4.2 · Question 6','Solve y = 3x and y = x + 4.','x = 2, y = 6'),
+  Q('Exercise 4.2 · Question 7','Solve'+subs([['a','y = 3x + 1 and 5x = y + 3'],['b','x = 4y − 2 and y + x = 8']]),subs([['a','x = 2, y = 7'],['b','x = 6, y = 2']])),
+  Q('Exercise 4.2 · Question 8','Sergio and Fausta both use substitution to solve x + 3y = 25 and 4x = 3y + 10.'+work(['Sergio: x = 25 − 3y, so 4(25 − 3y) = 3y + 10 → 100 − 12y = 3y + 10 → 90 = 15y → y = 6, then x = 25 − 18 = 7','Fausta: 3y = 25 − x, so 4x = 25 − x + 10 → 5x = 35 → x = 7, then 3y = 18 → y = 6','Both check: 4 × 7 = 3 × 6 + 10 → 28 = 28 ✓'])+'Use Sergio\'s method for a and b, and Fausta\'s method for c and d.'+subs([['a','x + 2y = 17 and 3x = 4y + 11'],['b','2x + y = 28 and 4y = x + 22'],['c','x + 2y = 8 and 5x = 2y + 4'],['d','3x + 2y = 28 and 3y = 3x + 12']]),subs([['a','x = 9, y = 4'],['b','x = 10, y = 8'],['c','x = 2, y = 3'],['d','x = 4, y = 8']])),
+  Q('Exercise 4.2 · Question 9','Solve each pair. Use your favourite algebraic method.'+subs([['a','x + y = 7 and y = 2x − 8'],['b','y + x = 19 and x = 5y + 1'],['c','2x + y = 18 and y = 2x − 10'],['d','y = 2x and x = 2y − 9']]),subs([['a','x = 5, y = 2'],['b','x = 16, y = 3'],['c','x = 7, y = 4'],['d','x = 3, y = 6']])),
+  Q('Exercise 4.2 · Question 10','Sofia and Zara solve y = 3(x + 5) and 2x + y = 0. Sofia gets x = −3, y = 6. Zara gets x = 3, y = −6. Who is correct?','Sofia is correct: x = −3, y = 6. Zara has the signs the wrong way round.'),
+  Q('Exercise 4.2 · Question 11','Afua uses elimination to solve x + y = 37 and x − y = 13.'+work(['Step 1: add the equations: 2x + 0y = 50, so x = 25','Step 2: substitute into the first: 25 + y = 37, so y = 12','Step 3: check in the second: 25 − 12 = 13 ✓','Step 4: x = 25 and y = 12'])+'Use elimination to solve'+subs([['a','2x + y = 50 and x − y = 4 (add)'],['b','x + 4y = 41 and x + 2y = 23 (subtract)'],['c','3x + 2y = 38 and 3x − y = 26 (subtract: careful, 2y − −y = 3y)']]),subs([['a','x = 18, y = 14'],['b','2y = 18, so y = 9, and x = 5'],['c','y = 4, x = 10']])+'<p class="tiny">The course\'s template shows "□ ÷ 3" in part b. It should be 18 ÷ 2 = 9.</p>'),
+  Q('Exercise 4.2 · Question 12 (Think like a mathematician)','Decide whether to add or subtract in each part. In one part you can do either: which one? Then describe a rule, and solve each pair.'+subs([['i','x + y = 15 and x − y = 3'],['ii','x + 6y = 9 and x + 2y = 1'],['iii','2x + y = 19 and 3x − y = 21'],['iv','3x + 2y = 37 and x + 2y = 19']]),subs([['i','Add or subtract, x = 9, y = 6'],['ii','Subtract, x = −3, y = 2'],['iii','Add, x = 8, y = 3'],['iv','Subtract, x = 9, y = 5'],['Rule','If the signs are the same, subtract. If they are different, add.']])),
+  Q('Exercise 4.2 · Question 13','Solve using any method.'+subs([['a','2x + y = 22 and x − y = 5'],['b','y = 2x − 12 and x + y = 3'],['c','y = 2x and x + 3y = 14'],['d','6x + 7y = 49 and 3x − 7y = 14']]),subs([['a','x = 9, y = 4'],['b','x = 5, y = −2'],['c','x = 2, y = 4'],['d','x = 7, y = 1']])),
+  Q('Exercise 4.2 · Question 14','Solve 3x + y = 8 and 4x + 2y = 12 by drawing graphs. Check your answer in both equations.','x = 2, y = 2. Check: 3 × 2 + 2 = 8 and 4 × 2 + 2 × 2 = 12')
+ ],checklist:['I can solve simultaneous equations with a graph.','I can solve them by substitution.','I can solve them by elimination.','I check my answer in both equations.']},
+
+{id:'4.3',title:'Inequalities',src:'Section 4.3',
+ goals:['understand and use inequalities, show them on a number line and solve them'],
+ hook:{q:'2x + 3 < 10. Is x = 4 allowed? Is x = 3?',a:'x = 4 gives 11, which is not less than 10, so no. x = 3 gives 9, so yes. Solving gives x < 3.5: every number below 3.5 works.'},
+ big:'Solve an inequality just like an equation, but if you multiply or divide by a negative number, flip the sign.',
+ steps:[
+ {t:'Showing an inequality on a number line',body:`<ul><li><b>Open circle</b> ○: the number is not included (&lt; or &gt;)</li><li><b>Closed circle</b> ●: the number is included (⩽ or ⩾)</li></ul>
+  <p>The arrow points the way the numbers go.</p>`,
+  vis:'ineqline5',check:C('Which inequality has a closed circle at 2 and an arrow to the left?',['x < 2','x ⩽ 2','x > 2','x ⩾ 2'],1,'Closed means 2 is included, and left means smaller: x ⩽ 2.')},
+ {t:'Two-sided inequalities',body:`<p>−2 ⩽ x &lt; 2 means x is between −2 and 2. −2 is included (closed circle) and 2 is not (open circle).</p>
+  <div class="ex"><span class="kicker">From the book</span><p>If x is an integer and −2 ⩽ x &lt; 2, then x can be −2, −1, 0, 1.</p></div>`,
+  vis:'ineqline2',check:C('List the integers with −2 ⩽ x < 2.',['−2, −1, 0, 1, 2','−1, 0, 1','−2, −1, 0, 1','−1, 0, 1, 2'],2,'−2 is included, 2 is not.')},
+ {t:'Solve like an equation',body:`<div class="ex"><span class="kicker">Exercise 4.3, Question 6</span><p>4x + 5 &lt; 17</p><p>4x &lt; 12 &nbsp;(take 5 from both sides)</p><p>x &lt; 3 &nbsp;(divide both sides by 4)</p></div>
+  <div class="ex"><span class="kicker">Exercise 4.3, Question 7 (Franco)</span><p>3(x + 2) ⩽ 2x − 5 → 3x + 6 ⩽ 2x − 5 → x ⩽ −11</p><p>Test x = −12: −30 ⩽ −29 ✓. &nbsp;x = −10: −24 ⩽ −25 ✗</p></div>`,
+  vis:'ineqsolve',check:C('Solve 2x + 3 < 10.',['x < 6.5','x < 3.5','x > 3.5','x < 7'],1,'2x < 7, so x < 3.5.')},
+ {t:'Worked example 4.3: a perimeter problem',body:`<p>A triangle has sides x, x + 2 and x + 3 (cm). Its perimeter is at least 50 cm.</p>
+  <div class="ex"><span class="kicker">Worked example 4.3</span><p>Perimeter = x + x + 2 + x + 3 = 3x + 5</p><p>3x + 5 ⩾ 50 &nbsp;("at least 50" means 50 or more)</p><p>3x ⩾ 45 &nbsp;(subtract 5)</p><p>x ⩾ 15 &nbsp;(divide by 3)</p><p>On a number line: a closed circle at 15, because 15 is in the solution set, and an arrow to the right.</p></div>`,
+  vis:'ineqline3',check:C('"Not more than 30" means which sign?',['<','⩽','>','⩾'],1,'Not more than 30 means 30 or less: ⩽ 30. This is Exercise 4.3, Question 10.')},
+ {t:'Dividing by a negative flips the sign',body:`<p>Start with 2 &lt; 5, which is true. Multiply both by −1: −2 and −5. Now −2 is <b>bigger</b>, so the sign must flip: −2 &gt; −5.</p>
+  <div class="ex"><span class="kicker">Exercise 4.3, Question 12</span><p>−3x &lt; 12</p><p>x &gt; −4 &nbsp;(divide by −3, flip the sign)</p></div>
+  <div class="plain"><span class="kicker">Or avoid it</span><p>Move the x terms so they stay positive. Question 11: 2(x − 8) ⩾ 4x − 26 → −2x ⩾ −10 → 10 ⩾ 2x → 5 ⩾ x, so x ⩽ 5.</p></div>`,
+  vis:'flip',check:C('Solve −4x ⩽ −20.',['x ⩽ 5','x ⩾ 5','x ⩾ −5','x ⩽ −5'],1,'Divide by −4 and flip: x ⩾ 5.')},
+ {t:'Three-part inequalities',body:`<p>Do the same thing to <b>all three parts</b>.</p>
+  <div class="ex"><span class="kicker">Exercise 4.3, Question 14 (Filipe)</span><p>−1 &lt; x + 5 ⩽ 4</p><p>−6 &lt; x ⩽ −1 &nbsp;(subtract 5 from every part)</p></div>
+  <div class="ex"><span class="kicker">Exercise 4.3, Question 14c</span><p>6 &lt; 2n &lt; 18 → 3 &lt; n &lt; 9 &nbsp;(divide every part by 2)</p></div>`,
+  check:C('Solve 3 < x + 1 ⩽ 6.',['2 < x ⩽ 5','4 < x ⩽ 7','3 < x ⩽ 5','2 ⩽ x < 5'],0,'Subtract 1 from every part: 2 < x ⩽ 5.')}
+ ],
+ mistakes:[['−3x < 12, so x < −4','Dividing by a negative flips the sign: x > −4.'],['Closed circle for <','< and > use an open circle. ⩽ and ⩾ use a closed circle.'],['In a three-part inequality, changing only the middle','Do the same to all three parts.']],
+ bq:[
+  Q('Exercise 4.3 · Question 1','Write an inequality to describe each of these solution sets.'+subs([['a','closed circle at 2, arrow to the left'],['b','open circle at −2, arrow to the right'],['c','closed circle at 10, arrow to the right'],['d','open circle at −20, arrow to the left'],['e','closed circle at −2, line to an open circle at 2'],['f','open circle at −10, line to a closed circle at 15']]),subs([['a','x ⩽ 2'],['b','x &gt; −2'],['c','x ⩾ 10'],['d','x &lt; −20'],['e','−2 ⩽ x &lt; 2'],['f','−10 &lt; x ⩽ 15']])),
+  Q('Exercise 4.3 · Question 2','Draw a number line for each inequality.'+subs([['a','x &gt; 3'],['b','x ⩽ −3'],['c','x &lt; 0'],['d','x ⩾ −20'],['e','0 &lt; x ⩽ 7'],['f','−2 ⩽ x &lt; 5']]),'Your own drawings. Use an open circle for &lt; and &gt;, and a closed circle for ⩽ and ⩾. Try the number line on this page to check.'),
+  Q('Exercise 4.3 · Question 3','N is an integer. Work out'+subs([['a','the smallest possible value of N when N ⩾ 6.5'],['b','the largest possible value of N when N &lt; −3'],['c','the possible values of N when −2 ⩽ N &lt; 2']]),subs([['a','7'],['b','−4'],['c','−2, −1, 0, 1']])),
+  Q('Exercise 4.3 · Question 4','Solve these inequalities.'+subs([['a','5x &gt; 10'],['b','4x + 1 ⩽ 17'],['c','3x + 1 &lt; −8'],['d','3(x + 1) ⩾ −6']]),subs([['a','x &gt; 2'],['b','x ⩽ 4'],['c','x &lt; −3'],['d','x ⩾ −3']])),
+  Q('Exercise 4.3 · Question 5','Show your answers to Question 4 on number lines.','Your own drawings.'),
+  Q('Exercise 4.3 · Question 6','Solve 4x + 5 &lt; 17.','x &lt; 3'),
+  Q('Exercise 4.3 · Question 7','This is part of Franco\'s homework. When he checks his answer in part b, he gets a false inequality, so he has made a mistake.'+work(['a Solve 3(x + 2) ⩽ 2x − 5','Expand brackets: 3x + 2 ⩽ 2x − 5','Collect like terms: 3x − 2x ⩽ −5 − 2','Simplify: x ⩽ −7','b When x = −7: 3(−7 + 2) ⩽ 2 × −7 − 5 → −15 ⩽ −19 (false)'])+subs([['a','Find his mistake. Show that the correct solution set is x ⩽ −11.'],['b','Substitute i x = −12, ii x = −11 and iii x = −10 into 3(x + 2) ⩽ 2x − 5. Explain how this shows x ⩽ −11 is correct.']]),'He expanded 3(x + 2) as 3x + 2 instead of 3x + 6. Correct: 3x + 6 ⩽ 2x − 5, so x ⩽ −11. x = −12: −30 ⩽ −29, true. x = −11: −27 ⩽ −27, true. x = −10: −24 ⩽ −25, false.'),
+  Q('Exercise 4.3 · Question 8','Solve 4(2y + 3) − 5y &lt; 18 − y. Check by substituting y = 1, 1.5 and 2.','y &lt; 1.5. y = 1: 15 &lt; 17, true. y = 1.5: 16.5 &lt; 16.5, false. y = 2: 18 &lt; 16, false.'),
+  Q('Exercise 4.3 · Question 9','Solve these inequalities. Check each solution set.'+subs([['a','2(a + 4) &lt; 15'],['b','3b − 4 ⩾ b + 18'],['c','c + 18 ⩽ 30 − c'],['d','3(d + 5) &gt; 2(d − 6)']]),subs([['a','a &lt; 3.5'],['b','b ⩾ 11'],['c','c ⩽ 6'],['d','d &gt; −27']])),
+  Q('Exercise 4.3 · Question 10','A triangle has sides n cm, (2n + 2) cm and (2n + 3) cm. Its perimeter is not more than 30 cm.'+subs([['a','Write an inequality to show this.'],['b','Solve the inequality.'],['c','What are the largest possible lengths of the sides?']]),'5n + 5 ⩽ 30, so n ⩽ 5. The largest triangle has sides 5, 12 and 13.'),
+  Q('Exercise 4.3 · Question 11 (Think like a mathematician)','Sergey and Natalia solve 2x + 1 &lt; 3x + 7.'+work(['Both: 2x − 3x &lt; 7 − 1 → −x &lt; 6','Sergey: −x − 6 &lt; 0 → −6 &lt; x → x &gt; −6','Natalia: divides both sides by −1 and flips the sign → x &gt; −6'])+subs([['a','Discuss the differences at the fourth line. Whose method do you prefer?'],['c','Show that the solution to 2(x − 8) ⩾ 4x − 26 is x ⩽ 5.']]),'2x − 16 ⩾ 4x − 26 → −2x ⩾ −10 → 10 ⩾ 2x → 5 ⩾ x, so x ⩽ 5'),
+  Q('Exercise 4.3 · Question 12','Solve'+subs([['a','−3x &lt; 12'],['b','−4x ⩽ −20'],['c','−42 &gt; −7x'],['d','6 − x ⩾ 19'],['e','21 − 3x &gt; x + 5'],['f','4 − 10x ⩽ 20 − 2x']]),subs([['a','x &gt; −4'],['b','x ⩾ 5'],['c','x &gt; 6'],['d','x ⩽ −13'],['e','x &lt; 4'],['f','x ⩾ −2']])),
+  Q('Exercise 4.3 · Question 13','In triangle ABC, AB = 3x − 7 and AC = 4x − 11. Side AB is less than side AC.'+subs([['a','Write an inequality to show this.'],['b','Solve it.'],['c','Check your solution is correct.']]),'x &gt; 4. Check: x = 5 gives 8 &lt; 9, true. x = 4 gives 5 &lt; 5, false.'),
+  Q('Exercise 4.3 · Question 14','Filipe solves −1 &lt; x + 5 ⩽ 4 by subtracting 5 from all three parts, which keeps the inequality balanced. Solve these and show each answer on a number line.'+subs([['a','4 &lt; x + 2 ⩽ 7'],['b','−1 ⩽ y − 6 ⩽ 14'],['c','6 &lt; 2n &lt; 18'],['d','−15 &lt; 5m &lt; 30']]),subs([['a','2 &lt; x ⩽ 5'],['b','5 ⩽ y ⩽ 20'],['c','3 &lt; n &lt; 9'],['d','−3 &lt; m &lt; 6']]))
+ ],checklist:['I can show an inequality on a number line.','I can solve an inequality.','I flip the sign when I multiply or divide by a negative.','I can solve a three-part inequality.']}
+];
+
+const KEYWORDS4=[
+ {id:'k41',topic:'4.1',t:'construct',d:'Write an equation from information in words or a diagram.'},
+ {id:'k42',topic:'4.1',t:'solve',d:'Find the value of the unknown that makes the equation true.'},
+ {id:'k43',topic:'4.1',t:'sector',d:'A slice of a circle, like a piece of a pie chart.'},
+ {id:'k44',topic:'4.2',t:'simultaneous equations',d:'Two equations with two unknowns that are both true at the same time.'},
+ {id:'k45',topic:'4.2',t:'method of substitution',d:'Swapping an expression in for a letter in another equation.'},
+ {id:'k46',topic:'4.2',t:'method of elimination',d:'Adding or subtracting the equations to get rid of one letter.'},
+ {id:'k47',topic:'4.3',t:'inequality',d:'A statement using <, ⩽, > or ⩾.'},
+ {id:'k48',topic:'4.3',t:'solution set',d:'All the values that make an inequality true.'}
+];
+const CYP4=[
+ {p:'1',q:'Solve these equations. Check each answer by substituting it back in.'+subs([['a','5x + 14 = −6'],['b','a − 12 = 5a − 2'],['c','6(x + 2) = 4(9 − x)'],['d','0 = 12 − 2(y − 3)'],['e',F(64,'m')+' = 4'],['f',F(75,'n + 5')+' = 5']]),a:subs([['a','x = −4'],['b','a = −2.5'],['c','x = 2.4'],['d','y = 9'],['e','m = 16'],['f','n = 10']])},
+ {p:'2',q:'Solve y = 4x − 1 and y = 2x + 9.',a:'x = 5, y = 19'},
+ {p:'3',q:'Solve x + y = 26 and x − y = 12.',a:'x = 19, y = 7'},
+ {p:'4',q:'Solve these inequalities. Check each solution set.'+subs([['a','2a + 6 &lt; 10'],['b','5b − 1 ⩾ b + 19'],['c','3(c + 5) &gt; 2(5 − c)'],['d','4d ⩽ 7d + 15']]),a:subs([['a','a &lt; 2'],['b','b ⩾ 5'],['c','c &gt; −1'],['d','d ⩾ −5']])},
+ {p:'5',q:'Solve these inequalities. Show each answer on a number line.'+subs([['a','3 &lt; x + 4 ⩽ 6'],['b','−12 &lt; 3n &lt; 3']]),a:subs([['a','−1 &lt; x ⩽ 2'],['b','−4 &lt; n &lt; 1']])}
+];
+const QUIZ4=[
+ C('Solve 3x + 7 = 22.',['x = 5','x = 29/3','x = 15','x = 3'],0,'3x = 15.'),
+ C('Solve 8x − 14 = −30.',['x = 2','x = −2','x = −5.5','x = 5.5'],1,'8x = −16.'),
+ C('Solve 2(x + 12) = 4x − 6.',['x = 9','x = 15','x = 3','x = 30'],1,'2x + 24 = 4x − 6, so 30 = 2x.'),
+ C('Solve 42 ÷ c = 7.',['c = 294','c = 6','c = 35','c = 49'],1,'42 = 7c.'),
+ C('Solve 21 ÷ (e + 2) = 7.',['e = 3','e = 1','e = 5','e = 147'],1,'21 = 7e + 14.'),
+ C('Adeline: A + 10 = 2(A − 6). How old is she?',['16','22','26','12'],1,'A + 10 = 2A − 12, so A = 22.'),
+ C('Solve y = 5x − 3 and y = 2x + 15.',['x = 6, y = 27','x = 4, y = 17','x = 6, y = 21','x = 3, y = 21'],0,'5x − 3 = 2x + 15.'),
+ C('x + y = 37 and x − y = 13. What is x?',['12','25','24','50'],1,'Add: 2x = 50.'),
+ C('2x + y = 50 and x − y = 4: add or subtract?',['Add','Subtract'],0,'+y and −y: opposite signs, so add.'),
+ C('Two lines cross at (4, 13). What is y?',['4','13','17','9'],1,'The point is (x, y).'),
+ C('Which needs an open circle?',['x ⩽ 3','x ⩾ 3','x < 3'],2,'< and > use open circles.'),
+ C('Solve 4x + 5 < 17.',['x < 3','x < 5.5','x > 3','x ⩽ 3'],0,'4x < 12.'),
+ C('Solve −3x < 12.',['x < −4','x > −4','x > 4','x < 4'],1,'Divide by −3 and flip.'),
+ C('Solve 6 − x ⩾ 19.',['x ⩾ −13','x ⩽ −13','x ⩽ 13','x ⩾ 25'],1,'−x ⩾ 13, so x ⩽ −13.'),
+ C('Solve −1 < x + 5 ⩽ 4.',['4 < x ⩽ 9','−6 < x ⩽ −1','−6 ⩽ x < −1','−1 < x ⩽ 4'],1,'Subtract 5 from every part.')
+];
+CHAPTERS_DATA[4]={title:'Equations and inequalities',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4,cypNote:'The online course does not show marks for these questions.'};
+
 /* =================== FOUNDATIONS (before Chapter 1): extra practice, not from the book =================== */
 const TOPICS0=[
 {id:'0.1',title:'Basic division',src:'Foundations',
@@ -1038,6 +1466,199 @@ Object.assign(INIT,{
    $('#agOut',el).innerHTML=`T = ${x} + ${x+2} + ${x-6} = ${3*x-4}<small>Using the formula: T = 3x − 4 = 3 × ${x} − 4 = ${3*x-4} ✓</small>`;};s.oninput=f;f();},
  circle(el){const s=$('#ciR',el);const f=()=>{const r=+s.value,A=Math.PI*r*r,R=r*7;$('#ciSvg',el).innerHTML=`<circle class="fadein" cx="160" cy="90" r="${R}" fill="${COL.blush}" stroke="${COL.rose}" stroke-width="2.5"/><line x1="160" y1="90" x2="${160+R}" y2="90" stroke="#3A2522" stroke-width="2.5"/><circle cx="160" cy="90" r="3.5" fill="#3A2522"/><text x="${160+R/2}" y="82" text-anchor="middle" font-size="14" font-family="JetBrains Mono" fill="#3A2522">r</text>`;
    $('#ciOut',el).innerHTML=`A = π × ${r}² ≈ ${A.toFixed(1)} cm²<small>Backwards: r = √(${A.toFixed(1)} ÷ π) ≈ ${Math.sqrt(+A.toFixed(1)/Math.PI).toFixed(2)} cm</small>`;};s.oninput=f;f();}
+});
+
+/* =================== CHAPTERS 3 & 4 VISUALS =================== */
+// exact decimal shift: multiply the number in string s by 10^k without floating point errors
+function shiftDec(s,k){s=String(s);const neg=s[0]==='-';if(neg)s=s.slice(1);let [i,f='']=s.split('.');let d=i+f,pos=i.length+k;
+ if(pos<0){d='0'.repeat(-pos)+d;pos=0;}if(pos>d.length)d+='0'.repeat(pos-d.length);
+ const ip=d.slice(0,pos).replace(/^0+/,'')||'0',fp=d.slice(pos).replace(/0+$/,'');return (neg?'-':'')+ip+(fp?'.'+fp:'');}
+// book style: spaces in groups of three when a part has more than four digits
+function fmtN(s){s=String(s);const neg=s[0]==='-';if(neg)s=s.slice(1);let [i,f]=s.split('.');
+ if(i.length>4)i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');if(f&&f.length>4)f=f.replace(/(\d{3})(?=\d)/g,'$1 ');return (neg?MI:'')+i+(f!==undefined?'.'+f:'');}
+const P10=n=>`10<sup>${n<0?MI+(-n):n}</sup>`;
+const TENS=['1','10','100','1000','10 000'];
+// place-value table with up to two rows
+function pvTable(rows){const cols=[4,3,2,1,0,-1,-2,-3,-4,-5];
+ const cells=s=>{const [i,f='']=String(s).split('.');return cols.map(c=>{let d='';if(c>=0){const k=i.length-1-c;d=k>=0?i[k]:'';if(d==='0'&&i==='0'&&c===0)d='0';}else{d=f[-c-1]||'';}return d;});};
+ return `<div class="scrollx"><table class="dt pv" style="margin:0 auto;text-align:center"><tr><th></th>${cols.map(c=>`<th style="${c===0?'border-right:3px solid '+COL.espresso:''}">${P10(c)}</th>`).join('')}</tr>${rows.map(([lab,s,hl])=>`<tr><th class="tiny" style="white-space:nowrap">${lab}</th>${cells(s).map((d,j)=>`<td class="m${hl?' fadein':''}" style="min-width:26px;font-size:17px;${cols[j]===0?'border-right:3px solid '+COL.espresso+';':''}${hl&&d?'color:'+COL.espresso+';font-weight:800':''}">${d}</td>`).join('')}</tr>`).join('')}</table></div>`;}
+// simple step list player driven by a button, with a hook to redraw something else on each step
+function linePlayer(el,boxSel,btnSel,lines,onStep){const box=$(boxSel,el),btn=$(btnSel,el);let k=0;
+ const f=()=>{box.innerHTML=lines.slice(0,k+1).map((l,i)=>`<div class="${i===k?'fadein':''}" style="display:grid;gap:2px;padding:8px 12px;border-radius:12px;${i===k?'box-shadow:var(--press)':''}"><span class="m" style="white-space:normal;font-size:17px">${l[0]}</span>${l[1]?`<span class="tiny">${l[1]}</span>`:''}</div>`).join('');btn.textContent=k<lines.length-1?'Next step':'Start again';if(onStep)onStep(lines[k],k);};
+ btn.onclick=()=>{k=k<lines.length-1?k+1:0;f();};f();return {set:L=>{lines=L;k=0;f();}};}
+function pickWire(el,name,cb){el.addEventListener('click',e=>{const b=e.target.closest(`[data-${name}]`);if(!b||!el.contains(b))return;$$(`[data-${name}]`,el).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(+b.dataset[name]);});}
+const playerUI=(id)=>`<div id="${id}Box" style="display:grid;gap:8px"></div><div class="row" style="justify-content:center"><button class="btn primary" id="${id}Next">Next step</button></div>`;
+// number line in SVG: from lo to hi, returns {svg, X}
+function nline(lo,hi,step,W=340){const X=v=>20+(v-lo)/(hi-lo)*(W-40);let h=`<line x1="14" y1="60" x2="${W-14}" y2="60" stroke="${COL.mist}" stroke-width="3" stroke-linecap="round"/>`;
+ for(let v=lo;v<=hi+1e-9;v+=step){const lab=Math.round(v*100)/100;h+=`<line x1="${X(v)}" y1="54" x2="${X(v)}" y2="66" stroke="${COL.taupe}" stroke-width="1.5"/><text x="${X(v)}" y="86" text-anchor="middle" font-size="11" fill="${COL.cocoa}" font-family="JetBrains Mono">${ns(lab)}</text>`;}return {h,X};}
+const dot=(x,open,c)=>`<circle cx="${x}" cy="60" r="7" fill="${open?COL.snow:c}" stroke="${c}" stroke-width="3"/>`;
+
+Object.assign(VIS,{
+ /* ---- 3.1 powers of 10 ---- */
+ pow10:()=>W_('pow10',pickRow('pn',['3.2','85','0.45','6.8'])+`<div class="row" style="justify-content:center">${pickRow('po',['× multiply','÷ divide'])}</div><div class="readout" id="pwOut"></div><div id="pwTab"></div><div class="readout" id="pwTag" style="font-size:16px"></div>${sl('pwP',-4,4,2,'Power of 10')}`,'Slide the power. Watch the digits move past the decimal point (the thick line).'),
+ pow10div:()=>VIS.pow10().replace('data-w="pow10"','data-w="pow10" data-op="1" data-p="-2"'),
+ tenth:()=>VIS.pow10().replace('data-w="pow10"','data-w="pow10" data-p="-1"'),
+ tenthdiv:()=>VIS.pow10().replace('data-w="pow10"','data-w="pow10" data-op="1" data-p="-1"'),
+ ladder10:()=>W_('ladder10',`<div id="ldBox" style="display:grid;gap:6px;max-width:420px;margin:0 auto;width:100%"></div><div class="readout" id="ldOut"></div>`,'Tap a rung. Each step down the ladder is ten times smaller.'),
+ bigsmall:()=>W_('bigsmall',`<div class="bigm" id="bsQ"></div><div class="row" style="justify-content:center"><button class="btn" data-bs="0">Bigger</button><button class="btn" data-bs="1">The same</button><button class="btn" data-bs="2">Smaller</button></div><div class="readout" id="bsOut"></div><div class="tiny" style="text-align:center" id="bsScore"></div>`,'Is the answer bigger, the same or smaller than the starting number?'),
+ spider:()=>W_('spider',pickRow('sp',['Answer 8','Answer 0.32'])+`<div id="spBox" style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))"></div><div class="row" style="justify-content:center"><button class="btn primary" id="spChk">Check</button></div><div class="readout" id="spOut"></div>`,'Exercise 3.1, Question 13. Choose the power that makes each calculation equal the answer.'),
+ /* ---- 3.2 decimals ---- */
+ dpcount:()=>W_('dpcount',pickRow('dc',['0.08 × 0.2','0.4 × 0.007','0.3 × 0.05','12.3 × 5.7'])+playerUI('dc'),'Count the decimal places in the question. The answer has the same number.'),
+ eqdiv:()=>W_('eqdiv',pickRow('ed',['0.81 ÷ 0.09','6.4 ÷ 0.004','4 ÷ 0.2','0.09 ÷ 0.003'])+playerUI('ed'),'Multiply both numbers by 10 until you divide by a whole number.'),
+ scaler:()=>W_('scaler',`<svg viewBox="0 0 340 170" id="scSvg" role="img" aria-label="Bars comparing 8 with the answer"></svg><div class="readout" id="scOut"></div>${sl('scM',0.1,2,0.5,'Multiply or divide 8 by',0.1)}`,'Below 1: multiplying shrinks, dividing grows. Above 1: the opposite.'),
+ fraccalc:()=>W_('fraccalc',playerUI('fc'),'Exercise 3.2, Question 9: Hassan\'s homework, done correctly.'),
+ estimate:()=>W_('estimate',pickRow('es',['4.35 × 27.5','11.78 ÷ 0.19','0.23 × 37.8'])+playerUI('es'),'Round each number to one significant figure first.'),
+ /* ---- 3.3 percentages ---- */
+ mult:()=>W_('mult',pickRow('mb',['$300','$200','$60'])+`<svg viewBox="0 0 340 120" id="mlSvg" role="img" aria-label="Bar showing the percentage change"></svg><div class="readout" id="mlOut"></div>${sl('mlP',-50,50,15,'Percentage change (%)')}`,'100% is the whole amount. The multiplier is the new percentage divided by 100.'),
+ compound:()=>W_('compound',pickRow('cb',['$200','$800','$60','$50'])+`<svg viewBox="0 0 340 170" id="cpSvg" role="img" aria-label="Bars showing two percentage changes in a row"></svg><div class="readout" id="cpOut"></div><div class="row" style="justify-content:center">${sl('cpA',-30,50,10,'First change (%)')}${sl('cpB',-30,50,15,'Second change (%)')}</div>`,'The second change is a percentage of the new amount, not the start.'),
+ compound2:()=>VIS.compound().replace('data-w="compound"','data-w="compound" data-pre="800,10,-10"'),
+ combine:()=>VIS.compound().replace('data-w="compound"','data-w="compound" data-pre="50,20,10"'),
+ growth:()=>W_('growth',pickRow('gr',['$5000 at 4%','10 000 people at −10%','$20 000 at 8%'])+`<svg viewBox="0 0 340 190" id="grSvg" role="img" aria-label="Bars for each year"></svg><div class="readout" id="grOut"></div>${sl('grN',1,20,5,'Number of years, n')}`,'Each bar is the one before it times the multiplier.'),
+ /* ---- 3.4 bounds ---- */
+ roundline:()=>W_('roundline',`<svg viewBox="0 0 340 110" id="rlSvg" role="img" aria-label="Number line from 20 to 40"></svg><div class="readout" id="rlOut"></div>${sl('rlN',20,40,34,'Number')}`,'Pink numbers round down. Green numbers round up to the next ten.'),
+ bounds:()=>W_('bounds',pickRow('ba',['nearest 1','nearest 10','nearest 100','nearest 1000'])+`<div class="row" style="justify-content:center">${pickRow('bk',['whole numbers','any number'])}</div><svg viewBox="0 0 340 110" id="bdSvg" role="img" aria-label="Number line showing the bounds"></svg><div class="readout" id="bdOut"></div><div class="row" style="justify-content:center"><span class="tiny">Rounded number</span><input class="field" id="bdV" type="number" value="90" style="width:110px"></div>`,'Half a step below is included. Half a step above is not.').replace('data-w="bounds"','data-w="bounds" data-a="1"'),
+ bounds2:()=>VIS.bounds().replace('data-a="1"','data-a="0" data-k="1"').replace('value="90"','value="8"'),
+ /* ---- 4.x equations ---- */
+ balance:()=>W_('balance',pickRow('bl',['3x + 7 = 22','2x − 8 = 10','y ÷ 5 + 3 = 8','2y + 2 = y + 27'])+`<svg viewBox="0 0 340 150" id="blSvg" role="img" aria-label="Balance scale"></svg>`+playerUI('bl'),'Both pans always weigh the same. Do the same to both and it stays level.'),
+ solver:()=>VIS.balance().replace('data-w="balance"','data-w="balance" data-set="1"').replace(pickRow('bl',['3x + 7 = 22','2x − 8 = 10','y ÷ 5 + 3 = 8','2y + 2 = y + 27']),pickRow('bl',['5(3 − 2x) = 9','2(x + 12) = 4x − 6','10(x − 4) = 5x + 25','2(x + 8) = 3(6 − x)'])),
+ solver2:()=>VIS.solver().replace('data-set="1"','data-set="1" data-start="1"'),
+ balance2:()=>VIS.balance().replace('data-w="balance"','data-w="balance" data-start="3"'),
+ fracsolve:()=>VIS.balance().replace('data-w="balance"','data-w="balance" data-set="2"').replace(pickRow('bl',['3x + 7 = 22','2x − 8 = 10','y ÷ 5 + 3 = 8','2y + 2 = y + 27']),pickRow('bl',['42 ÷ c = 7','12 ÷ d = 15','21 ÷ (e + 2) = 7','9 ÷ (x − 12) = 4'])),
+ triangle4:()=>W_('triangle4',`<svg viewBox="0 0 340 200" id="trSvg" role="img" aria-label="Triangle with algebraic side lengths"></svg><div class="readout" id="trOut"></div>${sl('trX',1,6,1,'Value of x')}`,'Exercise 4.1, Question 10. Find the x that makes the perimeter 48.'),
+ intersect:()=>W_('intersect',pickRow('it',['y = 3x + 1, y = x + 9','y = 3x, y = x + 4','y = 5x − 3, y = 2x + 15','3x + y = 8, 4x + 2y = 12'])+`<svg viewBox="0 0 340 250" id="itSvg" role="img" aria-label="Two straight-line graphs"></svg><div class="readout" id="itOut"></div>${sl('itX',0,8,1,'Try x =')}`,'Slide x. When both lines give the same y, you have found the solution.'),
+ substep:()=>W_('substep',pickRow('ss',['y = 5x − 3, y = 2x + 15','y = 3x, y = x + 4','y = 3x + 1, 5x = y + 3','y = 3(x + 5), 2x + y = 0'])+playerUI('ss'),'Substitution: replace y with what it equals.'),
+ elim:()=>W_('elim',pickRow('el',['x + y = 37, x − y = 13','2x + y = 50, x − y = 4','x + 4y = 41, x + 2y = 23','3x + 2y = 38, 3x − y = 26'])+`<div id="elEq" class="scrollx"></div>`+playerUI('el'),'Same signs: subtract. Different signs: add.'),
+ /* ---- 4.3 inequalities ---- */
+ ineqline:()=>W_('ineqline',pickRow('iq',['One end','Two ends'])+`<div class="row" style="justify-content:center" id="iqSigns"></div><svg viewBox="0 0 340 110" id="iqSvg" role="img" aria-label="Number line showing an inequality"></svg><div class="readout" id="iqOut"></div><div class="row" style="justify-content:center">${sl('iqA',-20,20,2,'Number')}<span id="iqBw" hidden>${sl('iqB',-20,20,5,'Second number')}</span></div>`,'Open circle: not included. Closed circle: included.'),
+  ineqline5:()=>VIS.ineqline().replace('data-w="ineqline"','data-w="ineqline" data-pre="0,1,2"'),
+ ineqline2:()=>VIS.ineqline().replace('data-w="ineqline"','data-w="ineqline" data-pre="1,1,-2,0,2"'),
+ ineqline3:()=>VIS.ineqline().replace('data-w="ineqline"','data-w="ineqline" data-pre="0,3,15"'),
+ ineqline4:()=>VIS.ineqline().replace('data-w="ineqline"','data-w="ineqline" data-pre="1,0,4,1,7"'),
+ ineqsolve:()=>W_('ineqsolve',pickRow('is',['4x + 5 < 17','2x + 3 < 10','3(x + 2) ⩽ 2x − 5'])+playerUI('is')+`<div class="readout" id="isOut" style="font-size:16px"></div>${sl('isX',-14,6,2,'Test a value of x')}`,'Testing values is a great way to check your answer.'),
+ flip:()=>W_('flip',`<svg viewBox="0 0 340 110" id="fpSvg" role="img" aria-label="Two numbers on a number line"></svg><div class="readout" id="fpOut"></div>${sl('fpM',-3,3,1,'Multiply both sides by')}`,'Start with 2 < 5. Multiply by a negative and the order swaps.')
+});
+
+Object.assign(INIT,{
+ pow10(el){let num=['3.2','85','0.45','6.8'],ni=0,op=+(el.dataset.op||0);const P=$('#pwP',el);if(el.dataset.p)P.value=el.dataset.p;
+   if(op)$$('[data-po]',el).forEach((b,i)=>b.setAttribute('aria-pressed',i===op));
+   const f=()=>{const p=+P.value,s=num[ni];const k=op?-p:p;const r=shiftDec(s,k);
+    let how;if(p===0)how=`${P10(0)} = 1`;else if(p>0)how=`${op?'÷':'×'} ${TENS[p]}`;else how=op?`÷ ${F(1,TENS[-p])} = × ${TENS[-p]}`:`× ${F(1,TENS[-p])} = ÷ ${TENS[-p]}`;
+    $('#pwOut',el).innerHTML=`${fmtN(s)} ${op?'÷':'×'} ${P10(p)} = ${fmtN(r)}<small>${how}</small>`;
+    $('#pwTab',el).innerHTML=pvTable([['start',s],['answer',r,1]]);
+    const big=k>0?'bigger':k<0?'smaller':'the same';$('#pwTag',el).innerHTML=`<span style="color:${k>0?COL.sage:k<0?COL.rose:COL.cocoa}">The answer is ${big}${k?`: the digits move ${Math.abs(k)} place${Math.abs(k)>1?'s':''} ${k>0?'left':'right'}`:''}.</span>`;};
+   P.oninput=f;pickWire(el,'pn',i=>{ni=i;f();});pickWire(el,'po',i=>{op=i;f();});f();},
+ ladder10(el){const R=[[3,'1000','1000'],[2,'100','100'],[1,'10','10'],[0,'1','1'],[-1,F(1,10),'0.1'],[-2,F(1,100),'0.01'],[-3,F(1,1000),'0.001']];
+   const f=sel=>{$('#ldBox',el).innerHTML=R.map(([p,fr,d])=>`<button class="btn" data-ld="${p}" aria-pressed="${p===sel}" style="justify-content:space-between;width:100%;${p===0?'outline:2px dashed '+COL.mist+';':''}"><span class="m">${P10(p)}</span><span class="m">${fr}</span><span class="m">${d}</span></button>`).join('');
+    const r=R.find(x=>x[0]===sel);$('#ldOut',el).innerHTML=`${P10(sel)} = ${r[1]} = ${r[2]}<small>${sel>0?`${sel} zero${sel>1?'s':''} after the 1`:sel===0?'Any number to the power 0 is 1':`the 1 is in place ${-sel} after the decimal point`}</small>`;};
+   el.addEventListener('click',e=>{const b=e.target.closest('[data-ld]');if(b)f(+b.dataset.ld);});f(-2);},
+ bigsmall(el){const nums=['3.2','0.45','47','8.5','0.07','12','600'];let cur,sc=0,tot=0;
+   const nq=()=>{const s=nums[Math.floor(Math.random()*nums.length)],op=Math.random()<.5?0:1,p=Math.floor(Math.random()*9)-4;cur={s,op,p,k:op?-p:p};$('#bsQ',el).innerHTML=`${fmtN(s)} ${op?'÷':'×'} ${P10(p)}`;};
+   el.addEventListener('click',e=>{const b=e.target.closest('[data-bs]');if(!b||!cur)return;const want=cur.k>0?0:cur.k<0?2:1;const ok=+b.dataset.bs===want;tot++;if(ok)sc++;
+    $('#bsOut',el).innerHTML=`<span style="color:${ok?COL.sage:COL.rose}">${ok?'Yes!':'Not quite.'}</span> ${fmtN(cur.s)} ${cur.op?'÷':'×'} ${P10(cur.p)} = ${fmtN(shiftDec(cur.s,cur.k))}`;$('#bsScore',el).textContent=`Score: ${sc} out of ${tot}`;nq();});nq();},
+ spider(el){const D=[['8',[['0.8','×',1],['8','÷',0],['80','×',-1],['0.08','÷',-2],['0.008','×',3],['800','÷',2]]],['0.32',[['32','÷',2],['0.32','×',0],['3.2','÷',1],['320','÷',3],['32','×',-2],['3.2','×',-1]]]];let di=0;
+   const f=()=>{$('#spBox',el).innerHTML=D[di][1].map(([n,o],i)=>`<label class="plain" style="justify-items:center"><span class="m" style="font-size:18px">${n} ${o} 10<select class="field" data-sx="${i}" aria-label="power" style="width:62px;padding:3px 4px;font-size:14px;vertical-align:super;margin-left:2px">${[3,2,1,0,-1,-2,-3].map(v=>`<option value="${v}">${ns(v)}</option>`).join('')}</select></span><span class="tiny" data-sr="${i}"></span></label>`).join('');$$('[data-sx]',el).forEach(s=>s.value='0');$('#spOut',el).innerHTML=`Target: ${D[di][0]}`;};
+   $('#spChk',el).onclick=()=>{let ok=0;D[di][1].forEach(([n,o,p],i)=>{const v=+$(`[data-sx="${i}"]`,el).value;const got=shiftDec(n,o==='×'?v:-v);const good=got===D[di][0];if(good)ok++;$(`[data-sr="${i}"]`,el).innerHTML=`<span style="color:${good?COL.sage:COL.rose}">= ${fmtN(got)} ${good?'✓':'✗'}</span>`;});$('#spOut',el).innerHTML=ok===6?'All six correct!':`${ok} out of 6 correct. Try the others again.`;};
+   pickWire(el,'sp',i=>{di=i;f();});f();},
+ dpcount(el){const D=[[['0.08 × 0.2',''],['8 × 2 = 16','Ignore the decimal points first'],['0.08 has 2 decimal places, 0.2 has 1','2 + 1 = 3 decimal places altogether'],['0.08 × 0.2 = 0.016','Put back 3 decimal places in 16']],
+   [['0.4 × 0.007',''],['4 × 7 = 28','Ignore the decimal points first'],['1 + 3 = 4 decimal places',''],['0.4 × 0.007 = 0.0028','Put back 4 decimal places in 28']],
+   [['0.3 × 0.05',''],['3 × 5 = 15',''],['1 + 2 = 3 decimal places',''],['0.3 × 0.05 = 0.015','Exercise 3.2, Question 3: cards C, D, I and K all equal 0.015']],
+   [['12.3 × 5.7',''],['123 × 57 = 7011','Exercise 3.2, Question 13a'],['1 + 1 = 2 decimal places',''],['12.3 × 5.7 = 70.11','Check: 12 × 6 = 72, which is close']]];
+   const P_=linePlayer(el,'#dcBox','#dcNext',D[0]);pickWire(el,'dc',i=>P_.set(D[i]));},
+ eqdiv(el){const D=[[['0.81 ÷ 0.09',''],['8.1 ÷ 0.9','× 10 both numbers'],['81 ÷ 9','× 10 again: now 9 is a whole number'],['= 9','The answer never changed']],
+   [['6.4 ÷ 0.004',''],['64 ÷ 0.04','× 10 both'],['640 ÷ 0.4','× 10 both'],['6400 ÷ 4','× 10 both: now 4 is a whole number'],['= 1600','']],
+   [['4 ÷ 0.2',''],['40 ÷ 2','× 10 both'],['= 20','Bigger than 4, because 0.2 is less than 1']],
+   [['0.09 ÷ 0.003',''],['0.9 ÷ 0.03','× 10 both'],['9 ÷ 0.3','× 10 both'],['90 ÷ 3','× 10 both'],['= 30','Exercise 3.2, Question 6c: answer C']]];
+   const P_=linePlayer(el,'#edBox','#edNext',D[0]);pickWire(el,'ed',i=>P_.set(D[i]));},
+ scaler(el){const M=$('#scM',el);const f=()=>{const m=+M.value,a=r2(8*m),b=r2(8/m),mx=Math.max(8,a,b,1);const L=v=>20+v/mx*200;
+   const bar=(y,v,lab,c)=>`<text x="10" y="${y+15}" font-size="12" fill="${COL.cocoa}" font-family="JetBrains Mono">${lab}</text><rect x="100" y="${y}" width="${Math.max(2,L(v)-20)}" height="22" rx="8" fill="${c}" class="fadein"/><text x="${100+Math.max(2,L(v)-20)+6}" y="${y+16}" font-size="13" font-weight="700" fill="${COL.espresso}" font-family="JetBrains Mono">${v}</text>`;
+   $('#scSvg',el).innerHTML=bar(20,8,'start: 8',COL.mist)+bar(70,a,`8 × ${m}`,m<1?COL.rose:m>1?COL.sage:COL.taupe)+bar(120,b,`8 ÷ ${m}`,m<1?COL.sage:m>1?COL.rose:COL.taupe);
+   $('#scOut',el).innerHTML=m===1?'× 1 and ÷ 1 change nothing':`${m<1?'Between 0 and 1':'More than 1'}<small>× ${m} makes it ${m<1?'smaller':'bigger'}, ÷ ${m} makes it ${m<1?'bigger':'smaller'}</small>`;};M.oninput=f;f();},
+ fraccalc(el){linePlayer(el,'#fcBox','#fcNext',[[`${F('24 × 0.25','0.2 × 0.6')}`,'Work out the top and the bottom separately'],['Top: 24 × 0.25 = 6','0.25 is a quarter, and a quarter of 24 is 6'],['Bottom: 0.2 × 0.6 = 0.12','2 × 6 = 12, with 2 decimal places. Hassan wrote 1.2 here'],['6 ÷ 0.12 = 600 ÷ 12','× 100 both numbers'],['= 50','Hassan got 5 because of his mistake in the bottom']]);},
+ estimate(el){const D=[[['4.35 × 27.5',''],['≈ 4 × 30','Round each to 1 significant figure'],['= 120','Estimate'],['Accurate: 119.625','Very close to 120, so it is sensible']],
+   [['11.78 ÷ 0.19',''],['≈ 10 ÷ 0.2','Round each to 1 significant figure'],['= 100 ÷ 2 = 50','Estimate'],['Accurate: 62','The same size as 50, so it is sensible']],
+   [['0.23 × 37.8',''],['≈ 0.2 × 40','Hugo\'s estimate'],['= 8',''],['Accurate: 8.694','378 × 23 = 8694, then 3 decimal places']]];
+   const P_=linePlayer(el,'#esBox','#esNext',D[0]);pickWire(el,'es',i=>P_.set(D[i]));},
+ mult(el){const B=[300,200,60];let bi=0;const P=$('#mlP',el);const f=()=>{const p=+P.value,b=B[bi],m=r2(1+p/100),nv=r2(b*m);const W=260,u=W/150;
+   let h=`<rect x="20" y="30" width="${100*u}" height="34" rx="10" fill="${COL.blush}"/><text x="${20+50*u}" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="${COL.espresso}">100% = $${b}</text>`;
+   if(p>0)h+=`<rect class="fadein" x="${20+100*u}" y="30" width="${p*u}" height="34" rx="10" fill="${COL.sage}"/><text x="${p<14?20+100*u+p*u+4:20+100*u+p*u/2}" y="52" text-anchor="${p<14?'start':'middle'}" font-size="12" font-weight="700" fill="${p<14?COL.espresso:'#fff'}">+${p}%</text>`;
+   if(p<0)h+=`<rect class="fadein" x="${20+(100+p)*u}" y="30" width="${-p*u}" height="34" rx="10" fill="${COL.rose}" opacity=".8"/><line x1="${20+(100+p)*u}" y1="24" x2="${20+(100+p)*u}" y2="70" stroke="${COL.espresso}" stroke-width="2" stroke-dasharray="4 3"/><text x="${20+(100+p/2)*u}" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${MI}${-p}%</text>`;
+   h+=`<text x="20" y="98" font-size="13" fill="${COL.cocoa}">New amount: ${100+p}% of the start</text>`;$('#mlSvg',el).innerHTML=h;
+   $('#mlOut',el).innerHTML=`$${b} × ${m} = $${nv.toFixed(2).replace(/\.00$/,'')}<small>${p>=0?'Increase':'Decrease'} by ${Math.abs(p)}% → ${100+p}% → multiplier ${m}</small>`;};
+   P.oninput=f;pickWire(el,'mb',i=>{bi=i;f();});f();},
+ compound(el){const B=[200,800,60,50];let b=200;const A=$('#cpA',el),Bs=$('#cpB',el);
+   if(el.dataset.pre){const [x,y,z]=el.dataset.pre.split(',').map(Number);b=x;A.value=y;Bs.value=z;$$('[data-cb]',el).forEach((t,i)=>t.setAttribute('aria-pressed',B[i]===x));}
+   const f=()=>{const p=+A.value,q=+Bs.value,m1=r2(1+p/100),m2=r2(1+q/100),v1=r2(b*m1),v2=r2(v1*m2),mm=Math.round(m1*m2*10000)/10000,mx=Math.max(b,v1,v2);
+    const bar=(x,v,lab,c)=>{const H=v/mx*100;return `<rect class="fadein" x="${x}" y="${130-H}" width="70" height="${H}" rx="10" fill="${c}"/><text x="${x+35}" y="${124-H}" text-anchor="middle" font-size="13" font-weight="700" fill="${COL.espresso}" font-family="JetBrains Mono">${v}</text><text x="${x+35}" y="150" text-anchor="middle" font-size="11" fill="${COL.cocoa}">${lab}</text>`;};
+    $('#cpSvg',el).innerHTML=bar(30,b,'start',COL.mist)+bar(135,v1,`× ${m1}`,p>=0?COL.sage:COL.rose)+bar(240,v2,`× ${m2}`,q>=0?COL.sage:COL.rose)+`<line x1="20" y1="130" x2="320" y2="130" stroke="${COL.taupe}" stroke-width="2"/>`;
+    $('#cpOut',el).innerHTML=`${b} × ${m1} × ${m2} = ${v2}<small>Combined multiplier: ${m1} × ${m2} = ${mm}${v2===b?' · back where it started':v2<b&&p+q===0?' · less than the start, even though the percentages look equal':''}</small>`;};
+   A.oninput=f;Bs.oninput=f;pickWire(el,'cb',i=>{b=B[i];f();});f();},
+ growth(el){const D=[[5000,1.04,'$'],[10000,0.9,''],[20000,1.08,'$']];let di=0;const N=$('#grN',el);
+   const f=()=>{const [s,m,u]=D[di],n=+N.value;const vals=[];let v=s;for(let i=0;i<=n;i++){vals.push(v);v*=m;}const mx=Math.max(...vals);const bw=280/(n+1);
+    $('#grSvg',el).innerHTML=vals.map((x,i)=>{const H=x/mx*130;return `<rect class="fadein" style="animation-delay:${i*0.02}s" x="${30+i*bw+1}" y="${155-H}" width="${Math.max(2,bw-3)}" height="${H}" rx="4" fill="${i===n?COL.espresso:m>1?COL.sage:COL.rose}" opacity="${i===n?1:.75}"/>`;}).join('')+`<line x1="28" y1="155" x2="314" y2="155" stroke="${COL.taupe}" stroke-width="2"/><text x="30" y="175" font-size="11" fill="${COL.cocoa}">year 0</text><text x="314" y="175" text-anchor="end" font-size="11" fill="${COL.cocoa}">year ${n}</text>`;
+    const fin=vals[n];$('#grOut',el).innerHTML=`${u}${fmtN(String(s))} × ${m}<sup>${n}</sup> = ${u}${fmtN(fin.toFixed(2))}<small>${m>1?'Grows':'Shrinks'} by the same percentage every year</small>`;};
+   N.oninput=f;pickWire(el,'gr',i=>{di=i;f();});f();},
+ roundline(el){const N=$('#rlN',el);const f=()=>{const n=+N.value;const {h,X}=nline(20,40,2);let s=h;
+   for(let v=20;v<=40;v++){const up=v%10>=5;s+=`<circle cx="${X(v)}" cy="40" r="${v===n?7:4}" fill="${v%10===0?COL.cocoa:up?COL.sage:COL.rose}" opacity="${v===n?1:.6}"/>`;}
+   $('#rlSvg',el).innerHTML=s;const r=Math.round(n/10)*10;$('#rlOut',el).innerHTML=`${n} → ${r}<small>The units digit is ${n%10}: ${n%10>=5?'5 or more, so round up':'4 or less, so round down'}</small>`;};N.oninput=f;f();},
+ bounds(el){const AC=[1,10,100,1000];let ai=+(el.dataset.a||0),whole=!el.dataset.k;const V=$('#bdV',el);
+   $$('[data-ba]',el).forEach((b,i)=>b.setAttribute('aria-pressed',i===ai));$$('[data-bk]',el).forEach((b,i)=>b.setAttribute('aria-pressed',(i===1)===!whole));
+   const f=()=>{const a=AC[ai];let v=Math.round((+V.value||0)/a)*a;const half=a/2,lo=v-half,hi=v+half;const span=a*2;const {h,X}=nline(v-span,v+span,a/2);
+    let s=h+`<rect x="${X(lo)}" y="52" width="${X(whole&&a>1?hi-1:hi)-X(lo)}" height="16" rx="8" fill="${COL.sage}" opacity=".35"/>`+dot(X(lo),false,COL.espresso)+(whole&&a>1?dot(X(hi-1),false,COL.espresso):dot(X(hi),true,COL.espresso))+`<circle cx="${X(v)}" cy="30" r="5" fill="${COL.rose}"/><text x="${X(v)}" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="${COL.espresso}">${fmtN(String(v))}</text>`;
+    $('#bdSvg',el).innerHTML=s;const fmt=x=>fmtN(String(r2(x)));
+    $('#bdOut',el).innerHTML=whole&&a>1?`Whole numbers from ${fmt(lo)} to ${fmt(hi-1)}<small>Lower bound ${fmt(lo)}, upper bound ${fmt(hi-1)} (the largest whole number that still rounds to ${fmtN(String(v))})</small>`:`${fmt(lo)} ⩽ x &lt; ${fmt(hi)}<small>Half of ${fmtN(String(a))} is ${fmt(half)}. ${fmt(hi)} is not included: it rounds up.</small>`;if(+V.value!==v)V.value=v;};
+   V.onchange=f;pickWire(el,'ba',i=>{ai=i;f();});pickWire(el,'bk',i=>{whole=i===0;f();});f();},
+ balance(el){const S=[
+   [[['3x + 7','22',''],['3x','15','Take 7 from both sides'],['x','5','Divide both sides by 3'],['x = 5','','Check: 3 × 5 + 7 = 22 ✓']],[['2x − 8','10',''],['2x','18','Add 8 to both sides'],['x','9','Divide both sides by 2'],['x = 9','','Check: 2 × 9 − 8 = 10 ✓']],[['y ÷ 5 + 3','8',''],['y ÷ 5','5','Take 3 from both sides'],['y','25','Multiply both sides by 5'],['y = 25','','Check: 25 ÷ 5 + 3 = 8 ✓']],[['2y + 2','y + 27',''],['y + 2','27','Take y from both sides'],['y','25','Take 2 from both sides'],['y = 25','','Check: 52 = 52 ✓']]],
+   [[['5(3 − 2x)','9',''],['15 − 10x','9','Expand the bracket'],['15','9 + 10x','Add 10x to both sides'],['6','10x','Take 9 from both sides'],['x = 3/5','','Divide by 10 and simplify 6/10']],[['2(x + 12)','4x − 6',''],['2x + 24','4x − 6','Expand the bracket'],['24','2x − 6','Take 2x from both sides'],['30','2x','Add 6 to both sides'],['x = 15','','Divide both sides by 2']],[['10(x − 4)','5x + 25',''],['10x − 40','5x + 25','Expand the bracket'],['5x − 40','25','Take 5x from both sides'],['5x','65','Add 40 to both sides'],['x = 13','','Divide both sides by 5']],[['2(x + 8)','3(6 − x)',''],['2x + 16','18 − 3x','Expand both brackets'],['5x + 16','18','Add 3x to both sides'],['5x','2','Take 16 from both sides'],['x = 0.4','','Check: 16.8 = 16.8 ✓']]],
+   [[['42 ÷ c','7',''],['42','7c','Multiply both sides by c'],['6','c','Divide both sides by 7'],['c = 6','','Check: 42 ÷ 6 = 7 ✓']],[['12 ÷ d','15',''],['12','15d','Multiply both sides by d'],['12/15','d','Divide both sides by 15'],['d = 4/5','','Simplify 12/15']],[['21 ÷ (e + 2)','7',''],['21','7(e + 2)','Multiply both sides by (e + 2)'],['21','7e + 14','Expand the bracket'],['7','7e','Take 14 from both sides'],['e = 1','','Divide both sides by 7']],[['9 ÷ (x − 12)','4',''],['9','4(x − 12)','Multiply both sides by (x − 12)'],['9','4x − 48','Expand'],['57','4x','Add 48 to both sides'],['x = 14¼','','Divide both sides by 4']]]][+(el.dataset.set||0)];
+   const draw=(st)=>{const [L,R]=st;const solved=!R;$('#blSvg',el).innerHTML=`<polygon points="170,58 156,138 184,138" fill="${COL.cocoa}"/><rect x="120" y="136" width="100" height="8" rx="4" fill="${COL.espresso}"/><line x1="40" y1="58" x2="300" y2="58" stroke="${COL.espresso}" stroke-width="5" stroke-linecap="round"/><circle cx="170" cy="58" r="6" fill="${COL.rose}"/>`+
+    (solved?`<rect class="fadein" x="95" y="8" width="150" height="40" rx="14" fill="${COL.sage}"/><text x="170" y="34" text-anchor="middle" font-size="18" font-weight="800" fill="#fff" font-family="JetBrains Mono">${L}</text>`:
+    [[75,L],[265,R]].map(([x,t])=>`<line x1="${x}" y1="58" x2="${x}" y2="80" stroke="${COL.taupe}" stroke-width="2"/><path d="M${x-62} 80 Q ${x} 118 ${x+62} 80 Z" fill="${COL.blush}"/><text class="fadein" x="${x}" y="99" text-anchor="middle" font-size="${t.length>11?11.5:t.length>7?13.5:16}" font-weight="800" fill="${COL.espresso}" font-family="JetBrains Mono">${t}</text>`).join(''));};
+   const lines=d=>d.map(([l,r,n])=>[r?`${l} = ${r}`:l,n]);const st0=+(el.dataset.start||0);let cur=S[st0];$$('[data-bl]',el).forEach((b,i)=>b.setAttribute('aria-pressed',i===st0));
+   const P_=linePlayer(el,'#blBox','#blNext',lines(cur),(l,k)=>draw(cur[k]));pickWire(el,'bl',i=>{cur=S[i];P_.set(lines(cur));});},
+ triangle4(el){const X=$('#trX',el);const f=()=>{const x=+X.value,a=2*(x+3),b=7*x-5,c=5*(7-x),p=a+b+c;
+   $('#trSvg',el).innerHTML=`<polygon points="60,170 280,170 170,30" fill="${p===48?COL.sage:COL.blush}" opacity=".55" stroke="${COL.espresso}" stroke-width="3" stroke-linejoin="round"/><text x="170" y="192" text-anchor="middle" font-size="13" font-weight="700" fill="${COL.espresso}" font-family="JetBrains Mono">2(x + 3) = ${a}</text><text x="88" y="96" text-anchor="middle" font-size="13" font-weight="700" fill="${COL.espresso}" font-family="JetBrains Mono" transform="rotate(-52 88 96)">7x − 5 = ${b}</text><text x="252" y="96" text-anchor="middle" font-size="13" font-weight="700" fill="${COL.espresso}" font-family="JetBrains Mono" transform="rotate(52 252 96)">5(7 − x) = ${c}</text>`;
+   $('#trOut',el).innerHTML=`Perimeter = ${a} + ${b} + ${c} = ${p}<small>${p===48?'That is 48, so x = 3. The sides are 12, 16 and 20.':p<48?'Too small: try a bigger x':'Too big: try a smaller x'} · 4x + 36 = ${4*x+36}</small>`;};X.oninput=f;f();},
+ intersect(el){const D=[[[3,1],[1,9],7,'y = 3x + 1','y = x + 9'],[[3,0],[1,4],5,'y = 3x','y = x + 4'],[[5,-3],[2,15],8,'y = 5x − 3','y = 2x + 15'],[[-3,8],[-2,6],4,'y = 8 − 3x','y = 6 − 2x']];let di=0;const XS=$('#itX',el);
+   const f=()=>{const [l1,l2,xm,n1,n2]=D[di];XS.max=xm;if(+XS.value>xm)XS.value=xm;const x=+XS.value;const yv=(l,v)=>l[0]*v+l[1];
+    const ys=[yv(l1,0),yv(l1,xm),yv(l2,0),yv(l2,xm),0];let lo=Math.min(...ys),hi=Math.max(...ys);const pad=(hi-lo)*.08;lo-=pad;hi+=pad;
+    const PX=v=>40+v/xm*280,PY=v=>220-(v-lo)/(hi-lo)*200;let h='';
+    for(let v=0;v<=xm;v++)h+=`<line x1="${PX(v)}" y1="20" x2="${PX(v)}" y2="220" stroke="${COL.mist}" stroke-width="1" opacity=".5"/><text x="${PX(v)}" y="236" text-anchor="middle" font-size="11" fill="${COL.cocoa}" font-family="JetBrains Mono">${v}</text>`;
+    h+=`<line x1="40" y1="${PY(0)}" x2="320" y2="${PY(0)}" stroke="${COL.taupe}" stroke-width="2"/><line x1="40" y1="20" x2="40" y2="220" stroke="${COL.taupe}" stroke-width="2"/>`;
+    [[l1,COL.sage,n1],[l2,COL.rose,n2]].forEach(([l,c,n],i)=>{h+=`<line x1="${PX(0)}" y1="${PY(yv(l,0))}" x2="${PX(xm)}" y2="${PY(yv(l,xm))}" stroke="${c}" stroke-width="4" stroke-linecap="round"/><text x="${PX(xm)-4}" y="${PY(yv(l,xm))+(i?16:-8)}" text-anchor="end" font-size="12" font-weight="700" fill="${c}">${n}</text>`;});
+    const a=yv(l1,x),b=yv(l2,x);h+=`<line x1="${PX(x)}" y1="20" x2="${PX(x)}" y2="220" stroke="${COL.espresso}" stroke-width="2" stroke-dasharray="5 4"/><circle cx="${PX(x)}" cy="${PY(a)}" r="6" fill="${COL.sage}"/><circle cx="${PX(x)}" cy="${PY(b)}" r="6" fill="${COL.rose}"/>`;
+    if(a===b)h+=`<circle class="fadein" cx="${PX(x)}" cy="${PY(a)}" r="11" fill="none" stroke="${COL.espresso}" stroke-width="3"/><text x="${PX(x)+14}" y="${PY(a)+4}" font-size="13" font-weight="800" fill="${COL.espresso}">(${x}, ${a})</text>`;
+    $('#itSvg',el).innerHTML=h;$('#itOut',el).innerHTML=a===b?`x = ${x}, y = ${ns(a)}<small>Both lines give ${ns(a)}. This is the solution.</small>`:`x = ${x}: green gives ${ns(a)}, pink gives ${ns(b)}<small>Not equal yet. Keep sliding.</small>`;};
+   XS.oninput=f;pickWire(el,'it',i=>{di=i;XS.value=Math.min(1,D[i][2]);f();});f();},
+ substep(el){const D=[[['y = 5x − 3 and y = 2x + 15',''],['5x − 3 = 2x + 15','Both equal y, so they equal each other'],['3x − 3 = 15','Take 2x from both sides'],['3x = 18, so x = 6',''],['y = 2 × 6 + 15 = 27','Put x = 6 into one equation'],['Check: 5 × 6 − 3 = 27 ✓','It works in the other equation too']],
+   [['y = 3x and y = x + 4',''],['3x = x + 4','Both equal y'],['2x = 4, so x = 2','Take x from both sides'],['y = 3 × 2 = 6',''],['Check: 2 + 4 = 6 ✓','']],
+   [['y = 3x + 1 and 5x = y + 3',''],['5x = (3x + 1) + 3','Swap y for 3x + 1'],['5x = 3x + 4',''],['2x = 4, so x = 2',''],['y = 3 × 2 + 1 = 7',''],['Check: 5 × 2 = 7 + 3 ✓','']],
+   [['y = 3(x + 5) and 2x + y = 0',''],['2x + 3(x + 5) = 0','Swap y for 3(x + 5)'],['2x + 3x + 15 = 0','Expand'],['5x = −15, so x = −3',''],['y = 3(−3 + 5) = 6','Sofia\'s answer'],['Check: 2(−3) + 6 = 0 ✓','']]];
+   const P_=linePlayer(el,'#ssBox','#ssNext',D[0]);pickWire(el,'ss',i=>P_.set(D[i]));},
+ elim(el){const D=[[['x + y = 37','x − y = 13'],[['+y and −y: different signs, so add',''],['2x = 50','(x + x) + (y − y) = 37 + 13'],['x = 25',''],['25 + y = 37, so y = 12','Put x back into the first equation']]],
+   [['2x + y = 50','x − y = 4'],[['+y and −y: different signs, so add',''],['3x = 54','The y\'s cancel'],['x = 18',''],['18 − y = 4, so y = 14','']]],
+   [['x + 4y = 41','x + 2y = 23'],[['+x and +x: same sign, so subtract',''],['2y = 18','4y − 2y = 2y and 41 − 23 = 18'],['y = 9','18 ÷ 2'],['x + 18 = 23, so x = 5','']]],
+   [['3x + 2y = 38','3x − y = 26'],[['+3x and +3x: same sign, so subtract',''],['3y = 12','2y − (−y) = 3y and 38 − 26 = 12'],['y = 4',''],['3x − 4 = 26, so x = 10','']]]];
+   const eq=i=>{$('#elEq',el).innerHTML=`<table class="dt" style="margin:0 auto;font-family:var(--mono);font-size:18px"><tr><td>${D[i][0][0]}</td></tr><tr><td style="border-bottom:3px solid ${COL.espresso}">${D[i][0][1]}</td></tr></table>`;};
+   eq(0);const P_=linePlayer(el,'#elBox','#elNext',D[0][1]);pickWire(el,'el',i=>{eq(i);P_.set(D[i][1]);});},
+ ineqline(el){const SG=['&lt;','⩽','&gt;','⩾'];let two=false,s1=0,s2=0;const A=$('#iqA',el),B=$('#iqB',el);
+   const signs=()=>{$('#iqSigns',el).innerHTML=two?`<span class="tiny">left</span>${['&lt;','⩽'].map((t,i)=>`<button class="btn" data-qs1="${i}" aria-pressed="${i===s1}">${t}</button>`).join('')}<span class="tiny">right</span>${['&lt;','⩽'].map((t,i)=>`<button class="btn" data-qs2="${i}" aria-pressed="${i===s2}">${t}</button>`).join('')}`:SG.map((t,i)=>`<button class="btn" data-qs1="${i}" aria-pressed="${i===s1}">${t}</button>`).join('');};
+   const f=()=>{let a=+A.value,b=+B.value;$('#iqBw',el).hidden=!two;const big=Math.max(Math.abs(a),two?Math.abs(b):0)>10;const {h,X}=nline(big?-20:-10,big?20:10,big?5:2);let s=h;
+    if(!two){const open=s1===0||s1===2,right=s1>=2,c=COL.sage;s+=`<line class="fadein" x1="${X(a)}" y1="60" x2="${right?326:14}" y2="60" stroke="${c}" stroke-width="6" stroke-linecap="round"/><path d="M${right?330:10} 60 l${right?-10:10} -7 v14z" fill="${c}"/>`+dot(X(a),open,COL.espresso);
+     $('#iqOut',el).innerHTML=`x ${SG[s1]} ${ns(a)}<small>${open?'Open circle: '+ns(a)+' is not included':'Closed circle: '+ns(a)+' is included'}</small>`;}
+    else{if(b<=a){b=a+1;B.value=b;}s+=`<line class="fadein" x1="${X(a)}" y1="60" x2="${X(b)}" y2="60" stroke="${COL.sage}" stroke-width="6"/>`+dot(X(a),s1===0,COL.espresso)+dot(X(b),s2===0,COL.espresso);
+     const ints=[];for(let v=Math.ceil(a);v<=b;v++){if((v===a&&s1===0)||(v===b&&s2===0))continue;ints.push(ns(v));}
+     $('#iqOut',el).innerHTML=`${ns(a)} ${s1?'⩽':'&lt;'} x ${s2?'⩽':'&lt;'} ${ns(b)}<small>Integers: ${ints.length>8?ints.slice(0,3).join(', ')+', … , '+ints.slice(-2).join(', '):ints.join(', ')||'none'}</small>`;}
+    $('#iqSvg',el).innerHTML=s;};
+   el.addEventListener('click',e=>{const b1=e.target.closest('[data-qs1]'),b2=e.target.closest('[data-qs2]');if(b1){s1=+b1.dataset.qs1;signs();f();}if(b2){s2=+b2.dataset.qs2;signs();f();}});
+   A.oninput=f;B.oninput=f;pickWire(el,'iq',i=>{two=i===1;s1=two?1:0;s2=0;if(two){A.value=-2;B.value=2;}signs();f();});if(el.dataset.pre){const q=el.dataset.pre.split(',').map(Number);two=q[0]===1;s1=q[1];A.value=q[2];if(two){s2=q[3];B.value=q[4];}$$('[data-iq]',el).forEach((t,i)=>t.setAttribute('aria-pressed',i===q[0]));}signs();f();},
+ ineqsolve(el){const D=[[['4x + 5 &lt; 17',''],['4x &lt; 12','Take 5 from both sides'],['x &lt; 3','Divide both sides by 4']],[['2x + 3 &lt; 10',''],['2x &lt; 7','Take 3 from both sides'],['x &lt; 3.5','Divide both sides by 2']],[['3(x + 2) ⩽ 2x − 5',''],['3x + 6 ⩽ 2x − 5','Expand the bracket'],['x + 6 ⩽ −5','Take 2x from both sides'],['x ⩽ −11','Take 6 from both sides']]];
+   const T=[[x=>[4*x+5,17,'&lt;'],x=>x<3],[x=>[2*x+3,10,'&lt;'],x=>x<3.5],[x=>[3*(x+2),2*x-5,'⩽'],x=>x<=-11]];let di=0;const XS=$('#isX',el);
+   const f=()=>{const x=+XS.value;const [l,r,sg]=T[di][0](x);const ok=sg==='⩽'?l<=r:l<r;$('#isOut',el).innerHTML=`x = ${ns(x)}: ${ns(l)} ${sg} ${ns(r)}? <span style="color:${ok?COL.sage:COL.rose}">${ok?'true':'false'}</span>`;};
+   const P_=linePlayer(el,'#isBox','#isNext',D[0]);XS.oninput=f;pickWire(el,'is',i=>{di=i;P_.set(D[i]);XS.value=i===2?-12:2;f();});f();},
+ flip(el){const M=$('#fpM',el);const f=()=>{const m=+M.value,a=2*m,b=5*m;const {h,X}=nline(-16,16,4);
+   let s=h+`<circle cx="${X(a)}" cy="60" r="8" fill="${COL.sage}"/><text x="${X(a)}" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="${COL.sage}" font-family="JetBrains Mono">${ns(a)}</text><circle cx="${X(b)}" cy="60" r="8" fill="${COL.rose}"/><text x="${X(b)}" y="${a===b?22:38}" text-anchor="middle" font-size="13" font-weight="800" fill="${COL.rose}" font-family="JetBrains Mono">${ns(b)}</text>`;
+   $('#fpSvg',el).innerHTML=s;const sg=a<b?'&lt;':a>b?'&gt;':'=';$('#fpOut',el).innerHTML=`2 × ${nb(m)} ${sg} 5 × ${nb(m)} → ${ns(a)} ${sg} ${ns(b)}<small>${m<0?'Multiplying by a negative flips the sign':m>0?'A positive number keeps the sign the same':'Multiplying by 0 makes both sides 0'}</small>`;};M.oninput=f;f();}
 });
 
 /* =================== FOUNDATIONS + 1.1 EXTRA VISUALS =================== */
