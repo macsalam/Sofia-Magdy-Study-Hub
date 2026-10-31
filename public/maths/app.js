@@ -1,11 +1,15 @@
 /* Sofia Magdy's Maths Hub. Storage keys: math9-hub-v1 (progress), math9-prefs (font), math9-notes (notes), math9-times (marked times table facts). */
 'use strict';
 const KEY='math9-hub-v1',PKEY='math9-prefs',NKEY='math9-notes',TKEY='math9-times';
-const DEF=()=>({checks:{},done:{},stk:{},bq:{},cl:{},cards:{},quiz:{},sec:{},ch:1,later:{},view:'chapter'});
+const DEF=()=>({mv:2,checks:{},done:{},stk:{},bq:{},cl:{},cards:{},quiz:{},sec:{},ch:1,later:{},view:'chapter'});
 let S=DEF();
-try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(DEF(),JSON.parse(raw));}catch(e){S=DEF();}
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);S=Object.assign(DEF(),o);if(!o.mv)S.mv=0;}}catch(e){S=DEF();}
 // done = steps ever answered (keeps later steps open after Clear); stk = stickers earned
 for(const k in S.checks){if(!S.done[k])S.done[k]=1;if(!S.stk[k])S.stk[k]=1;}
+// Topic 1.1 gained four new steps after step 3 (31 Oct 2026): move saved progress on old steps 4 to 6 along by four.
+if(!S.mv){const mv=k=>{const m=/^1\.1-(\d+)$/.exec(k);return m&&+m[1]>=3?'1.1-'+(+m[1]+4):k;};
+ for(const box of ['checks','done','stk']){const o={};for(const k in S[box])o[mv(k)]=S[box][k];S[box]=o;}
+ const L={};for(const k in S.later){const nk=mv(k);L[nk]=Object.assign({},S.later[k],nk!==k?{i:+nk.split('-')[1]}:{});}S.later=L;S.mv=2;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let P={font:0};try{Object.assign(P,JSON.parse(localStorage.getItem(PKEY)||'{}'));}catch(e){}
 const saveP=()=>{try{localStorage.setItem(PKEY,JSON.stringify(P));}catch(e){}};
@@ -27,13 +31,18 @@ const M=s=>`<span class="m">${s}</span>`;
 const MI='−';
 const SF=(a,n)=>`${a} × 10<sup>${n}</sup>`;                                               // standard form
 
-/* ---------- snowfall ---------- */
-(function snow(){const c=$('#snow');if(!c)return;const g=c.getContext('2d');let W,H,F=[];
+/* ---------- falling cherry blossom petals ---------- */
+(function petals(){const c=$('#snow');if(!c)return;const g=c.getContext('2d');let W,H,F=[];
+ const COLS=['#B78993','#D0BDBF','#C99AA6','#E2B8C2','#B97C8C'];
  function size(){const d=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;g.setTransform(d,0,0,d,0,0);
-  F=Array.from({length:Math.round(Math.min(140,W*H/9000))},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.4+.8,s:.25+Math.random()*.7,w:Math.random()*6,c:Math.random()<.5?'178,168,167':'208,189,191',a:.35+Math.random()*.45}));}
+  F=Array.from({length:Math.round(Math.min(46,W*H/26000))},()=>({x:Math.random()*W,y:Math.random()*H,s:7+Math.random()*9,v:.35+Math.random()*.6,w:Math.random()*6.3,rot:Math.random()*6.3,spin:(Math.random()-.5)*.02,flip:Math.random()*6.3,col:COLS[Math.floor(Math.random()*COLS.length)],a:.55+Math.random()*.35}));}
  size();addEventListener('resize',size);
- function draw(t){g.clearRect(0,0,W,H);for(const f of F){if(!reduceMotion){f.y+=f.s;f.x+=Math.sin(t/1600+f.w)*.35;if(f.y>H+5){f.y=-5;f.x=Math.random()*W;}}
-  g.fillStyle=`rgba(${f.c},${f.a})`;g.beginPath();g.arc(f.x,f.y,f.r,0,7);g.fill();}
+ function petal(p){const k=Math.abs(Math.cos(p.flip))*.75+.25;g.save();g.translate(p.x,p.y);g.rotate(p.rot);g.scale(1,k);g.globalAlpha=p.a;
+  const s=p.s;g.beginPath();g.moveTo(0,-s);g.bezierCurveTo(s*.85,-s*.75,s*.75,s*.55,0,s);g.bezierCurveTo(-s*.75,s*.55,-s*.85,-s*.75,0,-s);g.closePath();
+  const gr=g.createLinearGradient(0,-s,0,s);gr.addColorStop(0,p.col);gr.addColorStop(1,'#EFEDEE');g.fillStyle=gr;g.fill();
+  g.beginPath();g.moveTo(-s*.18,-s*.98);g.lineTo(0,-s*.72);g.lineTo(s*.18,-s*.98);g.fillStyle='rgba(239,237,238,.9)';g.fill();
+  g.strokeStyle='rgba(97,87,86,.18)';g.lineWidth=.8;g.beginPath();g.moveTo(0,-s*.6);g.lineTo(0,s*.8);g.stroke();g.restore();}
+ function draw(t){g.clearRect(0,0,W,H);for(const p of F){if(!reduceMotion){p.y+=p.v;p.x+=Math.sin(t/1700+p.w)*.55+.15;p.rot+=p.spin;p.flip+=.018;if(p.y>H+20){p.y=-20;p.x=Math.random()*W;}if(p.x>W+20)p.x=-20;}petal(p);}
   if(!reduceMotion)requestAnimationFrame(draw);}
  requestAnimationFrame(draw);})();
 
@@ -95,6 +104,23 @@ const TOPICS1=[
   <p>An irrational square root or cube root has a special name: a <span class="kw">surd</span>.</p>
   <div class="plain"><span class="kicker">Not a surd, but irrational</span><p>π (pi) = 3.141592… is irrational, but it isn't a root, so it isn't called a surd.</p></div>`,
   vis:'sorter',check:C('Which one is a surd?',[SQ(9),SQ(7),'π',F(1,3)],1,`${SQ(7)} is an irrational root, so it is a surd. ${SQ(9)} = 3 is an integer, π is irrational but not a root, and ${F(1,3)} is rational.`)},
+ {t:'Zoom in: √2 never settles down',body:`<p>Here is the clearest way to see the difference. Zoom in on a number line again and again, one decimal place at a time.</p>
+  <ul><li>${F(3,8)} lands <b>exactly</b> on a mark after three zooms: 0.375. It stops.</li><li>${F(1,3)} is always the same distance into the gap: 0.333… The 3s repeat forever.</li><li>${SQ(2)} is never exactly on a mark, and its digits never fall into a repeating pattern: 1.41421356…</li></ul>
+  <div class="plain"><span class="kicker">In plain words</span><p>Rational numbers either stop or repeat. Irrational numbers do neither, however far you zoom.</p></div>`,
+  vis:'zoom',check:C('Which decimal belongs to an irrational number?',['0.375','0.333…','1.41421356…','2.5'],2,'1.41421356… is √2. It never stops and never repeats. 0.375 stops and 0.333… repeats, so those are rational.')},
+ {t:'You can draw √2 exactly',body:`<p>Irrational numbers are real lengths, not just long decimals.</p>
+  <p>Draw a 2 by 2 square. Its area is 4. Now join the middles of its sides to make a tilted square. The tilted square is exactly <b>half</b> of the big one, so its area is 2.</p>
+  <p>A square with area 2 has sides of ${SQ(2)}. So you have drawn a line exactly ${SQ(2)} long, even though no fraction is equal to it.</p>
+  <div class="ex"><span class="kicker">Pattern</span><p>Area 4 → side ${SQ(4)} = 2 (rational) &nbsp;·&nbsp; Area 2 → side ${SQ(2)} (irrational) &nbsp;·&nbsp; Area 9 → side ${SQ(9)} = 3 (rational)</p></div>`,
+  vis:'area2',check:C('A square has an area of 5 cm². Is its side length rational or irrational?',['Rational','Irrational'],1,`The side is ${SQ(5)}. 5 is not a square number, so ${SQ(5)} is irrational.`)},
+ {t:'Irrational numbers live on the number line too',body:`<p>Every irrational number has its own exact spot on the number line, between the rational numbers.</p>
+  <p>To find roughly where a square root goes, use the square numbers either side: ${SQ(5)} is between ${SQ(4)} = 2 and ${SQ(9)} = 3.</p>
+  <p>Tap each number to place it.</p>`,
+  vis:'irrline',check:C('π is between which two whole numbers?',['2 and 3','3 and 4','4 and 5','31 and 32'],1,'π = 3.141592…, so it is between 3 and 4.')},
+ {t:'Game: rational or irrational?',body:`<p>Time to practise sorting. Here is the quick test:</p>
+  <div class="scrollx"><table class="dt"><tr><th>Rational</th><th>Irrational</th></tr><tr><td>integers, like −26 or 7</td><td>square roots of numbers that are not square numbers, like ${SQ(7)}</td></tr><tr><td>fractions, like ${F(23,8)}</td><td>cube roots of numbers that are not cube numbers, like ${CR(45)}</td></tr><tr><td>decimals that stop or repeat</td><td>π</td></tr><tr><td>roots that come out exactly, like ${SQ('1.21')} = 1.1</td><td></td></tr></table></div>
+  <p>The numbers in the game all come from the book's exercise.</p>`,
+  vis:'sortgame',check:C(`Is ${SQ('1.21')} rational or irrational?`,['Rational, because it equals 1.1','Irrational, because it is a square root'],0,`1.1 × 1.1 = 1.21, so ${SQ('1.21')} = 1.1, which stops. It is rational. This matches the book's answer to Exercise 1.1, Question 2b.`)},
  {t:'Is the square root a whole number?',refresh:true,body:`<p>Here is the quick test the book uses:</p>
   <ul><li>If the number <b>is</b> a square number (1, 4, 9, 16, 25, …), its square root is an integer. ${SQ(49)} = 7.</li><li>If it <b>isn't</b>, the square root is irrational. ${SQ(19)} is irrational.</li></ul>
   <div class="ex"><span class="kicker">Exercise 1.1, Question 1</span><p>${SQ(9)} is the integer 3. ${SQ(39)} is irrational, because 39 is not a square number.</p></div>`,
@@ -609,6 +635,105 @@ const QUIZ2=[
 
 CHAPTERS_DATA[2]={title:'Expressions and formulae',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2,cypNote:'The online course does not show marks for these questions.'};
 
+/* =================== FOUNDATIONS (before Chapter 1): extra practice, not from the book =================== */
+const TOPICS0=[
+{id:'0.1',title:'Basic division',src:'Foundations',
+ goals:['understand division as sharing and as grouping','use the times tables to divide','handle remainders','divide bigger numbers with short division'],
+ hook:{q:'You have 12 cookies and 3 friends. How many cookies does each friend get if you share them fairly?',a:'4 each. 12 ÷ 3 = 4, because 3 × 4 = 12. Division is just sharing fairly, or multiplication done backwards.'},
+ big:'Division means sharing equally. Every division fact is a times table fact read backwards.',
+ steps:[
+ {t:'Division means sharing equally',refresh:true,body:`<p>12 ÷ 3 means: share 12 things equally between 3 groups.</p>
+  <p>Deal them out one at a time, like cards, until none are left. Each plate gets 4.</p>
+  <div class="plain"><span class="kicker">Say it like this</span><p>"12 shared between 3 is 4."</p></div>`,
+  vis:'share',check:C('Share 15 cookies equally between 5 plates. How many on each plate?',['3','5','10','20'],0,'Deal them out: each plate gets 3, because 5 × 3 = 15.')},
+ {t:'Division also means grouping',refresh:true,body:`<p>12 ÷ 4 can also mean: how many groups of 4 can you make from 12?</p>
+  <p>Circle groups of 4 until you run out. You make 3 groups.</p>
+  <div class="plain"><span class="kicker">Two ways, same answer</span><p>Sharing: 12 between 4 people is 3 each. Grouping: 12 makes 3 groups of 4.</p></div>`,
+  vis:'groups',check:C('How many groups of 6 can you make from 24?',['3','4','6','18'],1,'6, 12, 18, 24: that is 4 groups of 6.')},
+ {t:'Division is multiplication backwards',refresh:true,body:`<p>Three numbers that belong together make a <b>fact family</b>:</p>
+  <div class="ex"><p>3 × 4 = 12 &nbsp;&nbsp; 4 × 3 = 12</p><p>12 ÷ 3 = 4 &nbsp;&nbsp; 12 ÷ 4 = 3</p></div>
+  <p>So if you know your times tables, you already know your division facts.</p>`,
+  vis:'factfam',check:C('You know 7 × 8 = 56. What is 56 ÷ 8?',['6','7','8','48'],1,'Same fact family: 7 × 8 = 56, so 56 ÷ 8 = 7.')},
+ {t:'Divide by counting up the times table',refresh:true,body:`<p>To work out 42 ÷ 6, count up in 6s until you reach 42, and count your jumps.</p>
+  <div class="ex"><p>6, 12, 18, 24, 30, 36, 42 &nbsp;→&nbsp; 7 jumps, so 42 ÷ 6 = 7</p></div>
+  <div class="plain"><span class="kicker">Tip</span><p>The Times table page (top bar) lets you practise any table and mark the facts you find tricky.</p></div>`,
+  vis:'skip',check:C('What is 63 ÷ 9?',['6','7','8','9'],1,'9, 18, 27, 36, 45, 54, 63: that is 7 jumps.')},
+ {t:'Remainders: what is left over',refresh:true,body:`<p>Sometimes the sharing doesn't come out exactly. What's left is the <b>remainder</b>.</p>
+  <div class="ex"><p>14 ÷ 4: deal 14 cookies onto 4 plates. Each gets 3, and 2 are left over.</p><p>14 ÷ 4 = 3 remainder 2 (written 3 r 2)</p></div>
+  <div class="plain"><span class="kicker">Check it</span><p>4 × 3 + 2 = 14 ✓. The remainder is always smaller than the number you divide by.</p></div>`,
+  vis:'share2',check:C('What is 17 ÷ 5?',['3 r 2','3 r 5','2 r 7','4 r 3'],0,'5 × 3 = 15, and 17 − 15 = 2 left over. So 3 r 2.')},
+ {t:'Handy rules',refresh:true,body:`<ul><li>Any number ÷ 1 = the same number: 9 ÷ 1 = 9</li><li>Any number ÷ itself = 1: 9 ÷ 9 = 1</li><li>0 ÷ any number = 0: 0 ÷ 9 = 0</li><li>You <b>can't</b> divide by 0. It has no answer.</li><li>÷ 10 moves the digits one place to the right: 70 ÷ 10 = 7</li></ul>`,
+  vis:'rules',check:C('What is 8 ÷ 8?',['0','1','8','64'],1,'Any number divided by itself is 1.')},
+ {t:'Bigger numbers: short division',refresh:true,body:`<p>For a number like 84 ÷ 3, divide one digit at a time, from the left. Carry any remainder to the next digit.</p>
+  <div class="ex"><p>8 ÷ 3 = 2 remainder 2 → write 2, carry the 2 to make 24</p><p>24 ÷ 3 = 8 → write 8</p><p>So 84 ÷ 3 = 28</p></div>
+  <p>Step through it in the "bus stop" below.</p>`,
+  vis:'bus',check:C('What is 96 ÷ 4?',['22','24','26','34'],1,'9 ÷ 4 = 2 r 1, carry 1 to make 16. 16 ÷ 4 = 4. So 24.')}
+ ],
+ mistakes:[['12 ÷ 3 = 3 ÷ 12','Order matters in division. 12 ÷ 3 = 4, but 3 ÷ 12 is a fraction, ¼.'],['14 ÷ 4 = 3 r 6','The remainder must be smaller than 4. 4 × 3 = 12, so the remainder is 2.'],['5 ÷ 0 = 0','You can\'t divide by 0. There is no answer.']],
+ bq:[],checklist:['I can explain division as sharing or as grouping.','I can use the times tables to divide.','I can find a remainder and check it.','I can use short division for bigger numbers.']},
+
+{id:'0.2',title:'Multiplying negative numbers',src:'Foundations',
+ goals:['picture negative numbers on a number line','multiply a positive by a negative','understand why a negative times a negative is positive','use the sign rules for multiplying and dividing'],
+ hook:{q:'If you multiply two negative numbers, like −3 × −2, is the answer positive or negative?',a:'Positive: −3 × −2 = 6. It surprises a lot of people. This topic shows you why, with a pattern you can see.'},
+ big:'Same signs give a positive answer. Different signs give a negative answer.',
+ steps:[
+ {t:'Negative numbers are below zero',refresh:true,body:`<p>Negative numbers are numbers less than 0, like temperatures below freezing.</p>
+  <p>On a number line, they sit to the <b>left</b> of 0. The further left, the smaller: −8 is smaller than −3.</p>`,
+  vis:'thermo',check:C('Which is smaller: −8 or −3?',['−8','−3','They are equal'],0,'−8 is further left on the number line, so it is smaller. (8 °C below zero is colder than 3 °C below.)')},
+ {t:'Positive × negative: repeated jumps',refresh:true,body:`<p>3 × 4 means three jumps of 4. In the same way, 3 × (−2) means three jumps of −2:</p>
+  <div class="ex"><p>3 × (−2) = (−2) + (−2) + (−2) = −6</p></div>
+  <p>Each jump goes 2 to the left, so you end up at −6.</p>`,
+  vis:'jumps',check:C('What is 4 × (−3)?',['12','−12','−7','1'],1,'Four jumps of −3: −3, −6, −9, −12.')},
+ {t:'Negative × negative: follow the pattern',refresh:true,body:`<p>Look at this pattern. Each time the first number goes down by 1, the answer goes <b>up</b> by 2:</p>
+  <div class="ex"><p>3 × (−2) = −6 &nbsp; 2 × (−2) = −4 &nbsp; 1 × (−2) = −2 &nbsp; 0 × (−2) = 0</p></div>
+  <p>Keep the pattern going: (−1) × (−2) = <b>2</b>, (−2) × (−2) = <b>4</b>. The answers become positive.</p>
+  <p>Press the button to continue the pattern yourself.</p>`,
+  vis:'pattern',check:C('Continue the pattern: what is (−3) × (−2)?',['−6','6','−5','5'],1,'The answers go up by 2 each time: 2, 4, 6. So (−3) × (−2) = 6.')},
+ {t:'The sign rules',refresh:true,body:`<div class="scrollx"><table class="dt"><tr><th>Signs</th><th>Answer</th><th>Example</th></tr><tr><td>+ × +</td><td>+</td><td>3 × 2 = 6</td></tr><tr><td>+ × −</td><td>−</td><td>3 × (−2) = −6</td></tr><tr><td>− × +</td><td>−</td><td>(−3) × 2 = −6</td></tr><tr><td>− × −</td><td>+</td><td>(−3) × (−2) = 6</td></tr></table></div>
+  <div class="plain"><span class="kicker">Two steps every time</span><p>1. Multiply the numbers as if there were no signs. 2. Same signs → +, different signs → −.</p></div>`,
+  vis:'signs',check:C('What is (−5) × (−4)?',['−20','20','−9','9'],1,'5 × 4 = 20. Both signs are the same, so the answer is +20.')},
+ {t:'Dividing follows the same rules',refresh:true,body:`<p>Division is multiplication backwards, so the sign rules are the same:</p>
+  <div class="ex"><p>12 ÷ (−3) = −4 &nbsp; (different signs)</p><p>(−12) ÷ (−3) = 4 &nbsp; (same signs)</p></div>
+  <p>Check: (−3) × (−4) = 12 ✓ and (−3) × 4 = −12 ✓</p>`,
+  vis:'signsdiv',check:C('What is (−18) ÷ 6?',['3','−3','−12','12'],1,'18 ÷ 6 = 3. The signs are different, so −3.')},
+ {t:'Three or more negatives: count the minus signs',refresh:true,body:`<p>When you multiply several numbers, count the negative ones:</p>
+  <ul><li>An <b>even</b> number of negatives (2, 4, …) → positive answer</li><li>An <b>odd</b> number of negatives (1, 3, …) → negative answer</li></ul>
+  <div class="ex"><p>(−2) × (−3) × (−1) = −6 &nbsp; (three negatives, odd)</p></div>
+  <div class="plain"><span class="kicker">Why this matters later</span><p>(−2)<sup>3</sup> = (−2) × (−2) × (−2) = −8, and (−3)<sup>2</sup> = 9. You'll use this in Chapters 1 and 2.</p></div>`,
+  vis:'countneg',check:C('What is (−1) × (−2) × (−3) × (−1)?',['−6','6','−7','7'],1,'1 × 2 × 3 × 1 = 6. There are four negatives (even), so the answer is +6.')}
+ ],
+ mistakes:[['(−3) × (−2) = −6','Two negatives multiplied make a positive: +6.'],['3 × (−2) = 6','Different signs give a negative: −6.'],['(−2)³ = 8','Three negatives multiplied give a negative: −8.']],
+ bq:[],checklist:['I can place negative numbers on a number line.','I can multiply a positive number by a negative number.','I know why a negative times a negative is positive.','I can use the sign rules to multiply and divide.']}
+];
+
+const KEYWORDS0=[
+ {id:'k01',topic:'0.1',t:'divide',d:'Share equally, or find how many groups fit. 12 ÷ 3 = 4.'},
+ {id:'k02',topic:'0.1',t:'remainder',d:'What is left over when a division doesn\'t come out exactly. 14 ÷ 4 = 3 r 2.'},
+ {id:'k03',topic:'0.1',t:'fact family',d:'Facts that use the same three numbers: 3 × 4 = 12, 12 ÷ 3 = 4, 12 ÷ 4 = 3.'},
+ {id:'k04',topic:'0.2',t:'negative number',d:'A number less than zero, like −5. It sits to the left of 0 on the number line.'},
+ {id:'k05',topic:'0.2',t:'sign rules',d:'Multiplying or dividing: same signs give +, different signs give −.'}
+];
+
+const QUIZ0=[
+ C('What is 36 ÷ 4?',['8','9','7','32'],1,'4 × 9 = 36.'),
+ C('What is 72 ÷ 8?',['8','9','7','64'],1,'8 × 9 = 72.'),
+ C('What is 23 ÷ 5?',['4 r 3','4 r 5','3 r 8','5 r 2'],0,'5 × 4 = 20, and 3 is left over.'),
+ C('What is 0 ÷ 7?',['7','0','1','You can\'t do it'],1,'Zero shared between 7 is still 0.'),
+ C('What is 75 ÷ 3?',['25','35','15','24'],0,'7 ÷ 3 = 2 r 1, carry 1 to make 15, 15 ÷ 3 = 5. So 25.'),
+ C('What is 112 ÷ 4?',['28','38','27','18'],0,'11 ÷ 4 = 2 r 3, carry to make 32, 32 ÷ 4 = 8. So 28.'),
+ C('What is 5 × (−3)?',['15','−15','−8','2'],1,'Different signs: −15.'),
+ C('What is (−6) × (−7)?',['−42','42','−13','13'],1,'Same signs: +42.'),
+ C('What is (−4) × 9?',['36','−36','5','−5'],1,'Different signs: −36.'),
+ C('What is (−24) ÷ (−6)?',['−4','4','−18','18'],1,'Same signs: +4.'),
+ C('What is 30 ÷ (−5)?',['6','−6','25','−25'],1,'Different signs: −6.'),
+ C('What is (−2) × (−2) × (−2)?',['8','−8','−6','6'],1,'Three negatives (odd): −8.'),
+ C('Which is the smallest?',['−2','−9','0','3'],1,'−9 is furthest left on the number line.'),
+ C('What is (−1) × (−1)?',['−1','1','0','−2'],1,'Same signs: +1.')
+];
+
+CHAPTERS_DATA[0]={title:'Foundations: division and negative numbers',short:'Foundations',topics:TOPICS0,kw:KEYWORDS0,cyp:[],quiz:QUIZ0,cypNote:'',extra:true,
+ sections:['games','cards','quiz'],lead:'Extra practice with the two skills that make the rest of the course easier. This part is not from the book: it is here to get you ready for Chapter 1.'};
+
 /* =================== VISUALS (redrawn, interactive) =================== */
 const COL={snow:'#EFEDEE',mist:'#B2A8A7',stone:'#7D746F',blush:'#D0BDBF',rose:'#B78993',taupe:'#8F7C78',cocoa:'#615756',moss:'#67695E',sage:'#779073',espresso:'#3A2522'};
 const W_=(name,inner,cap)=>`<div class="vis" data-w="${name}">${inner}${cap?`<p class="cap">${cap}</p>`:''}</div>`;
@@ -915,6 +1040,160 @@ Object.assign(INIT,{
    $('#ciOut',el).innerHTML=`A = π × ${r}² ≈ ${A.toFixed(1)} cm²<small>Backwards: r = √(${A.toFixed(1)} ÷ π) ≈ ${Math.sqrt(+A.toFixed(1)/Math.PI).toFixed(2)} cm</small>`;};s.oninput=f;f();}
 });
 
+/* =================== FOUNDATIONS + 1.1 EXTRA VISUALS =================== */
+const cookie=(c=COL.rose,extra='')=>`<span class="fadein" style="display:inline-block;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6 0 18%,transparent 19%),${c};box-shadow:2px 2px 5px rgba(97,72,68,.3);${extra}"></span>`;
+Object.assign(VIS,{
+ share:()=>W_('share',`<div id="shPlates" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;min-height:110px"></div><div id="shLeft" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:30px"></div><div class="readout" id="shOut"></div><div class="row" style="justify-content:center">${sl('shN',1,30,12,'Cookies')}${sl('shK',1,6,3,'Plates')}</div><div class="row" style="justify-content:center"><button class="btn primary" id="shGo">Deal them out</button></div>`,'Cookies are dealt one at a time, round and round, until there are not enough to go round again.'),
+ share2:()=>VIS.share().replace('value="12"','value="14"').replace('max="6" value="3"','max="6" value="4"'),
+ groups:()=>W_('groups',`<div id="grBox" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:90px"></div><div class="readout" id="grOut"></div><div class="row" style="justify-content:center">${sl('grN',2,36,12,'Total')}${sl('grG',1,9,4,'Group size')}</div>`,'Each ring is one group.'),
+ factfam:()=>W_('factfam',`<svg viewBox="0 0 320 200" id="ffSvg" role="img" aria-label="Fact family triangle"></svg><div id="ffFacts" style="display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));text-align:center"></div><div class="row" style="justify-content:center">${sl('ffA',2,12,3,'First number')}${sl('ffB',2,12,4,'Second number')}</div>`,'The top number is the product. Cover any corner and the other two tell you what it is.'),
+ skip:()=>W_('skip',`<svg viewBox="0 0 340 120" id="skSvg" role="img" aria-label="Skip counting on a number line"></svg><div class="readout" id="skOut"></div><div class="row" style="justify-content:center">${sl('skD',2,12,6,'Divide by')}${sl('skQ',1,12,7,'Answer to find')}</div><div class="row" style="justify-content:center"><button class="btn primary" id="skGo">Count the jumps</button></div>`,'Count up in equal jumps until you land on the number.'),
+ rules:()=>W_('rules',`<div class="row" style="justify-content:center">${['÷ 1','÷ itself','0 ÷','÷ 0','÷ 10'].map((t,i)=>`<button class="btn" data-ru="${i}" aria-pressed="${i===0}">${t}</button>`).join('')}</div><div class="readout" id="ruOut" style="min-height:4em"></div>${sl('ruN',1,90,9,'Number')}`),
+ bus:()=>W_('bus',pickRow('bs',['84 ÷ 3','96 ÷ 4','125 ÷ 5','456 ÷ 6'])+`<svg viewBox="0 0 320 130" id="bsSvg" role="img" aria-label="Short division bus stop"></svg><div class="readout" id="bsOut"></div><div class="row" style="justify-content:center"><button class="btn primary" id="bsNext">Next step</button></div>`,'Divide each digit from the left. Carry any remainder to the next digit.'),
+ thermo:()=>W_('thermo',`<svg viewBox="0 0 340 130" id="thSvg" role="img" aria-label="Thermometer and number line"></svg><div class="readout" id="thOut"></div>${sl('thT',-10,10,-3,'Temperature (°C)')}`,'Below zero means negative.'),
+ jumps:()=>W_('jumps',`<svg viewBox="0 0 340 120" id="jpSvg" role="img" aria-label="Jumps on a number line"></svg><div class="readout" id="jpOut"></div><div class="row" style="justify-content:center">${sl('jpN',1,5,3,'Number of jumps')}${sl('jpS',-5,-1,-2,'Size of each jump')}</div>`,'Each jump of a negative number goes to the left.'),
+ pattern:()=>W_('pattern',`<div id="ptBox" style="display:grid;gap:4px;max-width:360px;margin:0 auto;width:100%"></div><div class="row" style="justify-content:center"><button class="btn primary" id="ptNext">Continue the pattern</button><button class="btn" id="ptReset">Start again</button></div>`,'The answer goes up by 2 every row. Keep going below zero and the answers turn positive.'),
+ signs:()=>W_('signs',`<div class="row" style="justify-content:center;gap:14px"><button class="btn" id="sgA">+</button><input class="field" id="sgX" type="number" value="5" min="0" max="12" style="width:70px"><span class="m" style="font-size:22px">×</span><button class="btn" id="sgB">−</button><input class="field" id="sgY" type="number" value="4" min="0" max="12" style="width:70px"></div><div class="readout" id="sgOut" style="font-size:24px"></div>`,'Tap the sign buttons to switch between + and −.'),
+ signsdiv:()=>VIS.signs().replace('data-w="signs"','data-w="signs" data-op="div"').replace('<span class="m" style="font-size:22px">×</span>','<span class="m" style="font-size:22px">÷</span>').replace('value="5"','value="12"').replace('value="4"','value="3"'),
+ countneg:()=>W_('countneg',`<div id="cnRow" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;min-height:56px"></div><div class="readout" id="cnOut"></div><div class="row" style="justify-content:center"><button class="btn" id="cnAdd">Add a −1</button><button class="btn" id="cnAdd2">Add a 2</button><button class="btn" id="cnClr">Start again</button></div>`,'Tap a number to switch its sign.'),
+ zoom:()=>W_('zoom',pickRow('zm',['√2','3/8','1/3'])+`<svg viewBox="0 0 340 120" id="zmSvg" role="img" aria-label="Zooming into a number line"></svg><div class="readout" id="zmOut"></div><div class="row" style="justify-content:center"><button class="btn primary" id="zmIn">Zoom in ×10</button><button class="btn" id="zmReset">Start again</button></div>`,'Each zoom shows one more decimal place.'),
+ area2:()=>W_('area2',`<svg viewBox="0 0 320 240" id="a2Svg" role="img" aria-label="A tilted square of area 2 inside a 2 by 2 square"></svg><div class="readout" id="a2Out"></div><div class="row" style="justify-content:center"><button class="btn primary" id="a2Next">Next</button></div>`,'Fold the four corner triangles in and they cover the tilted square exactly.'),
+ irrline:()=>W_('irrline',`<div class="row" style="justify-content:center">${['√2','√3','√5','π','√10','∛10','√15'].map((t,i)=>`<button class="btn" data-il="${i}">${t}</button>`).join('')}</div><svg viewBox="0 0 340 130" id="ilSvg" role="img" aria-label="Number line from 0 to 4"></svg><div class="readout" id="ilOut"><small>Tap a number to place it.</small></div>`),
+ sortgame:()=>W_('sortgame',`<div class="flash" id="sgCard" style="font-size:clamp(34px,7vw,56px);padding:14px"></div><div class="row" style="justify-content:center"><button class="btn primary" data-sgv="r">Rational</button><button class="btn primary" data-sgv="i" style="background:var(--sage)">Irrational</button></div><div class="readout" id="sgFb" style="min-height:3.2em"></div><div class="row" style="justify-content:center"><span class="tiny" id="sgScore"></span><button class="btn" id="sgRestart">Play again</button></div>`)
+});
+
+Object.assign(INIT,{
+ share(el){const N=$('#shN',el),K=$('#shK',el);let tm=[];
+  const draw=(anim)=>{tm.forEach(clearTimeout);tm=[];const n=+N.value,k=+K.value,q=Math.floor(n/k),r=n%k;
+   $('#shPlates',el).innerHTML=Array.from({length:k},(_,i)=>`<div style="display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;justify-content:center;width:${Math.max(76,Math.min(130,Math.ceil(Math.sqrt(q||1))*32+16))}px;min-height:84px;padding:10px;border-radius:50%;box-shadow:var(--press)" id="pl${i}"></div>`).join('');
+   $('#shLeft',el).innerHTML='';$('#shOut',el).innerHTML='<small>Dealing…</small>';
+   const finish=()=>{$('#shLeft',el).innerHTML=Array.from({length:r},()=>cookie(COL.mist)).join('');$('#shOut',el).innerHTML=`${n} ÷ ${k} = ${q}${r?` remainder ${r}`:''}<small>Each plate gets ${q}.${r?` ${r} ${r===1?'is':'are'} left over, not enough to give every plate one more. Check: ${k} × ${q} + ${r} = ${n}`:` Check: ${k} × ${q} = ${n}`}</small>`;};
+   if(!anim||reduceMotion||q*k>40){for(let i=0;i<k;i++)$('#pl'+i,el).innerHTML=Array.from({length:q},()=>cookie(i%2?COL.rose:COL.taupe)).join('');finish();return;}
+   for(let c=0;c<q*k;c++)tm.push(setTimeout(()=>{const i=c%k;$('#pl'+i,el).insertAdjacentHTML('beforeend',cookie(i%2?COL.rose:COL.taupe));},c*110));
+   tm.push(setTimeout(finish,q*k*110+120));};
+  N.oninput=K.oninput=()=>draw(false);$('#shGo',el).onclick=()=>draw(true);draw(false);},
+ groups(el){const N=$('#grN',el),G=$('#grG',el);const f=()=>{const n=+N.value,g=+G.value,q=Math.floor(n/g),r=n%g;
+  $('#grBox',el).innerHTML=Array.from({length:q},(_,i)=>`<span class="fadein" style="display:inline-flex;flex-wrap:wrap;gap:3px;max-width:${Math.min(g,4)*29+14}px;padding:7px;border-radius:18px;border:2px dashed ${i%2?COL.sage:COL.rose};animation-delay:${i*.06}s">${Array.from({length:g},()=>cookie(i%2?COL.sage:COL.rose,'width:22px;height:22px')).join('')}</span>`).join('')+(r?`<span style="display:inline-flex;gap:3px;align-items:center;padding:7px">${Array.from({length:r},()=>cookie(COL.mist,'width:22px;height:22px')).join('')}</span>`:'');
+  $('#grOut',el).innerHTML=`${n} ÷ ${g} = ${q}${r?` remainder ${r}`:''}<small>${q} group${q===1?'':'s'} of ${g}${r?`, and ${r} left over that can't make a full group`:''}.</small>`;};N.oninput=G.oninput=f;f();},
+ factfam(el){const A=$('#ffA',el),B=$('#ffB',el);const f=()=>{const a=+A.value,b=+B.value,p=a*b;
+  $('#ffSvg',el).innerHTML=`<polygon points="160,20 40,180 280,180" fill="${COL.blush}" stroke="${COL.rose}" stroke-width="3" stroke-linejoin="round"/><circle cx="160" cy="58" r="30" fill="#3A2522"/><text x="160" y="66" text-anchor="middle" font-size="24" font-weight="700" font-family="JetBrains Mono" fill="#fff">${p}</text><circle cx="90" cy="150" r="26" fill="${COL.sage}"/><text x="90" y="158" text-anchor="middle" font-size="22" font-weight="700" font-family="JetBrains Mono" fill="#fff">${a}</text><circle cx="230" cy="150" r="26" fill="${COL.sage}"/><text x="230" y="158" text-anchor="middle" font-size="22" font-weight="700" font-family="JetBrains Mono" fill="#fff">${b}</text><text x="160" y="158" text-anchor="middle" font-size="22" font-family="JetBrains Mono" fill="${COL.cocoa}">×</text>`;
+  $('#ffFacts',el).innerHTML=[`${a} × ${b} = ${p}`,`${b} × ${a} = ${p}`,`${p} ÷ ${a} = ${b}`,`${p} ÷ ${b} = ${a}`].map((t,i)=>`<div class="plain m" style="font-weight:700;${i>1?'background:color-mix(in srgb,var(--sage) 18%,var(--bg))':''}">${t}</div>`).join('');};A.oninput=B.oninput=f;f();},
+ skip(el){const D=$('#skD',el),Q=$('#skQ',el);let tm=null;const draw=(upto)=>{const d=+D.value,q=+Q.value,n=d*q,X=v=>20+v/n*300;let h=`<line x1="20" y1="80" x2="320" y2="80" stroke="${COL.mist}" stroke-width="3"/><text x="20" y="104" text-anchor="middle" font-size="11" font-family="JetBrains Mono" fill="${COL.cocoa}">0</text><text x="320" y="104" text-anchor="middle" font-size="12" font-weight="700" font-family="JetBrains Mono" fill="#3A2522">${n}</text>`;
+   for(let i=0;i<upto;i++){const a=X(i*d),b=X((i+1)*d);h+=`<path class="fadein" d="M${a} 78 Q ${(a+b)/2} 38 ${b} 78" fill="none" stroke="${i%2?COL.sage:COL.rose}" stroke-width="2.5"/>${q<=12?`<text x="${b}" y="${i%2?118:104}" text-anchor="middle" font-size="10" font-family="JetBrains Mono" fill="${COL.cocoa}">${(i+1)*d}</text>`:''}<text x="${(a+b)/2}" y="46" text-anchor="middle" font-size="10" font-weight="700" font-family="JetBrains Mono" fill="${COL.cocoa}">${i+1}</text>`;}
+   $('#skSvg',el).innerHTML=h;$('#skOut',el).innerHTML=upto>=q?`${n} ÷ ${d} = ${q}<small>${q} jumps of ${d} land exactly on ${n}.</small>`:`What is ${n} ÷ ${d}?<small>${upto?`${upto} jump${upto>1?'s':''} so far…`:'Press the button to count up in '+d+'s.'}</small>`;};
+  const go=()=>{clearInterval(tm);const q=+Q.value;let k=0;if(reduceMotion){draw(q);return;}draw(0);tm=setInterval(()=>{k++;draw(k);if(k>=q)clearInterval(tm);},380);};
+  D.oninput=Q.oninput=()=>{clearInterval(tm);draw(0);};$('#skGo',el).onclick=go;draw(0);},
+ rules(el){let k=0;const N=$('#ruN',el);const f=()=>{const n=+N.value;const R=[[`${n} ÷ 1 = ${n}`,`Sharing ${n} between 1 person: they get all ${n}.`],[`${n} ÷ ${n} = 1`,`Sharing ${n} between ${n} people: everyone gets 1.`],[`0 ÷ ${n} = 0`,`Sharing nothing between ${n} people: everyone gets nothing.`],[`${n} ÷ 0 = ?`,`No answer. You can't share ${n} things between nobody. Calculators show an error.`],[`${n} ÷ 10 = ${n/10}`,`The digits move one place to the right.`]];
+  $('#ruOut',el).innerHTML=`<span class="fadein">${R[k][0]}</span><small>${R[k][1]}</small>`;$$('[data-ru]',el).forEach(b=>b.setAttribute('aria-pressed',+b.dataset.ru===k));};
+  N.oninput=f;el.addEventListener('click',e=>{const b=e.target.closest('[data-ru]');if(b){k=+b.dataset.ru;f();}});f();},
+ bus(el){const D=[[84,3],[96,4],[125,5],[456,6]];let k=0,st=0;
+  const f=()=>{const [n,d]=D[k];const dg=String(n).split('').map(Number);let carry=0;const out=[],carries=[],lines=[];
+   dg.forEach((x,i)=>{const cur=carry*10+x;const q=Math.floor(cur/d);carry=cur%d;out.push(q);carries.push(carry);lines.push(`${cur} ÷ ${d} = ${q}${carry?` remainder ${carry}, carry the ${carry}`:''}`);});
+   const X=i=>110+i*44;let h=`<text x="70" y="88" text-anchor="middle" font-size="30" font-family="JetBrains Mono" fill="#3A2522">${d}</text><path d="M88 56 V100 M88 56 H${X(dg.length-1)+30}" stroke="#3A2522" stroke-width="3" fill="none"/>`;
+   dg.forEach((x,i)=>{h+=`<text x="${X(i)}" y="88" text-anchor="middle" font-size="30" font-family="JetBrains Mono" fill="${COL.cocoa}">${x}</text>`;if(i<st){h+=`<text class="fadein" x="${X(i)}" y="44" text-anchor="middle" font-size="30" font-weight="700" font-family="JetBrains Mono" fill="${COL.sage}">${out[i]}</text>`;if(carries[i]&&i+1<dg.length)h+=`<text class="fadein" x="${X(i+1)-17}" y="76" text-anchor="middle" font-size="15" font-weight="700" font-family="JetBrains Mono" fill="${COL.rose}">${carries[i]}</text>`;}});
+   $('#bsSvg',el).innerHTML=h;
+   const ans=+out.join('');$('#bsOut',el).innerHTML=st===0?`${n} ÷ ${d}<small>Start with the first digit.</small>`:st<=dg.length?`${lines[st-1]}<small>${st<dg.length?'Next digit…':'Read the answer along the top.'}</small>`:'';
+   if(st>dg.length)$('#bsOut',el).innerHTML=`${n} ÷ ${d} = ${ans}<small>Check: ${d} × ${ans} = ${d*ans}</small>`;
+   $('#bsNext',el).textContent=st>dg.length?'Start again':'Next step';$$('[data-bs]',el).forEach(b=>b.setAttribute('aria-pressed',+b.dataset.bs===k));};
+  $('#bsNext',el).onclick=()=>{const L=String(D[k][0]).length;st=st>L?0:st+1;f();};el.addEventListener('click',e=>{const b=e.target.closest('[data-bs]');if(b){k=+b.dataset.bs;st=0;f();}});f();},
+ thermo(el){const T=$('#thT',el);const f=()=>{const t=+T.value,X=v=>30+(v+10)/20*280;let h=`<line x1="30" y1="70" x2="310" y2="70" stroke="${COL.mist}" stroke-width="3"/>`;
+  for(let v=-10;v<=10;v+=2)h+=`<line x1="${X(v)}" y1="62" x2="${X(v)}" y2="78" stroke="${v===0?'#3A2522':COL.taupe}" stroke-width="${v===0?3:1.5}"/><text x="${X(v)}" y="98" text-anchor="middle" font-size="11" font-family="JetBrains Mono" fill="${COL.cocoa}">${ns(v)}</text>`;
+  h+=`<rect x="30" y="60" width="${X(0)-30}" height="20" fill="${COL.blush}" opacity=".5" rx="6"/><text x="${(30+X(0))/2}" y="40" text-anchor="middle" font-size="12" fill="${COL.cocoa}" font-family="Atkinson Hyperlegible">negative</text><text x="${(X(0)+310)/2}" y="40" text-anchor="middle" font-size="12" fill="${COL.cocoa}" font-family="Atkinson Hyperlegible">positive</text><circle class="fadein" cx="${X(t)}" cy="70" r="10" fill="${t<0?COL.rose:t>0?COL.sage:'#3A2522'}"/>`;
+  $('#thSvg',el).innerHTML=h;$('#thOut',el).innerHTML=`${ns(t)} °C<small>${t<0?`${-t} degrees below zero. It is to the left of 0.`:t>0?`${t} degrees above zero.`:'Exactly zero: neither positive nor negative.'}</small>`;};T.oninput=f;f();},
+ jumps(el){const N=$('#jpN',el),Sz=$('#jpS',el);const f=()=>{const n=+N.value,s=+Sz.value,end=n*s,lo=Math.min(end,-1)-1,X=v=>20+(v-lo)/(2-lo)*300;
+  let h=`<line x1="20" y1="80" x2="320" y2="80" stroke="${COL.mist}" stroke-width="3"/>`;for(let v=lo;v<=2;v++)h+=`<line x1="${X(v)}" y1="74" x2="${X(v)}" y2="86" stroke="${v===0?'#3A2522':COL.taupe}" stroke-width="${v===0?2.5:1.2}"/>${(v%2===0||lo>-12)?`<text x="${X(v)}" y="104" text-anchor="middle" font-size="10" font-family="JetBrains Mono" fill="${COL.cocoa}">${ns(v)}</text>`:''}`;
+  for(let i=0;i<n;i++){const a=X(i*s),b=X((i+1)*s);h+=`<path class="fadein" style="animation-delay:${i*.18}s" d="M${a} 78 Q ${(a+b)/2} 30 ${b} 78" fill="none" stroke="${COL.rose}" stroke-width="2.6"/><text x="${(a+b)/2}" y="40" text-anchor="middle" font-size="10" font-weight="700" font-family="JetBrains Mono" fill="${COL.cocoa}">${ns(s)}</text>`;}
+  $('#jpSvg',el).innerHTML=h;$('#jpOut',el).innerHTML=`${n} × ${nb(s)} = ${ns(end)}<small>${Array(n).fill(nb(s)).join(' + ')} = ${ns(end)}</small>`;};N.oninput=Sz.oninput=f;f();},
+ pattern(el){let k=4;const f=()=>{const rows=[];for(let a=3;a>=3-k+1;a--)rows.push(a);
+  $('#ptBox',el).innerHTML=rows.map((a,i)=>{const p=a*-2;return `<div class="${i===rows.length-1?'fadein':''}" style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:6px 12px;border-radius:12px;${a<0?'background:color-mix(in srgb,var(--sage) 20%,var(--bg))':''}"><span class="m" style="font-size:18px">${nb(a)} × (${MI}2) = <b>${ns(p)}</b></span><span class="tiny">${i?'↑ 2 more':''}</span></div>`;}).join('');
+  $('#ptNext',el).disabled=k>=8;};$('#ptNext',el).onclick=()=>{k++;f();};$('#ptReset',el).onclick=()=>{k=4;f();};f();},
+ signs(el){const div=el.dataset.op==='div';let sa=1,sb=-1;const A=$('#sgA',el),B=$('#sgB',el),X=$('#sgX',el),Y=$('#sgY',el);
+  const f=()=>{A.textContent=sa>0?'+':MI;B.textContent=sb>0?'+':MI;const x=Math.abs(Math.round(+X.value)),y=Math.abs(Math.round(+Y.value));const a=sa*x,b=sb*y;
+   if(div&&y===0){$('#sgOut',el).innerHTML='<small>You can\'t divide by 0.</small>';return;}
+   const same=sa===sb;const mag=div?x/y:x*y;const res=(same?1:-1)*mag;
+   $('#sgOut',el).innerHTML=`${nb(a)} ${div?'÷':'×'} ${nb(b)} = <span style="color:${res<0?COL.rose:COL.sage}">${ns(r2(res))}</span><small>${div?`${x} ÷ ${y} = ${r2(mag)}`:`${x} × ${y} = ${mag}`}. The signs are ${same?'the same, so the answer is positive':'different, so the answer is negative'}.</small>`;};
+  A.onclick=()=>{sa=-sa;f();};B.onclick=()=>{sb=-sb;f();};X.oninput=Y.oninput=f;f();},
+ countneg(el){let nums=[-2,-3,-1];const f=()=>{$('#cnRow',el).innerHTML=nums.map((n,i)=>`<button class="btn" data-cni="${i}" style="font-family:var(--mono);font-size:18px;${n<0?'background:var(--bad-soft)':''}">${nb(n)}</button>`).join('<span style="font-weight:700">×</span>');
+  const negs=nums.filter(n=>n<0).length,prod=nums.reduce((a,b)=>a*b,1);
+  $('#cnOut',el).innerHTML=nums.length?`= ${ns(prod)}<small>${negs} negative${negs===1?'':'s'}: ${negs%2?'odd, so the answer is negative':'even, so the answer is positive'}.</small>`:'<small>Add some numbers.</small>';};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-cni]');if(b){nums[+b.dataset.cni]*=-1;f();}});
+  $('#cnAdd',el).onclick=()=>{if(nums.length<6){nums.push(-1);f();}};$('#cnAdd2',el).onclick=()=>{if(nums.length<6){nums.push(2);f();}};$('#cnClr',el).onclick=()=>{nums=[-2,-3,-1];f();};f();},
+ zoom(el){const N=[['√2','1.41421356237309504880168872420969807856967187537694'],['3/8','0.375'],['1/3','0.33333333333333333333333333333333333333333333333333']];let k=0,z=0;
+  const f=()=>{const [lab,dec]=N[k];const ip=dec.split('.')[0],fr=dec.split('.')[1];const shown=fr.slice(0,z);const lo=ip+(z?'.'+shown:'');const step=Math.pow(10,-z);const nextDigit=fr[z];const exact=fr.length<=z;
+   let h=`<line x1="20" y1="70" x2="320" y2="70" stroke="${COL.mist}" stroke-width="3"/>`;
+   for(let i=0;i<=10;i++){const x=20+i*30;h+=`<line x1="${x}" y1="${i%5?64:58}" x2="${x}" y2="${i%5?76:82}" stroke="${COL.taupe}" stroke-width="${i%5?1.2:2}"/>`;}
+   const fmt=v=>v.toFixed(z);const loN=+lo;h+=`<text x="20" y="102" text-anchor="middle" font-size="11" font-family="JetBrains Mono" fill="${COL.cocoa}">${fmt(loN)}</text><text x="320" y="102" text-anchor="middle" font-size="11" font-family="JetBrains Mono" fill="${COL.cocoa}">${fmt(loN+step)}</text>`;
+   let pos;if(exact)pos=20;else{const restDigits=fr.slice(z,z+6).padEnd(6,'0');pos=20+(+('0.'+restDigits))*300;}
+   h+=`<circle class="fadein" cx="${pos}" cy="70" r="9" fill="${k===0?COL.rose:COL.sage}"/><text x="${pos}" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="#3A2522" font-family="JetBrains Mono">${lab}</text>`;
+   $('#zmSvg',el).innerHTML=h;
+   const digits=ip+'.'+fr.slice(0,z+1);
+   $('#zmOut',el).innerHTML=exact?`${lab} = ${dec} exactly<small>It landed right on a mark. The decimal stops: rational.</small>`:`${lab} = ${digits}…<small>${z===0?'It is between '+ip+' and '+(+ip+1)+'.':`Zoom ${z}: between ${fmt(loN)} and ${fmt(loN+step)}. Next digit: ${nextDigit}.`} ${k===2&&z>1?'The 3s keep repeating: rational.':k===0&&z>2?'Still not landing, and no repeating pattern.':''}</small>`;
+   $('#zmIn',el).disabled=exact||z>=12;$$('[data-zm]',el).forEach(b=>b.setAttribute('aria-pressed',+b.dataset.zm===k));};
+  $('#zmIn',el).onclick=()=>{z++;f();};$('#zmReset',el).onclick=()=>{z=0;f();};el.addEventListener('click',e=>{const b=e.target.closest('[data-zm]');if(b){k=+b.dataset.zm;z=0;f();}});f();},
+ area2(el){let st=0;const f=()=>{const s=80,x0=80,y0=30;let h=`<rect x="${x0}" y="${y0}" width="${2*s}" height="${2*s}" fill="none" stroke="${COL.mist}" stroke-width="2"/><line x1="${x0+s}" y1="${y0}" x2="${x0+s}" y2="${y0+2*s}" stroke="${COL.mist}" stroke-width="1.2" stroke-dasharray="4 4"/><line x1="${x0}" y1="${y0+s}" x2="${x0+2*s}" y2="${y0+s}" stroke="${COL.mist}" stroke-width="1.2" stroke-dasharray="4 4"/>`;
+  const M=[[x0+s,y0],[x0+2*s,y0+s],[x0+s,y0+2*s],[x0,y0+s]];
+  if(st>=1)h+=`<polygon class="fadein" points="${M.map(p=>p.join(',')).join(' ')}" fill="${COL.blush}" stroke="${COL.rose}" stroke-width="3"/>`;
+  if(st>=2){const C=[[x0,y0],[x0+2*s,y0],[x0+2*s,y0+2*s],[x0,y0+2*s]];C.forEach((c,i)=>{const a=M[(i+3)%4],b=M[i];h+=`<polygon class="fadein" style="animation-delay:${i*.12}s" points="${c.join(',')} ${b.join(',')} ${a.join(',')}" fill="${COL.sage}" opacity=".55"/>`;});}
+  if(st>=3)h+=`<line class="fadein" x1="${M[0][0]}" y1="${M[0][1]}" x2="${M[1][0]}" y2="${M[1][1]}" stroke="#3A2522" stroke-width="4"/><text x="${(M[0][0]+M[1][0])/2+14}" y="${(M[0][1]+M[1][1])/2-6}" font-size="16" font-weight="700" fill="#3A2522" font-family="JetBrains Mono">√2</text>`;
+  h+=`<text x="${x0+s}" y="${y0+2*s+24}" text-anchor="middle" font-size="13" fill="${COL.cocoa}" font-family="JetBrains Mono">2</text><text x="${x0-14}" y="${y0+s+4}" text-anchor="middle" font-size="13" fill="${COL.cocoa}" font-family="JetBrains Mono">2</text>`;
+  $('#a2Svg',el).innerHTML=h;
+  const T=['The big square is 2 by 2, so its area is 4.<small>Press Next.</small>','Join the middles of the sides to make a tilted square.<small>How big is it?</small>','The four green corner triangles are exactly the same size as the four halves of the tilted square.<small>So the tilted square is half of 4: its area is 2.</small>','A square with area 2 has side √2 = 1.41421356…<small>A length you can draw exactly, but no fraction is equal to it.</small>'];
+  $('#a2Out',el).innerHTML=T[st];$('#a2Next',el).textContent=st<3?'Next':'Start again';};$('#a2Next',el).onclick=()=>{st=st<3?st+1:0;f();};f();},
+ irrline(el){const N=[['√2',Math.SQRT2,'1 and 2, because 1² = 1 and 2² = 4'],['√3',Math.sqrt(3),'1 and 2, because 1² = 1 and 2² = 4'],['√5',Math.sqrt(5),'2 and 3, because 2² = 4 and 3² = 9'],['π',Math.PI,'3 and 4. π = 3.141592…'],['√10',Math.sqrt(10),'3 and 4, because 3² = 9 and 4² = 16'],['∛10',Math.cbrt(10),'2 and 3, because 2³ = 8 and 3³ = 27'],['√15',Math.sqrt(15),'3 and 4, because 3² = 9 and 4² = 16']];const placed=new Set();
+  const X=v=>20+v/4*300;const f=last=>{let h=`<line x1="20" y1="80" x2="320" y2="80" stroke="${COL.mist}" stroke-width="3"/>`;for(let v=0;v<=4;v++)h+=`<line x1="${X(v)}" y1="70" x2="${X(v)}" y2="90" stroke="#3A2522" stroke-width="2"/><text x="${X(v)}" y="110" text-anchor="middle" font-size="13" font-weight="700" font-family="JetBrains Mono" fill="#3A2522">${v}</text>`;
+   let row=0;[...placed].sort((a,b)=>N[a][1]-N[b][1]).forEach((i,j)=>{const [l,v]=N[i];const y=j%2?36:56;h+=`<line x1="${X(v)}" y1="${y+6}" x2="${X(v)}" y2="78" stroke="${COL.rose}" stroke-width="1.5"/><circle cx="${X(v)}" cy="80" r="5" fill="${i===last?'#3A2522':COL.rose}"/><text x="${X(v)}" y="${y}" text-anchor="middle" font-size="13" font-weight="700" font-family="JetBrains Mono" fill="${i===last?'#3A2522':COL.cocoa}">${l}</text>`;});
+   $('#ilSvg',el).innerHTML=h;if(last!=null){const [l,v,why]=N[last];$('#ilOut',el).innerHTML=`${l} ≈ ${v.toFixed(4)}…<small>Between ${why}.</small>`;}};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-il]');if(!b)return;const i=+b.dataset.il;placed.add(i);b.setAttribute('aria-pressed','true');f(i);});f();},
+ sortgame(el){const C=[[SQ(9),'r','√9 = 3, an integer'],[SQ(7),'i','7 is not a square number'],[MX(9,3,4),'r','a fraction: 9¾ = 9.75'],[MI+'26','r','an integer'],['0.333…','r','the 3s repeat, so it is ⅓'],[SQ(200),'i','200 is not a square number'],[F(23,8),'r','a fraction'],[CR(343),'r','∛343 = 7, because 7³ = 343'],['π','i','π never stops and never repeats'],[SQ('1.21'),'r','√1.21 = 1.1'],[CR(45),'i','45 is not a cube number'],['18.4545…','r','the 45 repeats, so it is 18 5/11'],[MI+SQ('2.25'),'r','√2.25 = 1.5, so this is −1.5'],[SQ(160),'i','160 is not a square number']];
+  let order=[],pos=0,score=0,locked=false;const start=()=>{order=shuffle(C.map((c,i)=>i)).slice(0,10);pos=0;score=0;locked=false;show();};
+  const show=()=>{if(pos>=order.length){$('#sgCard',el).innerHTML=`${score} / ${order.length}`;$('#sgFb',el).innerHTML=score===order.length?'Perfect sorting!':'<small>Play again to beat your score.</small>';$('#sgScore',el).textContent='';$$('[data-sgv]',el).forEach(b=>b.disabled=true);return;}
+   $$('[data-sgv]',el).forEach(b=>b.disabled=false);$('#sgCard',el).innerHTML=`<span class="fadein" style="display:inline-block">${C[order[pos]][0]}</span>`;$('#sgFb',el).innerHTML='<small>Is this number rational or irrational?</small>';$('#sgScore',el).textContent=`Card ${pos+1} of ${order.length} · score ${score}`;locked=false;};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-sgv]');if(!b||locked||pos>=order.length)return;locked=true;const c=C[order[pos]];const ok=b.dataset.sgv===c[1];if(ok)score++;
+   $('#sgFb',el).innerHTML=`<span style="color:${ok?COL.sage:COL.rose}">${ok?'Correct!':'Not quite.'}</span> ${c[1]==='r'?'Rational':'Irrational'}<small>${c[2]}.</small>`;setTimeout(()=>{pos++;show();},reduceMotion?600:1500);});
+  $('#sgRestart',el).onclick=start;start();}
+});
+
+/* =================== GAMES (Foundations) =================== */
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function mcOpts(ans,spread=4,extra=[]){const s=new Set([ans,...extra.filter(x=>x!==ans)]);let g=0;while(s.size<4&&g++<60){const d=rnd(1,spread)*(Math.random()<.5?-1:1);s.add(ans+d);}return shuffle([...s].slice(0,4));}
+const GAMES=[
+ {id:'dash',name:'Division Dash',icon:'⚡',desc:'Answer as many division facts as you can in 60 seconds.',timed:60,levels:['Easy: ÷ 2, 5, 10','Medium: up to 10 × 10','Hard: up to 12 × 12'],
+  gen(l){const ds=l===0?[2,5,10]:l===1?[2,3,4,5,6,7,8,9,10]:[3,4,6,7,8,9,11,12];const d=ds[rnd(0,ds.length-1)],q=rnd(2,l===2?12:10);const n=d*q;return {q:`${n} ÷ ${d}`,ans:q,opts:mcOpts(q,3,[q+1,q-1].filter(x=>x>0)),why:`${d} × ${q} = ${n}`};}},
+ {id:'cookie',name:'Cookie Share',icon:'🍪',desc:'Share the cookies fairly. Some rounds have leftovers.',rounds:10,levels:['No leftovers','With leftovers'],
+  gen(l){const k=rnd(2,6),q=rnd(2,7),r=l===0?0:rnd(0,k-1),n=k*q+r;const lab=(a,b)=>b?`${a} each, ${b} left`:`${a} each`;
+   const c=[[q+1,r],[q-1,r],[q,(r+1)%k],[q+1,0],[q,r?0:1],[q+2,r]].filter(o=>o[0]>0&&o[1]<k).map(o=>lab(o[0],o[1]));const ans=lab(q,r);const others=[...new Set(c)].filter(x=>x!==ans).slice(0,3);
+   return {q:`<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:360px;margin:0 auto 8px">${Array.from({length:n},()=>cookie(COL.rose,'width:20px;height:20px')).join('')}</div><div style="font-size:clamp(20px,4vw,28px)">${n} cookies shared between ${k} plates</div>`,ans,opts:shuffle([ans,...others]),why:`${k} × ${q}${r?` + ${r}`:''} = ${n}`};}},
+ {id:'snap',name:'Sign Snap',icon:'±',desc:'Positive or negative? Decide fast. 30 seconds.',timed:30,levels:['Two numbers','Three numbers'],
+  gen(l){const k=l===0?2:3;const nums=Array.from({length:k},()=>rnd(1,9)*(Math.random()<.5?-1:1));const p=nums.reduce((a,b)=>a*b,1);const negs=nums.filter(n=>n<0).length;
+   return {q:nums.map(nb).join(' × '),ans:p>0?'Positive':'Negative',opts:['Positive','Negative'],why:`${negs} negative${negs===1?'':'s'}, so ${p>0?'positive':'negative'}: ${ns(p)}`};}},
+ {id:'climb',name:'Negative Number Climb',icon:'⛰',desc:'Get each answer right to climb the mountain. 10 steps to the top.',rounds:10,levels:['Multiply','Multiply and divide'],
+  gen(l){const a=rnd(2,9)*(Math.random()<.5?-1:1),b=rnd(2,9)*(Math.random()<.5?-1:1);if(l===1&&Math.random()<.5){const p=a*b;return {q:`${nb(p)} ÷ ${nb(b)}`,ans:a,opts:mcOpts(a,2,[-a]),why:`${nb(b)} × ${nb(a)} = ${ns(p)}`};}
+   const p=a*b;return {q:`${nb(a)} × ${nb(b)}`,ans:p,opts:mcOpts(p,3,[-p,a+b].filter(x=>x!==p)),why:`${Math.abs(a)} × ${Math.abs(b)} = ${Math.abs(p)}, and the signs are ${(a<0)===(b<0)?'the same, so positive':'different, so negative'}`};}}
+];
+let GM=null;
+function renderGames(){if(!S.games)S.games={};
+ if(!GM)return `<div class="thead"><div class="eyebrow">Foundations · Games</div><h2>Games</h2><p class="meta">Short games to make division and negative numbers feel easy. Your best scores are saved.</p></div>
+  <div class="lgrid">${GAMES.map(g=>`<div class="card"><div style="font-size:34px">${g.icon}</div><b class="ltitle">${g.name}</b><p class="tiny">${g.desc}</p><div class="row">${g.levels.map((lv,i)=>`<button class="btn ${i===0?'primary':''}" data-gstart="${g.id}" data-glv="${i}">${lv}</button>`).join('')}</div><span class="tiny">${g.levels.map((lv,i)=>{const b=S.games[g.id+i];return b!=null?`Best (${lv.split(':')[0]}): ${b}`:''}).filter(Boolean).join(' · ')||'No best score yet'}</span></div>`).join('')}</div>`;
+ const g=GAMES.find(x=>x.id===GM.id);
+ if(GM.over){const b=S.games[g.id+GM.lv];return `<div class="thead"><div class="eyebrow">${g.name}</div><h2>${GM.score>=b&&GM.score>0?'New best score!':'Well done'}</h2></div><div class="card empty"><div class="score">${GM.score}${g.rounds?' / '+g.rounds:''}</div><p>${g.timed?`correct answers in ${g.timed} seconds`:''}${g.id==='climb'?(GM.score===g.rounds?' You reached the top!':''):''}</p><p class="tiny">Best: ${b}</p><div class="row" style="justify-content:center"><button class="btn primary" data-gstart="${g.id}" data-glv="${GM.lv}">Play again</button><button class="btn" data-gquit>All games</button></div></div>`;}
+ const r=GM.cur;
+ return `<div class="thead"><div class="eyebrow">${g.name} · ${g.levels[GM.lv]}</div><h2>${g.timed?`<span id="gTime">${GM.left}</span> s`:`Question ${GM.n+1} of ${g.rounds}`}</h2></div>
+  ${g.id==='climb'?`<svg viewBox="0 0 320 70" aria-hidden="true" style="display:block;width:100%;max-width:420px;margin:0 auto"><path d="M10 64 L160 8 L310 64Z" fill="${COL.blush}"/>${Array.from({length:10},(_,i)=>`<circle cx="${20+i*14.2}" cy="${60-i*5.4}" r="4" fill="${i<GM.score?COL.sage:COL.mist}"/>`).join('')}<circle cx="${20+GM.score*14.2}" cy="${60-GM.score*5.4-8}" r="6" fill="#3A2522"/></svg>`:`<div class="qprog"><i style="width:${g.timed?GM.left/g.timed*100:GM.n/g.rounds*100}%"></i></div>`}
+  <div class="card"><div class="flash" style="font-size:clamp(28px,7vw,52px);padding:10px">${r.q}</div><div class="opts">${r.opts.map(o=>`<button class="opt" data-gans="${esc(String(o))}" ${GM.fb?'disabled':''} ${GM.fb&&String(o)===String(r.ans)?'style="outline:2px solid var(--sage)"':''}>${typeof o==='number'?ns(o):o}</button>`).join('')}</div>
+  ${GM.fb?`<div class="fb ${GM.fb==='ok'?'good':'bad'}"><b>${GM.fb==='ok'?'Correct!':'Not quite.'}</b> ${r.why}</div>`:''}
+  <div class="row" style="justify-content:space-between"><span class="tiny">Score: ${GM.score}</span><button class="btn" data-gquit>Stop</button></div></div>`;}
+function gNext(){const g=GAMES.find(x=>x.id===GM.id);GM.cur=g.gen(GM.lv);GM.fb=null;}
+function gEnd(){const g=GAMES.find(x=>x.id===GM.id);clearInterval(GM.tm);GM.over=true;const k=g.id+GM.lv;if(S.games[k]==null||GM.score>S.games[k])S.games[k]=GM.score;save();render();}
+document.addEventListener('click',e=>{
+ const st=e.target.closest('[data-gstart]');if(st){if(GM)clearInterval(GM.tm);const g=GAMES.find(x=>x.id===st.dataset.gstart);GM={id:g.id,lv:+st.dataset.glv,score:0,n:0,left:g.timed||0,over:false};gNext();
+  if(g.timed)GM.tm=setInterval(()=>{if(!GM||GM.over){return;}GM.left--;const t=$('#gTime');if(t)t.textContent=GM.left;const bar=$('.qprog i');if(bar)bar.style.width=(GM.left/g.timed*100)+'%';if(GM.left<=0)gEnd();},1000);
+  render();return;}
+ if(e.target.closest('[data-gquit]')){if(GM)clearInterval(GM.tm);GM=null;render();return;}
+ const an=e.target.closest('[data-gans]');if(an&&GM&&!GM.fb&&!GM.over){const g=GAMES.find(x=>x.id===GM.id);const ok=an.dataset.gans===String(GM.cur.ans);if(ok)GM.score++;
+  if(g.timed){if(ok){gNext();render();}else{GM.fb='bad';render();setTimeout(()=>{if(GM&&!GM.over){gNext();render();}},1200);}return;}
+  GM.fb=ok?'ok':'bad';GM.n++;render();setTimeout(()=>{if(!GM||GM.over)return;if(GM.n>=g.rounds)gEnd();else{gNext();render();}},ok?900:1700);}
+});
+
 /* =================== STATE FOR THE CURRENT CHAPTER =================== */
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD,QZ=null;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
@@ -922,7 +1201,9 @@ function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPIC
 if(!S.later)S.later={};
 
 /* =================== RENDER: chapter =================== */
-const sectionsList=()=>[...TOPICS.map(t=>({id:t.id,label:t.title,num:/\.0$/.test(t.id)?'★':t.id})),{id:'cards',label:'Key word cards',num:'Aa'},{id:'cyp',label:'Check your progress',num:'✓'},{id:'quiz',label:'Mixed quiz',num:'?'},{id:'papers',label:'Past papers',num:'P'}];
+const SECS={games:{id:'games',label:'Games',num:'▶'},cards:{id:'cards',label:'Key word cards',num:'Aa'},cyp:{id:'cyp',label:'Check your progress',num:'✓'},quiz:{id:'quiz',label:'Mixed quiz',num:'?'},papers:{id:'papers',label:'Past papers',num:'P'}};
+const sectionsList=()=>[...TOPICS.map(t=>({id:t.id,label:t.title,num:/\.0$/.test(t.id)?'★':t.id})),...(CHD.sections||['cards','cyp','quiz','papers']).map(k=>SECS[k])];
+const chName=n=>n===0?'Foundations':'Chapter '+n;
 function topicProg(t){let d=0;t.steps.forEach((s,i)=>{if(S.done[t.id+'-'+i])d++;});return d/t.steps.length;}
 function chapterPct(){const parts=TOPICS.map(topicProg);parts.push(KEYWORDS.filter(w=>S.cards[w.id]==='known').length/KEYWORDS.length);parts.push(qb()!=null?qb()/10:0);return Math.round(parts.reduce((a,b)=>a+b,0)/parts.length*100);}
 function renderPills(){
@@ -944,7 +1225,7 @@ function bqHtml(k,p,q,a){return `<div class="bqi"><div class="qh"><span class="p
  <div class="rowend"><button class="reveal-btn" data-rev aria-expanded="false">Show the answer</button><button class="clearbtn" data-clearbq="${k}">${CLR}Clear</button></div><div class="ans" hidden><span>Answer from the course</span><div>${a}</div></div></div>`;}
 function renderTopic(t){
  let firstOpen=t.steps.findIndex((s,i)=>!S.done[t.id+'-'+i]);if(firstOpen<0)firstOpen=t.steps.length;
- let h=`<div class="thead"><div class="eyebrow">${/\.0$/.test(t.id)?'Before you start':'Topic '+t.id} · ${t.src}</div><h2>${t.title}</h2></div>
+ let h=`<div class="thead"><div class="eyebrow">${/\.0$/.test(t.id)?'Before you start':'Topic '+t.id} · ${t.src}${CHD.extra?' · extra practice, not from the book':''}</div><h2>${t.title}</h2></div>
  <div class="intro"><div class="card"><div class="kicker">In this topic you will</div><ul class="goals">${t.goals.map(g=>`<li>${g}</li>`).join('')}</ul></div>
  <div class="card hook"><h3>Think about this</h3><p>${t.hook.q}</p><button class="reveal-btn" data-rev aria-expanded="false">Think first, then tap to see</button><p class="reveal-text" hidden>${t.hook.a}</p></div>
  <div class="card big"><h3>The big idea</h3><p>${t.big}</p></div></div>`;
@@ -953,24 +1234,24 @@ function renderTopic(t){
  if(firstOpen<t.steps.length-1){const left=t.steps.length-firstOpen-1;h+=`<div class="card locked">Answer the quick check above to open step ${firstOpen+2}. ${left} more step${left>1?'s':''} to go in this topic.</div>`;}
  if(firstOpen>=t.steps.length){
   h+=`<div class="card"><div class="kicker">Watch out for these mistakes</div><div class="mist">${t.mistakes.map(m=>`<div class="mrow"><div class="w"><span>Common mistake</span>${m[0]}</div><div class="r"><span>Actually</span>${m[1]}</div></div>`).join('')}</div></div>
-  <div class="card"><div class="kicker">Questions from your book</div><p class="meta">Try each question first. Write your answer, then tap to compare it with the course's answer.</p><div class="bq">${t.bq.map((q,i)=>bqHtml(t.id+'-'+i,q.p,q.q,q.a)).join('')}</div></div>`;
+  ${t.bq.length?`<div class="card"><div class="kicker">Questions from your book</div><p class="meta">Try each question first. Write your answer, then tap to compare it with the course's answer.</p><div class="bq">${t.bq.map((q,i)=>bqHtml(t.id+'-'+i,q.p,q.q,q.a)).join('')}</div></div>`:''}`;
   if(t.checklist.length)h+=`<div class="card"><div class="kicker">Can you do these? (the topic's goals)</div><div class="checklist">${t.checklist.map((c,i)=>{const k=t.id+'-'+i;return `<label><input type="checkbox" data-cl="${k}" ${S.cl[k]?'checked':''}> ${c}</label>`}).join('')}</div></div>`;
   const ni=TOPICS.indexOf(t)+1;h+=`<div class="row" style="justify-content:flex-end"><button class="btn primary" data-go="${ni<TOPICS.length?TOPICS[ni].id:'cards'}">${ni<TOPICS.length?'Next: '+(TOPICS[ni].id)+' '+TOPICS[ni].title:'Next: Key word cards'} →</button></div>`;}
  return h;}
 function renderCards(){const order=[...KEYWORDS].sort((a,b)=>(S.cards[a.id]==='known')-(S.cards[b.id]==='known'));const known=KEYWORDS.filter(w=>S.cards[w.id]==='known').length;
- return `<div class="thead"><div class="eyebrow">Chapter ${CUR} · Key words</div><h2>Key word cards</h2><p class="meta">Tap a card to flip it, then mark it "Got it" or "Not yet". Cards you haven't got yet move to the front. ${known} of ${KEYWORDS.length} marked as got it.</p></div>
+ return `<div class="thead"><div class="eyebrow">${chName(CUR)} · Key words</div><h2>Key word cards</h2><p class="meta">Tap a card to flip it, then mark it "Got it" or "Not yet". Cards you haven't got yet move to the front. ${known} of ${KEYWORDS.length} marked as got it.</p></div>
  <div class="cards">${order.map(w=>{const st=S.cards[w.id]||'';return `<div class="cardwrap"><button class="flip ${st}" data-flip aria-label="Flip the card for ${esc(w.t)}"><div class="in"><div class="f"><small>Topic ${w.topic}</small><strong>${w.t}</strong><small>Tap to flip</small></div><div class="b">${w.d}</div></div></button><div class="row" style="justify-content:center"><button class="btn" data-mark="${w.id}" data-v="unsure">Not yet</button><button class="btn" data-mark="${w.id}" data-v="known">Got it</button></div></div>`}).join('')}</div>`;}
-function renderCyp(){return `<div class="thead"><div class="eyebrow">Chapter ${CUR} · End of chapter</div><h2>Check your progress</h2><p class="meta">These are the end-of-chapter questions from the book. ${CHD.cypNote}</p></div>
+function renderCyp(){return `<div class="thead"><div class="eyebrow">${chName(CUR)} · End of chapter</div><h2>Check your progress</h2><p class="meta">These are the end-of-chapter questions from the book. ${CHD.cypNote}</p></div>
  <div class="card"><div class="bq">${CYP.map((c,i)=>bqHtml('c'+CUR+'-cyp-'+i,'Question '+c.p,c.q,c.a)).join('')}</div></div>`;}
 function startQuiz(){const wrong=new Set(S.quiz[CUR]?S.quiz[CUR].wrong:[]);const idx=QUIZ.map((q,i)=>i);QZ={order:[...shuffle(idx.filter(i=>wrong.has(i))),...shuffle(idx.filter(i=>!wrong.has(i)))].slice(0,10),pos:0,score:0,wrong:[],ans:null};}
 function renderQuiz(){
- if(!QZ)return `<div class="thead"><div class="eyebrow">Chapter ${CUR} · All topics</div><h2>Mixed quiz</h2><p class="meta">Ten questions from the whole chapter. Questions you got wrong last time come back first.</p></div><div class="card empty"><h3>${qb()!=null?'Best score so far: '+qb()+' / 10':'Ready when you are'}</h3><p>${qb()!=null?'Try again to beat it.':'Finish the topics first for the best result, or jump in now.'}</p><button class="btn primary" id="qStart">Start the quiz</button></div>`;
+ if(!QZ)return `<div class="thead"><div class="eyebrow">${chName(CUR)} · All topics</div><h2>Mixed quiz</h2><p class="meta">Ten questions from the whole chapter. Questions you got wrong last time come back first.</p></div><div class="card empty"><h3>${qb()!=null?'Best score so far: '+qb()+' / 10':'Ready when you are'}</h3><p>${qb()!=null?'Try again to beat it.':'Finish the topics first for the best result, or jump in now.'}</p><button class="btn primary" id="qStart">Start the quiz</button></div>`;
  if(QZ.pos>=QZ.order.length){const n=QZ.order.length;return `<div class="thead"><h2>Mixed quiz</h2></div><div class="card empty"><div class="score">${QZ.score} / ${n}</div><p>${QZ.score===n?'Perfect score.':QZ.wrong.length+' to review. They will come up first next time.'}</p><button class="btn primary" id="qStart">Play again</button></div>`;}
  const q=QUIZ[QZ.order[QZ.pos]];
  return `<div class="thead"><div class="eyebrow">Question ${QZ.pos+1} of ${QZ.order.length}</div><h2>Mixed quiz</h2></div><div class="qprog"><i style="width:${QZ.pos/QZ.order.length*100}%"></i></div>
  <div class="card"><div class="q" style="font-size:19px;font-weight:700">${q.q}</div><div class="opts">${q.opts.map((o,i)=>{let cls='';if(QZ.ans!=null){if(i===q.ans)cls='right';else if(i===QZ.ans)cls='wrong';}return `<button class="opt ${cls}" data-qa="${i}" ${QZ.ans!=null?'disabled':''}>${o}</button>`}).join('')}</div>
  ${QZ.ans!=null?fbHtml(QZ.ans===q.ans,q.why)+`<button class="btn primary" id="qNext" style="justify-self:end">${QZ.pos+1<QZ.order.length?'Next question':'See my score'} →</button>`:''}</div>`;}
-function renderPapers(){return `<div class="thead"><div class="eyebrow">Chapter ${CUR}</div><h2>Past paper questions</h2></div><div class="card empty"><h3>No past paper questions yet</h3><p>Only questions from official Cambridge Lower Secondary Checkpoint Mathematics papers will go here, each tagged to the topic it tests. They'll be added once official papers are shared, from Cambridge's specimen set or from school.</p><p class="tiny">Until then, Check your progress is the best exam-style practice for this chapter.</p></div>`;}
+function renderPapers(){return `<div class="thead"><div class="eyebrow">${chName(CUR)}</div><h2>Past paper questions</h2></div><div class="card empty"><h3>No past paper questions yet</h3><p>Only questions from official Cambridge Lower Secondary Checkpoint Mathematics papers will go here, each tagged to the topic it tests. They'll be added once official papers are shared, from Cambridge's specimen set or from school.</p><p class="tiny">Until then, Check your progress is the best exam-style practice for this chapter.</p></div>`;}
 
 /* =================== STICKERS (original winter designs) =================== */
 const STK_VAR=[['Rose',COL.rose,COL.blush],['Cocoa',COL.cocoa,COL.blush],['Moss',COL.moss,COL.snow],['Taupe',COL.taupe,COL.blush],['Stone',COL.stone,COL.snow],['Blush',COL.blush,COL.rose]];
@@ -1000,7 +1281,7 @@ function allSteps(){const out=[];Object.keys(CHAPTERS_DATA).map(Number).sort((a,
 function renderStickers(){const st=allSteps().map((s,i)=>({...s,idx:i}));const earned=st.filter(s=>S.stk[s.key]).length;
  let h=`<div class="thead"><div class="eyebrow">My collection</div><h2>Sticker board</h2><p class="meta">Every step you complete earns a new winter sticker. ${earned} of ${st.length} collected so far.</p></div>`;
  Object.keys(CHAPTERS_DATA).map(Number).forEach(n=>{const steps=st.filter(s=>s.ch===n);const got=steps.filter(s=>S.stk[s.key]).length;
-  h+=`<section class="card"><h3 class="lgh">Chapter ${n} · ${CHAPTERS_DATA[n].title}<span class="cnt">${got} / ${steps.length}</span></h3><div class="sgrid">${steps.map(s=>{const on=!!S.stk[s.key];const info=stickerInfo(s.idx);const rot=((s.idx*37)%15)-7;
+  h+=`<section class="card"><h3 class="lgh">${chName(n)} · ${CHAPTERS_DATA[n].title}<span class="cnt">${got} / ${steps.length}</span></h3><div class="sgrid">${steps.map(s=>{const on=!!S.stk[s.key];const info=stickerInfo(s.idx);const rot=((s.idx*37)%15)-7;
    return on?`<figure class="slotS on" title="${esc(s.title)}"><div style="transform:rotate(${rot}deg)">${stickerSVG(s.idx,92)}</div><figcaption>${info.name}</figcaption></figure>`:`<figure class="slotS" title="Complete: ${esc(s.title)}"><div class="empty-slot"><span>${/\.0$/.test(s.topic)?'warm-up':s.topic}<br>step ${s.i+1}</span></div><figcaption>&nbsp;</figcaption></figure>`;}).join('')}</div></section>`;});
  return h;}
 function awardSticker(key){const st=allSteps();const idx=st.findIndex(s=>s.key===key);if(idx<0)return;const info=stickerInfo(idx);
@@ -1011,7 +1292,7 @@ function renderLater(){const items=Object.entries(S.later).map(([k,v])=>({k,...v
  let h=`<div class="thead"><div class="eyebrow">My list</div><h2>Study later</h2><p class="meta">Steps you marked to come back to. Tap a step to jump straight to it. When you feel confident, tap "Got it now" to clear it.</p></div>`;
  if(!items.length)return h+`<div class="card empty"><svg viewBox="0 0 100 100" width="110" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="${COL.blush}" opacity=".5"/><path d="M38 24h24v52l-12-9-12 9z" fill="${COL.rose}"/></svg><h3>Nothing marked yet</h3><p>On any step, tap "Study again later" and it will appear here.</p></div>`;
  const chs=[...new Set(items.map(i=>i.ch))];
- chs.forEach(ch=>{const D=CHAPTERS_DATA[ch];h+=`<section><h3 class="lgh">Chapter ${ch} · ${D?D.title:''}</h3><div class="lgrid">${items.filter(i=>i.ch===ch).map(it=>{const t=D&&D.topics.find(x=>x.id===it.topic);const s=t&&t.steps[it.i];
+ chs.forEach(ch=>{const D=CHAPTERS_DATA[ch];h+=`<section><h3 class="lgh">${chName(ch)} · ${D?D.title:''}</h3><div class="lgrid">${items.filter(i=>i.ch===ch).map(it=>{const t=D&&D.topics.find(x=>x.id===it.topic);const s=t&&t.steps[it.i];
   return `<div class="card litem"><div class="eyebrow">${/\.0$/.test(it.topic)?'Warm-up':'Topic '+it.topic} · Step ${it.i+1}</div><b class="ltitle">${s?s.t:esc(it.t||'')}</b><span class="tiny">${t?t.title:''}</span><div class="row"><button class="btn primary" data-goto="${it.k}" data-goch="${ch}">Study this step →</button><button class="btn" data-unlater="${it.k}">Got it now</button></div></div>`}).join('')}</div></section>`;});
  return h;}
 
@@ -1048,8 +1329,8 @@ function selectCell(a,b,scroll=true){TTsel=[a,b];const tb=$('#ttTable');if(!tb)r
 
 /* =================== CHAPTER DROPDOWN =================== */
 function renderDropdown(){const nl=Object.keys(S.later).length,ns=Object.keys(S.stk).length,nt=Object.keys(T.marks).length;
- $('#ddK').textContent=S.view==='chapter'?`Chapter ${CUR}`:`Last chapter: ${CUR}`;$('#ddT').textContent=CHD.title;
- $('#ddMenu').innerHTML=`<div class="ddsec">Chapters</div>`+BOOK_CHAPTERS.map(([n,t])=>{const ready=!!CHAPTERS_DATA[n];const sel=S.view==='chapter'&&CUR===n;
+ $('#ddK').textContent=S.view==='chapter'?`${chName(CUR)}`:(CUR===0?'Last page: Foundations':`Last chapter: ${CUR}`);$('#ddT').textContent=CHD.title;
+ $('#ddMenu').innerHTML=`<div class="ddsec">Before Chapter 1</div><button class="ddopt" role="option" data-ch="0" aria-selected="${S.view==='chapter'&&CUR===0}"><span class="n">★</span><span class="t">Foundations<br><span class="s">Basic division · Multiplying negative numbers · Games</span></span></button><div class="ddsep"></div><div class="ddsec">Chapters</div>`+BOOK_CHAPTERS.map(([n,t])=>{const ready=!!CHAPTERS_DATA[n];const sel=S.view==='chapter'&&CUR===n;
   return `<button class="ddopt" role="option" data-ch="${n}" aria-selected="${sel}" ${ready?'':'disabled'}><span class="n">${n}</span><span class="t">${t}<br><span class="s">${ready?CHAPTERS_DATA[n].topics.filter(x=>!/\.0$/.test(x.id)).map(x=>x.id).join(' · '):'Coming soon'}</span></span></button>`}).join('');
  $('#hbT').textContent=nt||'';$('#hbL').textContent=nl||'';$('#hbS').textContent=ns||'';
  $$('.hnav [data-page]').forEach(b=>b.setAttribute('aria-current',S.view===b.dataset.page?'page':'false'));
@@ -1057,16 +1338,17 @@ function renderDropdown(){const nl=Object.keys(S.later).length,ns=Object.keys(S.
 function openDD(o){const m=$('#ddMenu'),b=$('#ddBtn');m.hidden=!o;b.setAttribute('aria-expanded',o);if(o){const s=$('.ddopt[aria-selected="true"]',m);if(s)s.scrollIntoView({block:'nearest'});}}
 
 /* =================== MAIN RENDER =================== */
+const DEFAULT_LEAD="Go one small step at a time. Each step ends with a quick check, and the next step opens once you've answered it. Your progress is saved to your Study Hub, so it follows you to any device.";
 function render(){renderDropdown();
  const ch=$('#chead'),pills=$('#pills');
- if(S.view==='chapter'){ch.hidden=false;pills.hidden=false;$('#chEyebrow').textContent=`Chapter ${CUR}`;$('#chTitle').textContent=CHD.title;$('#chLead').hidden=false;renderPills();
+ if(S.view==='chapter'){ch.hidden=false;pills.hidden=false;$('#chEyebrow').textContent=`${chName(CUR)}`;$('#chTitle').textContent=CHD.title;$('#chLead').hidden=false;$('#chLead').textContent=CHD.lead||DEFAULT_LEAD;renderPills();
   const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);
-  $('#view').innerHTML=t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():renderPapers();}
+  $('#view').innerHTML=t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():sec==='games'?renderGames():renderPapers();}
  else{ch.hidden=true;pills.hidden=true;const pct=chapterPct();$('#ringArc').setAttribute('stroke-dasharray',`${(pct/100*100.5).toFixed(1)} 100.5`);$('#ringTxt').textContent=pct+'%';
   $('#view').innerHTML=backBar()+(S.view==='later'?renderLater():S.view==='stickers'?renderStickers():renderTimes());if(S.view==='times'&&T.tab==='grid')buildTimesGrid();}
  initVisuals($('#view'));}
 function secLabel(ch,sec){const D=CHAPTERS_DATA[ch];if(!D)return '';const t=D.topics.find(x=>x.id===sec);if(t)return (/\.0$/.test(t.id)?'':t.id+' ')+t.title;return {cards:'Key word cards',cyp:'Check your progress',quiz:'Mixed quiz',papers:'Past papers'}[sec]||'';}
-function backBar(){const ch=CUR,sec=S.sec[ch]||TOPICS[0].id;return `<div class="backbar"><button class="btn primary" data-back><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to where I left off</button><span class="tiny">Chapter ${ch} · ${secLabel(ch,sec)}</span></div>`;}
+function backBar(){const ch=CUR,sec=S.sec[ch]||TOPICS[0].id;return `<div class="backbar"><button class="btn primary" data-back><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to where I left off</button><span class="tiny">${chName(ch)} · ${secLabel(ch,sec)}</span></div>`;}
 function enterAnim(){['#chead','#pills','#view'].forEach(s=>{const el=$(s);if(!el)return;el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter');});}
 
 /* =================== FONTS =================== */
@@ -1144,7 +1426,7 @@ function calcHtml(){const K=[['sin','fn','sin('],['cos','fn','cos('],['tan','fn'
  $$('.ntools button',pn).forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{const c=b.dataset.cmd;ed.focus();
   if(c==='h3'){const cur=document.queryCommandValue('formatBlock').toLowerCase();document.execCommand('formatBlock',false,cur==='h3'?'div':'h3');}
   else if(c==='sup')document.execCommand('superscript',false,null);
-  else if(c==='tag'){const label=S.view==='chapter'?`Chapter ${CUR}: ${CHD.title}`:S.view==='times'?'Times table':'General notes';const sel=getSelection();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r);document.execCommand('insertHTML',false,`<h3>${esc(label)}</h3><div><br></div>`);}
+  else if(c==='tag'){const label=S.view==='chapter'?`${chName(CUR)}: ${CHD.title}`:S.view==='times'?'Times table':'General notes';const sel=getSelection();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r);document.execCommand('insertHTML',false,`<h3>${esc(label)}</h3><div><br></div>`);}
   else document.execCommand(c,false,null);ed.dispatchEvent(new Event('input'));};});
  // calculator
  const calc=$('#calc'),cb=$('#nCalc');let expr='',ans=0,deg=true,last=null;
@@ -1195,19 +1477,19 @@ function calcHtml(){const K=[['sin','fn','sin('],['cos','fn','cos('],['tan','fn'
 /* =================== RESET =================== */
 function closeReset(){$('#resetPanel').hidden=true;$('#resetBtn').setAttribute('aria-expanded','false');}
 function renderReset(stage){const p=$('#resetPanel');const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);const lbl=secLabel(CUR,sec);
- if(stage==='chapter'){p.innerHTML=`<b>Reset all of Chapter ${CUR}?</b><p>This clears every quick check, typed answer, tick, key word card and quiz score in Chapter ${CUR}, and closes its steps again. Your stickers, notes and other chapters are kept.</p><div class="resetopts"><button class="btn primary" data-resetconfirm="chapter">Yes, reset Chapter ${CUR}</button><button class="btn" id="resetNo">Cancel</button></div>`;return;}
+ if(stage==='chapter'){p.innerHTML=`<b>Reset all of ${chName(CUR)}?</b><p>This clears every quick check, typed answer, tick, key word card and quiz score in ${chName(CUR)}, and closes its steps again. Your stickers, notes and other chapters are kept.</p><div class="resetopts"><button class="btn primary" data-resetconfirm="chapter">Yes, reset ${chName(CUR)}</button><button class="btn" id="resetNo">Cancel</button></div>`;return;}
  if(stage==='all'){p.innerHTML=`<b>Reset the whole Maths Hub?</b><p>This clears everything in every chapter, on every device that uses this Study Hub, and empties Study later and the Sticker board. Your notes, your tricky times table facts and your font are kept. It can't be undone.</p><div class="resetopts"><button class="btn primary" data-resetconfirm="all">Yes, reset everything</button><button class="btn" id="resetNo">Cancel</button></div>`;return;}
  let what,btn;
  if(t){what=`This clears your quick check answers, typed answers and ticks in ${lbl}, and closes its steps again so you can start the topic fresh. Your stickers stay on your Sticker board.`;btn=`Reset this topic`;}
- else if(sec==='cards'){what=`This clears your "Got it" and "Not yet" marks on the Chapter ${CUR} key word cards.`;btn='Reset the key word cards';}
- else if(sec==='cyp'){what=`This clears your typed answers to the Chapter ${CUR} Check your progress questions.`;btn='Reset Check your progress';}
- else if(sec==='quiz'){what=`This clears your best score and the questions you got wrong in the Chapter ${CUR} mixed quiz.`;btn='Reset the quiz';}
+ else if(sec==='cards'){what=`This clears your "Got it" and "Not yet" marks on the ${chName(CUR)} key word cards.`;btn='Reset the key word cards';}
+ else if(sec==='cyp'){what=`This clears your typed answers to the ${chName(CUR)} Check your progress questions.`;btn='Reset Check your progress';}
+ else if(sec==='quiz'){what=`This clears your best score and the questions you got wrong in the ${chName(CUR)} mixed quiz.`;btn='Reset the quiz';}
  else{what='There is nothing to reset on this page.';btn='';}
- p.innerHTML=`<b>${btn?btn+'?':'Reset'}</b><p>${what}</p><div class="resetopts">${btn?`<button class="btn primary" data-reset="section">${btn}</button>`:''}<button class="btn" id="resetNo">Cancel</button></div><div class="resetopts"><span class="tiny">Need a bigger reset?</span><button class="linkbtn" data-reset="chapter">Reset all of Chapter ${CUR}</button><button class="linkbtn" data-reset="all">Reset the whole Maths Hub</button></div>`;}
+ p.innerHTML=`<b>${btn?btn+'?':'Reset'}</b><p>${what}</p><div class="resetopts">${btn?`<button class="btn primary" data-reset="section">${btn}</button>`:''}<button class="btn" id="resetNo">Cancel</button></div><div class="resetopts"><span class="tiny">Need a bigger reset?</span><button class="linkbtn" data-reset="chapter">Reset all of ${chName(CUR)}</button><button class="linkbtn" data-reset="all">Reset the whole Maths Hub</button></div>`;}
 function resetTopic(t){t.steps.forEach((s,i)=>{const k=t.id+'-'+i;delete S.checks[k];delete S.done[k];});t.bq.forEach((q,i)=>delete S.bq[t.id+'-'+i]);t.checklist.forEach((c,i)=>delete S.cl[t.id+'-'+i]);}
 function doReset(w){const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);let msg='';
  if(w==='all'){try{localStorage.removeItem(KEY);}catch(err){}S=DEF();useChapter(1);msg='The Maths Hub has been reset. Fresh start!';}
- else if(w==='chapter'){TOPICS.forEach(resetTopic);KEYWORDS.forEach(k=>delete S.cards[k.id]);CYP.forEach((c,i)=>delete S.bq['c'+CUR+'-cyp-'+i]);delete S.quiz[CUR];QZ=null;S.sec[CUR]=TOPICS[0].id;msg=`Chapter ${CUR} has been reset.`;}
+ else if(w==='chapter'){TOPICS.forEach(resetTopic);KEYWORDS.forEach(k=>delete S.cards[k.id]);CYP.forEach((c,i)=>delete S.bq['c'+CUR+'-cyp-'+i]);delete S.quiz[CUR];QZ=null;S.sec[CUR]=TOPICS[0].id;msg=`${chName(CUR)} has been reset.`;}
  else if(t){resetTopic(t);msg=`${secLabel(CUR,sec)} has been reset.`;}
  else if(sec==='cards'){KEYWORDS.forEach(k=>delete S.cards[k.id]);msg='Key word cards reset.';}
  else if(sec==='cyp'){CYP.forEach((c,i)=>delete S.bq['c'+CUR+'-cyp-'+i]);msg='Check your progress answers cleared.';}
@@ -1269,4 +1551,4 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#ddMenu').hi
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.bq){S.bq[t.dataset.bq]=t.value;save();}});
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.cl){S.cl[t.dataset.cl]=t.checked;save();}});
 
-useChapter(S.ch||1);if(!['chapter','later','stickers','times'].includes(S.view))S.view='chapter';render();enterAnim();
+useChapter(S.ch??1);if(!['chapter','later','stickers','times'].includes(S.view))S.view='chapter';render();enterAnim();
