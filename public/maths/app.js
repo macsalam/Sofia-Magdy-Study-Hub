@@ -1063,6 +1063,410 @@ const QUIZ4=[
 ];
 CHAPTERS_DATA[4]={title:'Equations and inequalities',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4,cypNote:'The online course does not show marks for these questions.'};
 
+/* =================== CHAPTER 5 CONTENT (Angles) =================== */
+/* Small geometry drawing kit for static diagrams (redrawn from the book's figures). */
+const GK={ink:'#3A2522',soft:'#8F7C78',arc:'#B78993',sage:'#779073',fill:'rgba(208,189,191,.35)'};
+function gdAng(p){return Math.atan2(p[1],p[0]);}
+function gdIx(a,b,c,d){const x1=a[0],y1=a[1],x2=b[0],y2=b[1],x3=c[0],y3=c[1],x4=d[0],y4=d[1];const den=(x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);const t=((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/den;return [x1+t*(x2-x1),y1+t*(y2-y1)];}
+// items: ['l',A,B,{w,dash,arrow:n}] line; ['p',[pts],fill] polygon; ['t',P,text,size]; ['a',V,A,B,label,r,lr] arc at V from VA to VB (short way);
+// ['r',V,A,B] right-angle mark; ['k',A,B,n] tick marks; ['c',C,r] circle; ['d',P] dot
+function GD(vb,items,label){let h='';const L=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);const Z=Math.max(1,(+vb.split(' ')[2])/330);
+ for(const it of items){const k=it[0];
+  if(k==='l'){const [,a,b,o={}]=it;h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${o.c||GK.ink}" stroke-width="${(o.w||2.2)*Z}" stroke-linecap="round"${o.dash?' stroke-dasharray="6 5"':''}/>`;
+   if(o.arrow){for(let i=0;i<o.arrow;i++){const t=0.5+i*0.06,mx=a[0]+(b[0]-a[0])*t,my=a[1]+(b[1]-a[1])*t,an=Math.atan2(b[1]-a[1],b[0]-a[0]);const s=9;h+=`<path d="M${mx-s*Math.cos(an-0.45)} ${my-s*Math.sin(an-0.45)} L${mx} ${my} L${mx-s*Math.cos(an+0.45)} ${my-s*Math.sin(an+0.45)}" fill="none" stroke="${GK.ink}" stroke-width="2"/>`;}}}
+  else if(k==='p'){const [,pts,f]=it;h+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="${f||GK.fill}" stroke="${GK.ink}" stroke-width="2.2" stroke-linejoin="round"/>`;}
+  else if(k==='t'){const [,p,t,s=16,c]=it;h+=`<text x="${p[0]}" y="${p[1]}" text-anchor="middle" dominant-baseline="middle" font-size="${s*Z}" font-weight="700" fill="${c||GK.ink}" font-family="JetBrains Mono,monospace">${t}</text>`;}
+  else if(k==='a'){const [,V,A,B,lab,r=26,lr]=it;let a1=Math.atan2(A[1]-V[1],A[0]-V[0]),a2=Math.atan2(B[1]-V[1],B[0]-V[0]);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+   const sx=V[0]+r*Math.cos(a1),sy=V[1]+r*Math.sin(a1),ex=V[0]+r*Math.cos(a1+d),ey=V[1]+r*Math.sin(a1+d);h+=`<path d="M${sx} ${sy} A${r} ${r} 0 0 ${d>0?1:0} ${ex} ${ey}" fill="none" stroke="${GK.arc}" stroke-width="${2.4*Z}"/>`;
+   if(lab){const m=a1+d/2,R=lr||r+16;h+=`<text x="${V[0]+R*Math.cos(m)}" y="${V[1]+R*Math.sin(m)}" text-anchor="middle" dominant-baseline="middle" font-size="${14*Z}" font-weight="800" fill="${GK.ink}" font-family="JetBrains Mono,monospace">${lab}</text>`;}}
+  else if(k==='r'){const [,V,A,B,s=11]=it;const u=[(A[0]-V[0])/L(V,A),(A[1]-V[1])/L(V,A)],v=[(B[0]-V[0])/L(V,B),(B[1]-V[1])/L(V,B)];h+=`<path d="M${V[0]+u[0]*s} ${V[1]+u[1]*s} L${V[0]+(u[0]+v[0])*s} ${V[1]+(u[1]+v[1])*s} L${V[0]+v[0]*s} ${V[1]+v[1]*s}" fill="none" stroke="${GK.ink}" stroke-width="1.8"/>`;}
+  else if(k==='k'){const [,A,B,n=1]=it;const an=Math.atan2(B[1]-A[1],B[0]-A[0]),nx=-Math.sin(an),ny=Math.cos(an);for(let i=0;i<n;i++){const t=0.5+(i-(n-1)/2)*0.05,mx=A[0]+(B[0]-A[0])*t,my=A[1]+(B[1]-A[1])*t;h+=`<line x1="${mx-nx*7}" y1="${my-ny*7}" x2="${mx+nx*7}" y2="${my+ny*7}" stroke="${GK.ink}" stroke-width="2"/>`;}}
+  else if(k==='c'){const [,C,r]=it;h+=`<circle cx="${C[0]}" cy="${C[1]}" r="${r}" fill="none" stroke="${GK.ink}" stroke-width="2.2"/>`;}
+  else if(k==='d'){const [,P]=it;h+=`<circle cx="${P[0]}" cy="${P[1]}" r="3.5" fill="${GK.ink}"/>`;}}
+ return `<div class="gdw"><svg viewBox="${vb}" role="img" aria-label="${label||'Diagram'}" style="display:block;width:100%;max-width:360px;height:auto;margin:6px auto">${h}</svg></div>`;}
+// right-angled triangle with labels: legs a (vertical) and b (horizontal), hypotenuse c
+function RT(a,b,c,flip){const P=flip?[[230,20],[230,150],[30,150]]:[[30,20],[30,150],[230,150]];
+ return GD('0 0 260 175',[['p',P],['r',P[1],P[0],P[2]],['t',[flip?250:12,85],a,15],['t',[130,166],b,15],['t',[flip?120:140,flip?70:72],c,15]],'Right-angled triangle');}
+
+/* --- Diagrams from the book (redrawn) --- */
+const D5={
+ gs2:GD('0 0 620 320',[['l',[0,300],[610,300]],['l',[65,25],[210,300]],['l',[65,25],[605,300]],['a',[65,25],[210,300],[605,300],'35°',50,72],['a',[605,300],[65,25],[0,300],'27°',70,100],['a',[210,300],[0,300],[65,25],'x°',55,80]],'Triangle with angles 35° and 27° and an exterior angle x°'),
+ gs3:(()=>{const A=[245,335],B=[565,588],C=[22,488],D=[343,740],T1=[0,610],T2=[520,400];const P=gdIx(A,B,T1,T2),Q=gdIx(C,D,T1,T2);
+   return GD('0 320 580 430',[['l',A,B,{arrow:1}],['l',C,D,{arrow:1}],['l',T1,T2],['a',P,A,T2,'a',30,48],['a',P,T2,B,'b',30,48],['a',P,B,T1,'c',30,48],['a',Q,C,T2,'d',30,48],['a',Q,T2,D,'e',30,48],['a',Q,D,T1,'f',30,48]],'Two parallel lines cut by a transversal, angles a to f');})(),
+ we51:GD('0 10 210 300',[['l',[27,30],[27,295],{arrow:1}],['l',[178,22],[178,295],{arrow:1}],['l',[27,43],[117,58]],['l',[117,58],[178,152]],['l',[178,152],[27,232]],['a',[27,43],[27,232],[117,58],'80°',22,38],['a',[117,58],[27,43],[178,152],'134°',20,36],['a',[178,152],[117,58],[178,22],'y°',24,38],['a',[27,232],[27,43],[178,152],'x°',20,34],['a',[27,232],[178,152],[27,295],'118°',22,40],['t',[12,40],'A',14],['t',[120,40],'B',14],['t',[195,155],'C',14],['t',[12,234],'D',14],['t',[192,24],'E',14],['t',[192,290],'F',14]],'Worked example 5.1 diagram'),
+ q11:GD('0 300 480 140',[['l',[0,430],[475,430]],['p',[[95,430],[155,322],[380,430]]],['a',[95,430],[0,430],[155,322],'120°',32,54],['a',[380,430],[155,322],[475,430],'155°',36,58]],'Triangle on a straight line with exterior angles 120° and 155°'),
+ q12:GD('0 460 320 270',[['l',[97,483],[25,705]],['l',[25,705],[162,705]],['l',[162,705],[97,483]],['l',[97,483],[292,515]],['l',[292,515],[162,705]],['k',[97,483],[25,705],1],['k',[97,483],[162,705],1],['k',[97,483],[292,515],1],['a',[97,483],[25,705],[162,705],'x°',48,66],['a',[97,483],[162,705],[292,515],'80°',36,56],['a',[25,705],[97,483],[162,705],'72°',34,52],['a',[292,515],[97,483],[162,705],'y°',30,48],['t',[90,470],'A',15],['t',[14,715],'B',15],['t',[172,718],'C',15],['t',[306,512],'D',15]],'AB = AC = AD; angles x°, 80°, 72° and y°'),
+ q13:(()=>{const P=[135,70],u1=[83,40],u2=[114,14],u3=[165,18],d1=[386,215],d2=[190,220],d3=[50,217];const b1=gdIx(P,d1,[0,200],[420,200]),b2=gdIx(P,d2,[0,200],[420,200]),b3=gdIx(P,d3,[0,200],[420,200]);
+   return GD('0 0 420 230',[['l',[0,70],[330,70],{arrow:1}],['l',[0,200],[420,200],{arrow:1}],['l',u1,d1],['l',u2,d2],['l',u3,d3],['a',P,[0,70],u1,'30°',30,52],['a',P,u1,u2,'40°',38,58],['a',P,u2,u3,'50°',46,64],['a',P,d2,d1,'a°',30,48],['a',b1,P,[0,200],'b°',34,52],['a',b2,P,[0,200],'c°',22,38],['a',b3,P,[0,200],'d°',22,38]],'Two parallel lines with angles 30°, 40°, 50° and a°, b°, c°, d°');})(),
+ q15:GD('0 270 480 215',[['l',[0,295],[475,295],{arrow:1}],['l',[0,461],[475,461],{arrow:1}],['l',[68,461],[166,295]],['l',[232,295],[397,461]],['a',[68,461],[0,461],[166,295],'120°',30,52],['a',[397,461],[232,295],[475,461],'135°',30,54],['t',[166,282],'B',15],['t',[232,282],'C',15],['t',[66,478],'A',15],['t',[397,478],'D',15]],'BC parallel to AD, exterior angles 120° and 135°'),
+ q16:GD('0 525 480 280',[['l',[0,612],[470,782]],['l',[107,652],[372,555]],['l',[372,555],[422,647]],['l',[422,647],[368,745]],['k',[107,652],[372,555],2],['k',[107,652],[368,745],2],['k',[372,555],[422,647],1],['k',[422,647],[368,745],1],['a',[107,652],[0,612],[372,555],'140°',34,56],['a',[368,745],[422,647],[470,782],'80°',30,50],['t',[100,675],'C',15],['t',[378,540],'D',15],['t',[440,647],'A',15],['t',[350,762],'B',15]],'Kite ABCD with exterior angles 140° and 80°'),
+ q17:GD('0 15 270 265',[['c',[130,140],118],['l',[22,187],[242,92]],['l',[130,140],[145,258]],['l',[22,187],[145,258]],['l',[145,258],[242,92]],['a',[130,140],[22,187],[145,258],'72°',22,40],['d',[130,140]],['t',[124,124],'O',15],['t',[10,195],'A',15],['t',[148,272],'B',15],['t',[254,86],'C',15]],'Circle centre O with angle AOB = 72°'),
+ q18:GD('0 300 320 290',[['l',[0,577],[268,517],{arrow:1}],['l',[105,553],[152,331],{arrow:2}],['l',[268,517],[308,311],{arrow:2}],['l',[152,331],[308,311],{arrow:1}],['l',[152,331],[268,517]],['a',[105,553],[0,577],[152,331],'115°',32,52],['a',[105,553],[152,331],[268,517],'x°',30,46],['a',[152,331],[308,311],[268,517],'70°',28,46],['a',[268,517],[152,331],[308,311],'y°',32,48]],'Parallelogram with angles 115°, 70°, x° and y°'),
+ q19:(()=>{const A=[87,228],L=[65,490],R=[262,472],U1=[0,362],U2=[275,312],W1=[0,452],W2=[275,400];const pr=gdIx(A,R,U1,U2),pl=gdIx(A,L,W1,W2);
+   return GD('0 215 290 290',[['l',U1,U2,{arrow:1}],['l',W1,W2,{arrow:1}],['l',A,L],['l',A,R],['a',A,L,R,'40°',34,52],['a',pr,U2,A,'115°',28,48],['a',pl,W2,L,'x°',26,42]],'Triangle crossing two parallel lines, angles 40°, 115° and x°');})(),
+ q110:GD('0 510 290 265',[['l',[18,640],[155,525]],['l',[155,525],[178,660]],['l',[18,640],[275,680]],['l',[18,640],[103,758]],['l',[103,758],[178,660]],['a',[155,525],[18,640],[178,660],'65°',26,44],['a',[178,660],[155,525],[275,680],'110°',24,44],['a',[178,660],[275,680],[103,758],'123°',26,46],['a',[103,758],[18,640],[178,660],'72°',24,42],['t',[8,640],'A',15],['t',[160,514],'B',15],['t',[165,672],'C',15],['t',[282,688],'E',15],['t',[103,773],'D',15]],'ACE a straight line, angles 65°, 110°, 123° and 72°'),
+ q21:GD('-5 10 235 250',[['p',[[28,52],[192,20],[215,185],[87,247],[0,130]]],['a',[28,52],[0,130],[192,20],'120°',22,40],['a',[192,20],[28,52],[215,185],'85°',22,40],['a',[87,247],[215,185],[0,130],'100°',24,44],['a',[0,130],[87,247],[28,52],'125°',22,44]],'Pentagon with angles 120°, 85°, 100°, 125° and one missing angle'),
+ q24:GD('-5 265 310 250',[['p',[[218,275],[295,368],[268,502],[28,502],[0,380]]],['a',[218,275],[0,380],[295,368],'x°',24,40],['a',[295,368],[218,275],[268,502],'(x + 25)°',26,70],['a',[268,502],[295,368],[28,502],'x°',22,38],['a',[28,502],[268,502],[0,380],'x°',22,38],['a',[0,380],[28,502],[218,275],'x°',24,40]],'Pentagon with four angles x° and one angle (x + 25)°'),
+ q27a:GD('-5 515 345 255',[['p',[[12,565],[270,528],[330,655],[228,758],[75,730],[0,632]]],['a',[270,528],[12,565],[330,655],'110°',24,44],['a',[330,655],[270,528],[228,758],'108°',24,44],['a',[228,758],[330,655],[75,730],'125°',22,42],['a',[75,730],[228,758],[0,632],'136°',22,42],['a',[0,632],[75,730],[12,565],'132°',22,42]],'Hexagon with five angles given'),
+ q27b:GD('-5 95 320 250',[['p',[[5,148],[152,105],[302,145],[292,322],[115,333],[28,252]]],['r',[5,148],[152,105],[28,252],13],['a',[152,105],[5,148],[302,145],'150°',22,40],['a',[302,145],[152,105],[292,322],'x°',24,40],['a',[292,322],[302,145],[115,333],'x°',24,40],['a',[115,333],[292,322],[28,252],'130°',24,44],['a',[28,252],[115,333],[5,148],'150°',24,44]],'Hexagon with a right angle, 150°, x°, x°, 130° and 150°'),
+ we56:GD('0 0 300 175',[['p',[[30,20],[270,20],[270,150],[30,150]],'rgba(208,189,191,.2)'],['l',[30,20],[270,150]],['t',[18,12],'A',14],['t',[282,12],'B',14],['t',[282,160],'C',14],['t',[18,160],'D',14],['t',[10,85],'7.5',14],['t',[150,166],'11.3',14],['r',[30,150],[30,20],[270,150]]],'Rectangle ABCD, 7.5 cm by 11.3 cm, with diagonal AC'),
+ cyp1:(()=>{const T=[60,28],V=[208,77],W=[65,160],E=[25,16],P=[62.9,104.6],Q=[145.8,56.4];return GD('0 5 230 170',[['l',E,V],['l',T,W],['l',W,V,{arrow:1}],['l',P,Q,{arrow:1}],['a',T,E,W,'113°',20,36],['a',V,T,W,'48°',26,44],['a',P,T,Q,'a°',18,32]],'Triangle with exterior angle 113°, angle 48° and angle a°');})(),
+ cyp6:GD('0 0 220 140',[['l',[20,70],[20,133]],['l',[20,133],[67,133]],['l',[20,70],[67,133]],['l',[20,70],[212,20]],['l',[67,133],[212,20]],['r',[20,133],[20,70],[67,133],9],['r',[67,133],[20,70],[212,20],9],['t',[10,102],'8',14],['t',[44,148],'6',14],['t',[33,100],'x',14],['t',[112,36],'26',14],['t',[150,90],'y',14]],'Two right-angled triangles with sides 8, 6, x, 26 and y')
+};
+
+const TOPICS5=[
+{id:'5.0',title:'Warm-up: Getting started',src:'Chapter 5 Introduction',
+ goals:['remember the angle facts you already know','remember the names of angle pairs on parallel lines'],
+ hook:{q:'Islamic patterns are made from polygons. What shapes can you spot in a tiled pattern?',a:'Squares, hexagons, triangles, stars… In this chapter you learn the angle rules that make these patterns fit together perfectly.'},
+ big:'Angles on a straight line add to 180°. Angles in a triangle add to 180°. Angles in a quadrilateral add to 360°.',
+ steps:[
+ {t:'Angle facts to remember',refresh:true,body:`<div class="scrollx"><table class="dt"><tr><th>Angles on a straight line</th><td>add to 180°</td></tr><tr><th>Angles around a point</th><td>add to 360°</td></tr><tr><th>Angles in a triangle</th><td>add to 180°</td></tr><tr><th>Angles in a quadrilateral</th><td>add to 360°</td></tr></table></div>
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>Two angles of a quadrilateral are 70° and one is 80°. The fourth is 360° − (70° + 70° + 80°) = 140°.</p></div>`,
+  vis:'trisum',check:C('Three angles of a quadrilateral are 90°, 90° and 100°. What is the fourth?',['80°','90°','180°','100°'],0,'360 − 280 = 80°.')},
+ {t:'The exterior angle of a triangle',refresh:true,body:`<p>The outside angle of a triangle equals the two inside angles opposite it added together.</p>${D5.gs2}
+  <div class="ex"><span class="kicker">From the book's warm-up</span><p>x = 35 + 27 = 62°</p></div>`,
+  check:C('A triangle has angles 50° and 60°. What is the exterior angle at the third corner?',['70°','110°','130°','120°'],1,'50 + 60 = 110°. (The inside angle there is 70°, and 180 − 70 = 110.)')},
+ {t:'Angles on parallel lines',refresh:true,body:`${D5.gs3}<ul><li><b>Corresponding</b> angles are equal (F shape): a and d, b and e, c and f.</li><li><b>Alternate</b> angles are equal (Z shape): c and d.</li><li><b>Vertically opposite</b> angles are equal (X shape): a and c, d and f.</li></ul>`,
+  vis:'parallel',check:C('In the diagram, which angle is alternate to c?',['a','b','d','f'],2,'c and d make a Z shape, so they are alternate angles.')}
+ ],
+ mistakes:[['Adding quadrilateral angles to 180°','A quadrilateral\'s angles add to 360°.'],['Mixing up corresponding and alternate','Corresponding: F shape. Alternate: Z shape.']],
+ bq:[
+  Q('Getting started · Question 1','Two angles of a quadrilateral are 70° and one angle is 80°. Work out the fourth angle.','140°'),
+  Q('Getting started · Question 2','Work out the value of x.'+D5.gs2,'62°'),
+  Q('Getting started · Question 3','From this diagram, give an example of'+D5.gs3+subs([['a','two corresponding angles'],['b','two alternate angles'],['c','two vertically opposite angles']]),subs([['a','a and d, or b and e, or c and f'],['b','c and d'],['c','a and c, or d and f']])),
+  Q('Getting started · Question 4','A triangle has angles a, b and c. A line through the top corner is parallel to the bottom side. Use this to explain why a + b + c = 180°.','The angle next to a equals c (alternate angles), and the third angle at that point equals b (corresponding angles). The three angles on a straight line add to 180°.'),
+  Q('Getting started · Question 5',subs([['a','Use a protractor to draw an angle of 75°.'],['b','Use a ruler and compasses to bisect it.'],['c','Ask a partner to check your bisection.']]),subs([['a','Your own drawing.'],['b','Each angle should be 37.5°.'],['c','Your partner\'s check.']]))
+ ],checklist:[]},
+
+{id:'5.1',title:'Calculating angles',src:'Section 5.1',
+ goals:['use the properties of parallel lines to calculate angles','use the properties of triangles and quadrilaterals','use several angle properties together'],
+ hook:{q:'In a big diagram with lots of missing angles, where do you even start?',a:'Find one angle you can work out straight away, using one fact. Then use that answer to unlock the next angle.'},
+ big:'Work out one angle at a time. Write the reason next to each step.',
+ steps:[
+ {t:'One step at a time',body:`<p>Look for an angle you can find with one fact: a straight line, a triangle, a quadrilateral or parallel lines.</p>${D5.q11}
+  <div class="ex"><span class="kicker">Exercise 5.1, Question 1</span><p>180 − 120 = 60° (straight line)</p><p>180 − 155 = 25° (straight line)</p><p>180 − (60 + 25) = 95° (triangle)</p></div>`,
+  check:C('The exterior angle at one corner of a triangle is 120°. What is the inside angle there?',['120°','60°','30°','240°'],1,'Angles on a straight line: 180 − 120 = 60°.')},
+ {t:'Worked example 5.1',body:`${D5.we51}<div class="ex"><span class="kicker">Worked example 5.1</span><p>x = 180 − 118 = 62° (straight line)</p><p>Angle C of the quadrilateral = 360 − (62 + 80 + 134) = 84°</p><p>Angle DCF = x = 62° (alternate angles)</p><p>y = 180 − (84 + 62) = 34 (straight line at C)</p></div>`,
+  check:C('In Worked example 5.1, why is angle DCF equal to x?',['Corresponding angles','Alternate angles','Vertically opposite'],1,'AD and EF are parallel, and DC makes a Z shape: alternate angles.')},
+ {t:'Isosceles triangles hide equal angles',body:`<p>Two equal sides mean two equal angles. Look for the little tick marks.</p>${D5.q12}
+  <div class="ex"><span class="kicker">Exercise 5.1, Question 2</span><p>AB = AC, so angle ACB = 72°. Then x = 180 − 72 − 72 = 36.</p><p>AC = AD, so the two base angles of triangle ACD are equal: y = (180 − 80) ÷ 2 = 50.</p></div>`,
+  vis:'isos',check:C('An isosceles triangle has a top angle of 80°. What is each base angle?',['50°','100°','80°','40°'],0,'(180 − 80) ÷ 2 = 50°.')},
+ {t:'Algebra with angles',body:`<div class="ex"><span class="kicker">Exercise 5.1, Question 4</span><p>A quadrilateral has angles x°, (x + 10)°, (x + 20)° and (x + 30)°.</p><p>4x + 60 = 360</p><p>4x = 300, so x = 75</p></div>`,
+  check:C('Check: are 75, 85, 95 and 105 a correct set of quadrilateral angles?',['Yes, they add to 360','No'],0,'75 + 85 + 95 + 105 = 360.')},
+ {t:'Circles: radii make isosceles triangles',body:`${D5.q17}<div class="ex"><span class="kicker">Exercise 5.1, Question 7</span><p>OA = OB (radii), so angle OAB = (180 − 72) ÷ 2 = 54°</p><p>Angle BOC = 180 − 72 = 108°, so angle OCB = (180 − 108) ÷ 2 = 36°</p><p>Angle ABC = 54 + 36 = 90°</p></div>`,
+  check:C('Why is triangle AOB isosceles?',['OA and OB are both radii','It has a right angle','AB is a diameter'],0,'Every radius of a circle is the same length.')}
+ ],
+ mistakes:[['Forgetting to give reasons','Write the angle fact next to each step, for example "alternate angles".'],['Using 180° for a quadrilateral','Quadrilateral angles add to 360°.']],
+ bq:[
+  Q('Exercise 5.1 · Question 1','Work out the angles of this triangle.'+D5.q11,'60°, 25°, 95°'),
+  Q('Exercise 5.1 · Question 2','In this diagram, AB = AC = AD.'+D5.q12+subs([['a','Calculate x and y.'],['b','Work out angle C of quadrilateral ABCD.'],['c','Show that the four angles of the quadrilateral add to 360°.']]),subs([['a','x = 36, y = 50'],['b','122°'],['c','116° + 72° + 122° + 50° = 360°']])),
+  Q('Exercise 5.1 · Question 3','Calculate angles a, b, c and d.'+D5.q13,'a = 40°, b = 30°, c = 70°, d = 120°'),
+  Q('Exercise 5.1 · Question 4','The angles of a quadrilateral are x°, (x + 10)°, (x + 20)° and (x + 30)°. Work out the value of x.','75'),
+  Q('Exercise 5.1 · Question 5',D5.q15+subs([['a','What type of quadrilateral is ABCD? Give a reason.'],['b','Work out the angles of ABCD.']]),subs([['a','A trapezium: it has one pair of parallel sides.'],['b','A = 60°, B = 120°, C = 135°, D = 45°']])),
+  Q('Exercise 5.1 · Question 6','ABCD is a kite. Work out the angles of ABCD.'+D5.q16,'C = 40°, B = D = 100°, A = 120°'),
+  Q('Exercise 5.1 · Question 7','O is the centre of the circle. OA, OB and OC are radii. Angle AOB = 72°.'+D5.q17+'Work out, giving reasons:'+subs([['a','angle OAB'],['b','angle OCB'],['c','angle ABC']]),subs([['a','54° (triangle AOB is isosceles)'],['b','36° (angle BOC is 108° and triangle OBC is isosceles)'],['c','90° = 54° + 36°']])),
+  Q('Exercise 5.1 · Question 8','Work out the values of x and y. Justify your answers.'+D5.q18,'x = 65° (angles on a straight line). y = 45°: 115° (corresponding angles) − 70° (alternate angles).'),
+  Q('Exercise 5.1 · Question 9','Work out the value of x. Then discuss with a partner how you each solved it.'+D5.q19,'The course does not print a number for this question, only "Learner\'s own answer" for the discussion. Check your answer with your teacher.'),
+  Q('Exercise 5.1 · Question 10','ACE is a straight line.'+D5.q110+subs([['a','Calculate angle BAD.'],['b','Show that the angles of ABCD add to 360°.']]),subs([['a','45° + 51° = 96°'],['b','96° + 65° + 127° + 72° = 360°']]))
+ ],checklist:['I can find angles using parallel lines.','I can use triangle and quadrilateral angle sums.','I give a reason for each step.']},
+
+{id:'5.2',title:'Interior angles of polygons',src:'Section 5.2',
+ goals:['derive and use a formula for the sum of the interior angles of a polygon','work out the interior angles of regular polygons'],
+ hook:{q:'A pentagon has five angles. Without measuring, can you find what they add up to?',a:'Yes! Split it into 3 triangles from one corner: 3 × 180° = 540°.'},
+ big:'A polygon with n sides splits into (n − 2) triangles, so its angles add to (n − 2) × 180°.',
+ steps:[
+ {t:'Split it into triangles',body:`<p>From one corner, join to every other corner. A pentagon splits into 3 triangles.</p>
+  <div class="ex"><span class="kicker">From the book</span><p>Sum of the pentagon's angles = 3 × 180° = 540°</p><p>This is true for <b>any</b> pentagon.</p></div>`,
+  vis:'polysum',check:C('How many triangles does a hexagon split into from one corner?',['6','5','4','3'],2,'A hexagon has 6 sides: 6 − 2 = 4 triangles.')},
+ {t:'The formula',body:`<div class="scrollx"><table class="dt"><tr><th>Polygon</th><th>Sides</th><th>Sum of angles</th></tr><tr><td>triangle</td><td>3</td><td>180°</td></tr><tr><td>quadrilateral</td><td>4</td><td>360°</td></tr><tr><td>pentagon</td><td>5</td><td>540°</td></tr><tr><td>hexagon</td><td>6</td><td>720°</td></tr><tr><td>octagon</td><td>8</td><td>1080°</td></tr><tr><td>decagon</td><td>10</td><td>1440°</td></tr></table></div>
+  <div class="bigm">sum = (n − 2) × 180°</div><p class="tiny">From Exercise 5.2, Question 9.</p>`,
+  vis:'polysum',check:C('What do the angles of a nonagon (9 sides) add up to?',['1080°','1260°','1440°','1620°'],1,'(9 − 2) × 180 = 7 × 180 = 1260°.')},
+ {t:'Find a missing angle',body:`${D5.q21}<div class="ex"><span class="kicker">Exercise 5.2, Question 1</span><p>Pentagon: angles add to 540°</p><p>120 + 85 + 100 + 125 = 430</p><p>Missing angle = 540 − 430 = 110°</p></div>`,
+  check:C('Four angles of a pentagon are 125° each. What is the fifth?',['40°','55°','125°','35°'],0,'540 − 4 × 125 = 540 − 500 = 40°. This is Question 2.')},
+ {t:'Regular polygons',body:`<p>In a <span class="kw">regular polygon</span>, all the sides are equal and all the angles are equal. Divide the sum by the number of angles.</p>
+  <div class="ex"><span class="kicker">From the book</span><p>Regular pentagon: 540 ÷ 5 = 108°</p></div>
+  <div class="ex"><span class="kicker">Exercise 5.2, Questions 6, 10 and 11</span><p>Regular hexagon: 720 ÷ 6 = 120° &nbsp; Regular octagon: 1080 ÷ 8 = 135° &nbsp; Regular decagon: 1440 ÷ 10 = 144°</p></div>`,
+  vis:'polysum',check:C('What is each angle of a regular octagon?',['120°','135°','144°','108°'],1,'1080 ÷ 8 = 135°.')},
+ {t:'Shapes meeting at a point',body:`<p>Angles around a point add to 360°. Shapes fit together without gaps (a <b>tessellation</b>) only if their angles at each point add to 360°.</p>
+  <div class="ex"><span class="kicker">Exercise 5.2, Questions 12 and 13</span><p>2 squares + 3 equilateral triangles: 90 + 90 + 60 + 60 + 60 = 360 ✓</p><p>Regular pentagons can't tessellate: 108° is not a factor of 360°.</p><p>Two octagons and a square: 135 + 135 + 90 = 360 ✓</p></div>`,
+  vis:'tess',check:C('Can regular hexagons tessellate?',['Yes: 3 × 120° = 360°','No'],0,'Three hexagons meet at each point: 120 + 120 + 120 = 360.')}
+ ],
+ mistakes:[['Sum of angles = n × 180','It is (n − 2) × 180: a pentagon is 3 triangles, not 5.'],['Using the regular polygon angle for an irregular shape','Only a regular polygon has all its angles equal.']],
+ bq:[
+  Q('Exercise 5.2 · Question 1','Work out the missing interior angle of this pentagon.'+D5.q21,'110°'),
+  Q('Exercise 5.2 · Question 2','Four angles of a pentagon are 125° each. Work out the fifth angle.','40°'),
+  Q('Exercise 5.2 · Question 3','Two angles of a pentagon are 112° each and two are 90° each. Calculate the fifth angle.','136°'),
+  Q('Exercise 5.2 · Question 4',D5.q24+subs([['a','Work out the value of x.'],['b','Work out the largest angle of the pentagon.']]),subs([['a','103'],['b','128°']])),
+  Q('Exercise 5.2 · Question 5','The angles of a pentagon are y°, (y + 10)°, (y + 20)°, (y + 30)° and (y + 40)°.'+subs([['a','Work out y.'],['b','Work out the largest angle.']]),subs([['a','88'],['b','128°']])),
+  Q('Exercise 5.2 · Question 6',subs([['a','Draw a hexagon.'],['b','By joining vertices, split it into triangles.'],['c','Show that its interior angles add to 720°.'],['d','How big is each angle of a regular hexagon?']]),subs([['a','Your own drawing.'],['b','A hexagon split into four triangles.'],['c','4 × 180° = 720°'],['d','120°']])),
+  Q('Exercise 5.2 · Question 7',subs([['a','Calculate the missing angle of this hexagon.'+D5.q27a],['b','Calculate the value of x.'+D5.q27b]]),subs([['a','109°'],['b','100']])),
+  Q('Exercise 5.2 · Question 8','Work out the sum of the interior angles of'+subs([['a','an octagon (8 sides)'],['b','a decagon (10 sides)']])+'Justify your answers.',subs([['a','Six triangles: 6 × 180° = 1080°'],['b','Eight triangles: 8 × 180° = 1440°']])),
+  Q('Exercise 5.2 · Question 9',subs([['a','Complete the table for triangle (3), quadrilateral (4, 360°), pentagon, hexagon, octagon and decagon (10).'],['b','Derive a formula for the sum of the interior angles of a polygon with n sides.'],['c','A nonagon has 9 sides. Show your formula gives the correct answer.']]),subs([['a','180°, 360°, 540° (5 sides), 720° (6 sides), 1080° (8 sides), 1440°'],['b','Sum = (n − 2) × 180°'],['c','7 × 180° = 1260°, which is correct because there are seven triangles.']])),
+  Q('Exercise 5.2 · Question 10',subs([['a','7 of the interior angles of an octagon are 140° each. Work out the eighth.'],['b','Work out the interior angle of a regular octagon.']]),subs([['a','100°'],['b','135°']])),
+  Q('Exercise 5.2 · Question 11','How big is each interior angle of a regular decagon?','144°'),
+  Q('Exercise 5.2 · Question 12',subs([['a','Show that 2 squares and 3 equilateral triangles can meet at one point.'],['b','Draw a different way for them to meet at one point (sides the same length).'],['c','Can you find a third way? Give a reason.']]),subs([['a, b','There are two ways: the two squares side by side with the three triangles together, or the squares separated by one triangle on one side and two on the other. Either can be drawn reflected.'],['c','No other way: either the squares are next to each other, or they have one triangle between them on one side and two on the other.']])),
+  Q('Exercise 5.2 · Question 13 (Think like a mathematician)','A tessellation is an arrangement of shapes that completely covers a space.'+subs([['a','Draw a tessellation of equilateral triangles.'],['b','Draw a tessellation of regular hexagons.'],['c','Explain why regular pentagons cannot tessellate.'],['d','Draw a tessellation of squares and equilateral triangles. Is there more than one way?'],['e','Draw a tessellation using regular octagons and squares.'],['f','What other tessellations can you draw?'],['g','A pentagon can also be split into 5 triangles from a point inside it. Can you use this to find the sum of its angles?']]),subs([['a, b','Your own drawings.'],['c','108° is not a factor of 360°.'],['d','Yes: tessellations based on the two arrangements in Question 12.'],['e','Two octagons (135° each) and one square (90°) at every point.'],['f','Your own answer.'],['g','5 × 180 − 360 = 540°: subtract the 360° around the centre point. Same answer.']]))
+ ],checklist:['I can use (n − 2) × 180° to find the sum of the angles.','I can find a missing angle in a polygon.','I can find each angle of a regular polygon.']},
+
+{id:'5.3',title:'Exterior angles of polygons',src:'Section 5.3',
+ goals:['learn the sum of the exterior angles of a polygon','work out and use the exterior angles of regular polygons'],
+ hook:{q:'Walk all the way round a pentagon and end facing the way you started. How far have you turned?',a:'One full turn: 360°. Each corner turn is an exterior angle, so the exterior angles of any polygon add to 360°.'},
+ big:'The exterior angles of any polygon add to 360°. For a regular polygon, each exterior angle is 360° ÷ n.',
+ steps:[
+ {t:'Walking round a polygon',body:`<p>An <span class="kw">exterior angle of a polygon</span> is the angle you turn through at a corner when you walk round the shape.</p>
+  <div class="ex"><span class="kicker">From the book</span><p>Walk round pentagon ABCDE from P. You turn a° at A, b° at B, and so on. Back at P you have turned one whole turn.</p><p>a + b + c + d + e = 360°</p></div><p>There is nothing special about a pentagon: this works for every polygon.</p>`,
+  vis:'extwalk',check:C('What do the exterior angles of a hexagon add up to?',['720°','360°','540°','180°'],1,'Any polygon: 360°.')},
+ {t:'Interior + exterior = 180°',body:`<p>At each corner, the inside angle and the outside angle make a straight line.</p><div class="bigm">interior + exterior = 180°</div>
+  <div class="ex"><span class="kicker">Exercise 5.3, Question 7</span><p>Exterior angle 40°, so interior angle 180 − 40 = 140°</p></div>`,
+  vis:'extwalk',check:C('The exterior angle is 30°. What is the interior angle?',['60°','150°','330°','120°'],1,'180 − 30 = 150°.')},
+ {t:'Regular polygons: 360 ÷ n',body:`<div class="bigm">exterior angle = 360° ÷ n</div>
+  <div class="scrollx"><table class="dt"><tr><th>Regular polygon</th><th>Sides</th><th>Exterior angle</th></tr><tr><td>equilateral triangle</td><td>3</td><td>120°</td></tr><tr><td>square</td><td>4</td><td>90°</td></tr><tr><td>pentagon</td><td>5</td><td>72°</td></tr><tr><td>hexagon</td><td>6</td><td>60°</td></tr><tr><td>octagon</td><td>8</td><td>45°</td></tr><tr><td>decagon</td><td>10</td><td>36°</td></tr></table></div>`,
+  vis:'extwalk',check:C('What is the exterior angle of a regular 12-sided polygon?',['30°','36°','15°','150°'],0,'360 ÷ 12 = 30°.')},
+ {t:'Worked example 5.2: find the number of sides',body:`<div class="ex"><span class="kicker">Worked example 5.2</span><p>The exterior angle of a regular polygon is 36°. How many sides does it have?</p><p>All the exterior angles are 36° and they add to 360°.</p><p>Number of sides = 360 ÷ 36 = 10</p></div>`,
+  check:C('A regular polygon has an exterior angle of 24°. How many sides?',['12','15','18','24'],1,'360 ÷ 24 = 15. This is Question 9.')},
+ {t:'Missing exterior angles',body:`<div class="ex"><span class="kicker">Exercise 5.3, Question 2</span><p>A triangle has exterior angles 136°, 125° and a°.</p><p>a = 360 − (136 + 125) = 99°</p></div>
+  <div class="ex"><span class="kicker">Exercise 5.3, Question 12</span><p>Three identical regular polygons meet round an equilateral triangle: interior angle = (360 − 60) ÷ 2 = 150°, exterior = 30°, sides = 360 ÷ 30 = 12</p></div>`,
+  check:C('A quadrilateral has exterior angles 103°, 55° and 90°. What is the fourth?',['112°','122°','102°','68°'],0,'360 − 248 = 112°.')}
+ ],
+ mistakes:[['Exterior angles of a hexagon add to 720°','The exterior angles of every polygon add to 360°.'],['Number of sides = 360 ÷ interior angle','Use the exterior angle: 360 ÷ exterior.']],
+ bq:[
+  Q('Exercise 5.3 · Question 1',subs([['a','Draw a hexagon.'],['b','Draw its exterior angles.'],['c','Explain why they add to 360°.']]),'Your own drawing. Walking round the hexagon you turn through each exterior angle in turn, and the total is one full turn: 360°.'),
+  Q('Exercise 5.3 · Question 2','Work out the lettered angles.'+subs([['a','A triangle with exterior angles 136°, 125° and a°'],['b','A quadrilateral with exterior angles 103°, 55°, 90° (a right angle) and b°'],['c','A pentagon with exterior angles 80°, 30°, 45°, 80° and c°']]),'a = 99°, b = 112°, c = 125°'),
+  Q('Exercise 5.3 · Question 3',subs([['a','When two sides at a corner are both extended, there are two exterior angles at that corner. Are they equal? Give a reason.'],['b','In a quadrilateral, four exterior angles are drawn, but not all on the same side. Do they add to 360°? Give a reason.']]),subs([['a','Yes: vertically opposite angles.'],['b','Yes. The vertically opposite angles are the same as the ones you turn through walking round.']])),
+  Q('Exercise 5.3 · Question 4','What are the exterior angles of'+subs([['a','an equilateral triangle'],['b','a square'],['c','a regular pentagon?']]),subs([['a','120°'],['b','90°'],['c','72°']])),
+  Q('Exercise 5.3 · Question 5',subs([['a','What is the sum of the exterior angles of an octagon?'],['b','Work out the exterior angle of a regular octagon.']]),subs([['a','360°'],['b','360 ÷ 8 = 45°']])),
+  Q('Exercise 5.3 · Question 6',subs([['a','Complete the table of exterior angles for regular polygons with 3, 4, 5, 6, 8 and 10 sides.'],['b','Derive a formula for the exterior angle of a regular polygon with n sides.'],['c','Use it for i 12 sides, ii 20 sides.']]),subs([['a','120°, 90°, 72°, 60°, 45°, 36°'],['b','360 ÷ n degrees'],['c','i 30° &nbsp; ii 18°']])),
+  Q('Exercise 5.3 · Question 7','The exterior angle of a regular polygon is 40°.'+subs([['a','Work out the number of sides.'],['b','Write the interior angle.']]),subs([['a','9'],['b','140°']])),
+  Q('Exercise 5.3 · Question 8',subs([['a','Work out the interior angle of a regular polygon when the exterior angle is i 30°, ii 20°, iii 10°.'],['b','Work out the number of sides of each.']]),subs([['a','i 150° &nbsp; ii 160° &nbsp; iii 170°'],['b','i 12 &nbsp; ii 18 &nbsp; iii 36']])),
+  Q('Exercise 5.3 · Question 9','Part of a regular polygon is shown. Its exterior angle is 24°. How many sides does it have?','15 sides'),
+  Q('Exercise 5.3 · Question 10','Work out the number of sides of a regular polygon when the exterior angle is'+subs([['a','45°'],['b','30°'],['c','18°'],['d','15°']]),subs([['a','8'],['b','12'],['c','20'],['d','24']])),
+  Q('Exercise 5.3 · Question 11','Two regular octagons meet at corner B. A is a corner of one octagon and C is a corner of the other.'+subs([['a','Show that angle ABC is a right angle.'],['b','Draw four regular octagons arranged around a square.']]),subs([['a','360 − 2 × 135 = 90°'],['b','Your own drawing.']])),
+  Q('Exercise 5.3 · Question 12','Three identical regular polygons are joined round an equilateral triangle. Work out the number of sides of each polygon. Show how you get your answer.','(360 − 60) ÷ 2 = 150° is the interior angle. The exterior angle is 180 − 150 = 30°. The number of sides is 360 ÷ 30 = 12.'),
+  Q('Exercise 5.3 · Question 13 (Think like a mathematician)',subs([['a','Show that a regular polygon can have an interior angle of 168° or 170°, but not 169°.'],['b','Each interior angle is 180 − '+F(360,'n')+' (1). The sum is (n − 2) × 180, so each angle is (n − 2) × 180 ÷ n (2). Do formulae (1) and (2) give the same answers?']]),'The course says "Answers will vary", and its reflection notes that the formulae do agree: it is easier to see if you write (n − 2) × 180 ÷ n as (180n − 360) ÷ n.')
+ ],checklist:['I know the exterior angles of a polygon add to 360°.','I can find the exterior angle of a regular polygon.','I can find the number of sides from the exterior angle.']},
+
+{id:'5.4',title:'Constructions',src:'Section 5.4',
+ goals:['construct angles of 60°, 45° and 30°','use a circle to draw a regular polygon'],
+ hook:{q:'Can you draw a perfect 60° angle without a protractor?',a:'Yes, with just a ruler and compasses. Equal arcs make an equilateral triangle, and every angle in it is 60°.'},
+ big:'Compasses copy lengths exactly. Equal lengths make equilateral triangles (60°), perpendicular bisectors make 90°, and bisecting halves any angle.',
+ steps:[
+ {t:'Constructing 60°',body:`<div class="ex"><span class="kicker">Worked example 5.5</span><p>Draw a line segment AB.</p><p>Open the compasses to the length of AB.</p><p>Draw arcs from A and from B. They cross at C.</p><p>Join A to C: angle CAB is 60°. Join B to C: angle CBA is 60°.</p></div>`,
+  vis:'construct',check:C('Why is angle CAB exactly 60°?',['Triangle ABC is equilateral','AB is a diameter','It is a right angle'],0,'AC, BC and AB all have the same length, so all three angles are 60°.')},
+ {t:'Constructing 45° and 30°',body:`<div class="ex"><span class="kicker">Worked example 5.4</span><p>Draw a line segment and its perpendicular bisector.</p><p>Bisect one of the right angles. This gives two angles of 45°.</p></div>
+  <div class="plain"><span class="kicker">And 30°</span><p>Construct 60°, then bisect it (Exercise 5.4, Question 1).</p></div>`,
+  vis:'construct2',check:C('How do you get 15°?',['Bisect 30°','Bisect 45°','Bisect 60°'],0,'15 is half of 30. This is Question 8b.')},
+ {t:'Inscribe a square in a circle',body:`<p>To <span class="kw">inscribe</span> a shape means to draw it inside a circle with every corner on the circle.</p>
+  <div class="ex"><span class="kicker">Worked example 5.3</span><p>Draw a circle and a diameter.</p><p>Construct the perpendicular bisector of the diameter. (Tip: put the compass point on the end of the diameter.)</p><p>The four points where the diameters meet the circle are the corners of a square.</p></div>`,
+  vis:'inscribe',check:C('In a circle of radius 6 cm, how long is each side of the inscribed square?',['6 cm','8.5 cm','12 cm','4 cm'],1,'Check your progress, Question 4: each side should be 8.5 cm.')},
+ {t:'Inscribe a hexagon and an octagon',body:`<div class="ex"><span class="kicker">Exercise 5.4, Question 9</span><p>Keep the compasses open at the radius. Step round the circle: you get 6 points. Join them to make a regular hexagon with sides equal to the radius.</p></div>
+  <div class="ex"><span class="kicker">Exercise 5.4, Question 4</span><p>Draw two perpendicular diameters, then bisect the right angles to get four diameters. Join the 8 ends: a regular octagon.</p></div>`,
+  vis:'inscribe2',check:C('Why do six radius-length steps fit exactly round a circle?',['Each step makes an equilateral triangle with the centre: 6 × 60° = 360°','Because 6 is even'],0,'Each side of the hexagon is a radius, so each triangle with the centre is equilateral.')}
+ ],
+ mistakes:[['Changing the compass width halfway through','Keep the compasses the same for arcs that must be equal.'],['Rubbing out construction arcs','Leave the arcs: they show your method.']],
+ bq:[
+  Q('Exercise 5.4 · Question 1',subs([['a','Construct an angle of 60°.'],['b','Bisect it to make 30°.'],['c','Check with a protractor.']]),'All the answers in this exercise are drawings. Check your accuracy by measuring, or ask a partner to measure.'),
+  Q('Exercise 5.4 · Question 2','Construct an equilateral triangle with sides 6 cm. Check it with a ruler and protractor.','Your own drawing: every side 6 cm and every angle 60°.'),
+  Q('Exercise 5.4 · Question 3','Draw a circle with radius 4 cm. Inscribe a square in it. Measure the sides of your square.','Your own drawing.'),
+  Q('Exercise 5.4 · Question 4',subs([['a','Construct two perpendicular diameters in a circle.'],['b','Construct a diameter bisecting each of them.'],['c','Join the ends to form a regular octagon.'],['d','What is the interior angle of a regular octagon?'],['e','Ask a partner to check the sides and angles.']]),'Your own drawing. A regular octagon has interior angles of 135° (Section 5.2).'),
+  Q('Exercise 5.4 · Question 5','Construct a triangle with angles 30°, 60° and 90°. Check: the longest side should be double the shortest side.','Your own drawing.'),
+  Q('Exercise 5.4 · Question 6','Construct an equilateral triangle. Use it to construct a triangle with angles 30°, 30° and 120°.','Your own drawing.'),
+  Q('Exercise 5.4 · Question 7','O is the centre of a circle. OAB and OCB are equilateral triangles, with A, B and C on the circle.'+subs([['a','Construct a copy.'],['b','Extend it to inscribe a regular hexagon.'],['c','What size are the angles of a regular hexagon?'],['d','Ask a partner to check.']]),'Your own drawing. A regular hexagon\'s angles are 120°.'),
+  Q('Exercise 5.4 · Question 8','Use a ruler and compasses to construct angles of'+subs([['a','120°'],['b','15°']]),'Your own drawings.'),
+  Q('Exercise 5.4 · Question 9','Draw a circle of radius 6 cm. Mark P on it. With the compass point on P, mark arcs of radius 6 cm on the circle, then keep going from each new point until you have six points. Join them. Check that the hexagon is regular with sides of 6 cm.','Your own drawing.'),
+  Q('Exercise 5.4 · Question 10','Construct a copy of'+subs([['a','a large equilateral triangle split into four identical equilateral triangles (join the midpoints of its sides)'],['b','a right-angled triangle made of four identical triangles with angles 30°, 60° and 90°']]),'Your own drawings.'),
+  Q('Exercise 5.4 · Question 11','Draw a large circle and inscribe a regular dodecagon (12 sides). What is each angle? Use this to check your drawing.','Your own drawing. Think about different ways to construct it and which is more accurate. Each angle is (12 − 2) × 180 ÷ 12 = 150°.'),
+  Q('Exercise 5.4 · Question 12','Construct copies of these patterns. How did you do it? Is there a better way?'+subs([['a','A six-pointed star made of two overlapping equilateral triangles (rotational symmetry of order 6)'],['b','An octagon divided by two horizontal and two vertical lines (rotational symmetry of order 4)']]),'Your own drawings.'),
+  Q('Exercise 5.4 · Question 13','Construct a copy of each rhombus: one with angles 60°, 120°, 60°, 120°, and one with angles 30°, 150°, 30°, 150°. Ask a partner to check.','Your own drawings.')
+ ],checklist:['I can construct 60°, 30° and 45° angles.','I can inscribe a square and a hexagon in a circle.']},
+
+{id:'5.5',title:'Pythagoras\' theorem',src:'Section 5.5',
+ goals:['learn the relationship between the three sides of a right-angled triangle','use two sides to calculate the third side'],
+ hook:{q:'How can a builder make a perfect right angle with just a tape measure?',a:'The 3-4-5 rule: mark a triangle with sides 3 m, 4 m and 5 m. The angle between the 3 m and 4 m sides is a right angle.'},
+ big:'In a right-angled triangle, the square of the hypotenuse equals the sum of the squares of the other two sides: a² + b² = c².',
+ steps:[
+ {t:'The hypotenuse',body:`<p>The <span class="kw">hypotenuse</span> is the longest side of a right-angled triangle. It is always <b>opposite the right angle</b>.</p>${RT('a','b','c')}<p class="tiny">c is the hypotenuse.</p>`,
+  check:C('Which side is the hypotenuse?',['The shortest side','The side opposite the right angle','The bottom side'],1,'The hypotenuse is opposite the right angle, and it is the longest side.')},
+ {t:'The 3-4-5 triangle',body:`<div class="ex"><span class="kicker">From the book</span><p>3² = 9, 4² = 16 and 5² = 25</p><p>9 + 16 = 25, so 3² + 4² = 5²</p></div><div class="bigm">a² + b² = c²</div>
+  <p>This is <span class="kw">Pythagoras' theorem</span>. Pythagoras was born on the Greek island of Samos and wrote a proof over 2500 years ago.</p>`,
+  vis:'pyth',check:C('Is a triangle with sides 6, 8 and 10 right-angled?',['Yes: 36 + 64 = 100','No'],0,'6² + 8² = 100 = 10².')},
+ {t:'Finding the hypotenuse: add',body:`${D5.we56}<div class="ex"><span class="kicker">Worked example 5.6</span><p>AC is the hypotenuse of triangle ADC. Call it x.</p><p>x² = 7.5² + 11.3² = 183.94</p><p>x = ${SQ('183.94')} = 13.6 cm to 1 d.p.</p></div><p class="tiny">${SQ('183.94')} is irrational, so round it.</p>`,
+  vis:'pyth',check:C('Legs 5 cm and 12 cm. How long is the hypotenuse?',['17 cm','13 cm','7 cm','169 cm'],1,'25 + 144 = 169, and √169 = 13.')},
+ {t:'Finding a shorter side: subtract',body:`${RT('3.5','a','6.0')}
+  <div class="ex"><span class="kicker">Worked example 5.7</span><p>Ari says a² = 6.0² + 3.5² = 48.25, so a = 6.9. He is wrong: the hypotenuse is the 6.0 cm side.</p><p>a² + 3.5² = 6.0²</p><p>a² = 6.0² − 3.5² = 23.75</p><p>a = ${SQ('23.75')} = 4.9 cm to 1 d.p.</p></div>`,
+  vis:'pythleg',check:C('Hypotenuse 15 cm, one side 9 cm. Find the other side.',['12 cm','17.5 cm','6 cm','24 cm'],0,'15² − 9² = 225 − 81 = 144, √144 = 12.')},
+ {t:'Pythagoras in real life',body:`<div class="ex"><span class="kicker">Exercise 5.5, Question 7</span><p>A 3.50 m ladder, foot 0.91 m from the wall:</p><p>height = ${SQ('3.50² − 0.91²')} = 3.38 m</p></div>
+  <div class="ex"><span class="kicker">Exercise 5.5, Question 6</span><p>A TV screen 70 cm wide and 39 cm high: diagonal = ${SQ('39² + 70²')} = 80 cm</p></div>`,
+  check:C('A ladder leans on a wall. Which side is the hypotenuse?',['The wall','The ground','The ladder'],2,'The ladder is opposite the right angle between the wall and the ground.')}
+ ],
+ mistakes:[['Adding when the hypotenuse is given','If you know the hypotenuse, subtract: a² = c² − b².'],['Forgetting the square root','After c² = 169, take the square root: c = 13.']],
+ bq:[
+  Q('Exercise 5.5 · Question 1','Calculate the length of the hypotenuse.'+subs([['a','sides 6 cm and 8 cm'],['b','sides 5 cm and 12 cm'],['c','sides 8 cm and 15 cm']]),subs([['a','10 cm'],['b','13 cm'],['c','17 cm']])),
+  Q('Exercise 5.5 · Question 2','Calculate the hypotenuse, to 1 decimal place.'+subs([['a','2.5 cm and 3.5 cm'],['b','7.4 cm and 9.6 cm'],['c','13.5 cm and 4.5 cm']]),subs([['a','4.3 cm'],['b','12.1 cm'],['c','14.2 cm']])),
+  Q('Exercise 5.5 · Question 3','Calculate the missing side.'+subs([['a','one side 9 cm, hypotenuse 15 cm'],['b','one side 6.4 m, hypotenuse 8.0 m'],['c','one side 40 mm, hypotenuse 85 mm']]),subs([['a','12 cm'],['b','4.8 m'],['c','75 mm']])),
+  Q('Exercise 5.5 · Question 4','Calculate the missing side, to 1 decimal place.'+subs([['a','one side 4.5 cm, hypotenuse 8.0 cm'],['b','one side 8.9 cm, hypotenuse 10.2 cm'],['c','the two sides next to the right angle are 12.6 m and 4.8 m']]),subs([['a','6.6 cm'],['b','5.0 cm'],['c','13.5 m']])),
+  Q('Exercise 5.5 · Question 5','You can leave answers as square roots. In a spiral of right-angled triangles, AB = BC = CD = DE = 1 unit.'+subs([['a','Calculate AC.'],['b','Calculate AD.'],['c','Calculate AE.'],['d','Show how the pattern continues.'],['e','Will there be a line of length 3? Or 4?']]),subs([['a',SQ(2)],['b',SQ(3)],['c',SQ(4)+' = 2'],['d','Your own drawing continuing the spiral.'],['e','Yes: the 3rd hypotenuse is '+SQ(4)+' = 2, the 8th is '+SQ(9)+' = 3 and the 15th is '+SQ(16)+' = 4.']])),
+  Q('Exercise 5.5 · Question 6','The size of a TV screen is the length of its diagonal.'+subs([['a','A screen is 70 cm wide and 39 cm high. Show it is an 80 cm screen.'],['b','Another is 105 cm wide and 58 cm high. Calculate its size.']]),subs([['a',SQ('39² + 70²')+' = 80 cm to the nearest cm'],['b',SQ('105² + 58²')+' = 120 cm to the nearest cm']])),
+  Q('Exercise 5.5 · Question 7','A 3.50 m ladder leans against a wall. Its foot is 0.91 m from the wall. How far up the wall does it reach, to the nearest centimetre?',SQ('3.50² − 0.91²')+' = 3.38 m'),
+  Q('Exercise 5.5 · Question 8',subs([['a','Construct a triangle with sides 5.1 cm, 6.8 cm and 8.5 cm.'],['b','Use a calculation to show it has a right angle.'],['c','Check your drawing.']]),subs([['a','Your own drawing.'],['b','5.1² + 6.8² = 72.25 = 8.5², so it is right-angled.'],['c','Your own check.']])),
+  Q('Exercise 5.5 · Question 9','Two sides of a right-angled triangle are 15 cm and 20 cm. What could the third side be? Give reasons.','Either '+SQ('15² + 20²')+' = 25 cm (if 20 cm is not the hypotenuse), or '+SQ('20² − 15²')+' = 13.2 cm to 1 d.p. (if 20 cm is the hypotenuse).'),
+  Q('Exercise 5.5 · Question 10','A soccer pitch is 90 m long and 40 m wide. Zena walks from corner A to the opposite corner B round the edge.'+subs([['a','How far does she walk?'],['b','How much shorter is the straight line from A to B?']]),subs([['a','90 + 40 = 130 m'],['b','130 − '+SQ('90² + 40²')+' = 31.5 m to 1 d.p.']])),
+  Q('Exercise 5.5 · Question 11','A square has sides 25 mm. A rectangle is 20 mm by 30 mm.'+subs([['a','Show they have the same perimeter.'],['b','Calculate each diagonal.'],['c','Sketch another rectangle with the same perimeter and calculate its diagonal.'],['d','Sofia says: "When a square and a rectangle have the same perimeter, the square has a smaller diagonal than the rectangle." What evidence supports this?']]),subs([['a','Square: 4 × 25 = 100 mm. Rectangle: 2 × 20 + 2 × 30 = 100 mm.'],['b','Square 35.4 mm, rectangle 36.1 mm'],['c','Your own answer.'],['d','The values support Sofia\'s conjecture. The square has the smallest diagonal for a given perimeter, and this is true for any perimeter.']])),
+  Q('Exercise 5.5 · Question 12','One side of a right-angled triangle is '+SQ(17)+' units. The other two sides are whole numbers. How long are they? Is there more than one answer?','Two answers: the shorter sides are 1 and 4 (1 + 16 = 17), or the hypotenuse is 9 and the other side is 8 (81 − 64 = 17).'),
+  Q('Exercise 5.5 · Question 13 (Think like a mathematician)',subs([['a','A rectangle is 7.5 by 5.5 units. Show its diagonal is '+SQ('86.5')+' units.'],['b','A rectangle is x by 5.5 units. Show its diagonal is '+SQ('x² + 30.25')+'.'],['c','A rectangle is x by y. Find a formula for its diagonal d.']]),subs([['a','7.5² + 5.5² = 86.5, so the diagonal is '+SQ('86.5')],['b','x² + 5.5² = x² + 30.25'],['c','d = '+SQ('x² + y²')]])),
+  Q('Exercise 5.5 · Question 14',subs([['a','A square has sides of 7 units. Show that i its diagonal is '+SQ(98)+', ii '+SQ(98)+' = 7'+SQ(2)+'.'],['b','A square has sides of x. Show its diagonal is x'+SQ(2)+'.']]),subs([['a','i 7² + 7² = 98 &nbsp; ii '+SQ(98)+' = '+SQ('49 × 2')+' = 7'+SQ(2)],['b',SQ('x² + x²')+' = '+SQ('2x²')+' = x'+SQ(2)]]))
+ ],checklist:['I can spot the hypotenuse.','I can find the hypotenuse by adding squares.','I can find a shorter side by subtracting squares.']}
+];
+
+const KEYWORDS5=[
+ {id:'k51',topic:'5.2',t:'regular polygon',d:'A polygon with all sides the same length and all angles the same size.'},
+ {id:'k52',topic:'5.3',t:'exterior angle of a polygon',d:'The angle between one side and the next side extended: the angle you turn at a corner.'},
+ {id:'k53',topic:'5.4',t:'inscribe',d:'Draw a shape inside a circle with all its corners on the circle.'},
+ {id:'k54',topic:'5.4',t:'construct (geometry)',d:'Draw accurately using a ruler and compasses.'},
+ {id:'k55',topic:'5.5',t:'hypotenuse',d:'The longest side of a right-angled triangle, opposite the right angle.'},
+ {id:'k56',topic:'5.5',t:'Pythagoras\' theorem',d:'In a right-angled triangle, a² + b² = c², where c is the hypotenuse.'}
+];
+const CYP5=[
+ {p:'1',q:'Work out the value of a. Justify your answer.'+D5.cyp1,a:'a = 65°. The reason can use corresponding angles and the exterior angle of a triangle: 113 − 48 = 65.'},
+ {p:'2',q:'The angles of a pentagon are x°, x°, x°, x° and (x + 10)°. Work out the largest angle.',a:'116° (x = 106)'},
+ {p:'3',q:'AB, BC and CD are three sides of a regular polygon. The exterior angle at C is 36°. How many sides does the polygon have?',a:'10 sides'},
+ {p:'4',q:subs([['a','Construct a square inside a circle with radius 6 cm, using only a ruler and compasses.'],['b','Measure the side of the square.']]),a:subs([['a','Your own drawing.'],['b','Each side should be 8.5 cm.']])},
+ {p:'5',q:'The side of a square is 25 m. How long is the diagonal?',a:'The course accepts 35 m, 35.3 m or 35.36 m. <span class="tiny">Note: '+SQ(1250)+' = 35.355…, so to 1 decimal place it is 35.4 m.</span>'},
+ {p:'6',q:'Calculate the lengths x and y.'+D5.cyp6,a:'x = 10 and y = 24'}
+];
+const QUIZ5=[
+ C('Angles in a quadrilateral add to',['180°','360°','540°','720°'],1,'Two triangles: 2 × 180.'),
+ C('A triangle\'s exterior angle equals',['the angle next to it','the two opposite inside angles added','180°'],1,'Exterior angle of a triangle.'),
+ C('Alternate angles make which shape?',['F','Z','X','C'],1,'Z for alternate.'),
+ C('Corresponding angles make which shape?',['F','Z','X','U'],0,'F for corresponding.'),
+ C('Sum of the angles of a pentagon?',['360°','540°','720°','900°'],1,'3 × 180.'),
+ C('Sum of the angles of a decagon?',['1440°','1800°','1080°','1260°'],0,'8 × 180.'),
+ C('Each angle of a regular hexagon?',['108°','120°','135°','144°'],1,'720 ÷ 6.'),
+ C('Exterior angles of any polygon add to',['180°','360°','540°','depends on n'],1,'One full turn.'),
+ C('Exterior angle of a regular octagon?',['45°','40°','36°','135°'],0,'360 ÷ 8.'),
+ C('A regular polygon has an exterior angle of 40°. Sides?',['8','9','10','12'],1,'360 ÷ 40.'),
+ C('Interior angle when the exterior angle is 20°?',['160°','340°','70°','140°'],0,'180 − 20.'),
+ C('Which construction gives 60°?',['An equilateral triangle with compasses','A perpendicular bisector','Bisecting 90°'],0,'Equal arcs.'),
+ C('Hypotenuse with sides 8 and 15?',['17','23','13','289'],0,'64 + 225 = 289.'),
+ C('Hypotenuse 10, one side 6. The other side?',['8','4','11.7','16'],0,'100 − 36 = 64.'),
+ C('Is 5.1, 6.8, 8.5 right-angled?',['Yes','No'],0,'26.01 + 46.24 = 72.25 = 8.5².')
+];
+CHAPTERS_DATA[5]={title:'Angles',topics:TOPICS5,kw:KEYWORDS5,cyp:CYP5,quiz:QUIZ5,cypNote:'The online course does not show marks for these questions. Diagrams are redrawn from the book.'};
+
+/* =================== CHAPTER 6 CONTENT (Statistical investigations) =================== */
+const TOPICS6=[
+{id:'6.0',title:'Warm-up: Getting started',src:'Chapter 6 Introduction',
+ goals:['remember the three types of data','remember what a representative sample is'],
+ hook:{q:'"92% of people taking vitamin pills said the pills gave them more energy." Should you believe it?',a:'Not yet! First ask: who did the survey, how big was the sample, how was it chosen, and what does "more energy" actually mean?'},
+ big:'Before you believe a survey result, check who did it, how, and with what sample.',
+ steps:[
+ {t:'Three types of data',refresh:true,body:`<div class="scrollx"><table class="dt"><tr><th>Continuous</th><td>measured, can be any value</td><td>length or width of a car</td></tr><tr><th>Discrete</th><td>counted, whole numbers</td><td>number of doors or passenger seats</td></tr><tr><th>Categorical</th><td>words or groups</td><td>colour or manufacturer</td></tr></table></div><p class="tiny">Examples from the book's car park survey.</p>`,
+  vis:'datatype',check:C('Shoe size is which type of data?',['Continuous','Discrete','Categorical'],1,'The book calls shoe sizes discrete numerical data: they come in set steps.')},
+ {t:'Choosing a random sample',refresh:true,body:`<div class="ex"><span class="kicker">From the book's warm-up</span><p>To pick 50 people from 632: give each person a number from 1 to 632.</p><p>Use a calculator or computer to generate 50 random numbers between 1 and 632.</p><p>Ignore any number that repeats.</p></div>`,
+  vis:'randpick',check:C('A random number repeats. What do you do?',['Choose that person twice','Ignore it and generate another','Stop'],1,'Each person can only be in the sample once.')},
+ {t:'Is this survey reliable?',refresh:true,body:`<p>The book lists survey results found online, such as "The average reading age in Britain is 9 years." Before believing one, ask:</p>
+  <ul><li>Who did the survey?</li><li>How was it carried out?</li><li>How big was the sample?</li><li>How was the sample chosen? Was it representative?</li></ul>
+  <div class="plain"><span class="kicker">Also check</span><p>Is someone trying to persuade you, for example to sell a product? Is the subject clearly defined: what exactly is "reading age"?</p></div>`,
+  check:C('A company selling vitamin pills did the survey. Why be careful?',['They might want to persuade you to buy','The sample is too big','Vitamins are healthy'],0,'People selling a product may not be neutral.')}
+ ],
+ mistakes:[['Trusting any percentage you see','Check the sample size, who asked and how.'],['Height is always continuous','It can be categorical if you group people as short, average or tall.']],
+ bq:[
+  Q('Getting started · Question 1','You are doing a statistical survey of cars in a car park. Give two examples of'+subs([['a','continuous data'],['b','discrete data'],['c','categorical data']]),'Your own answers. The book suggests: a length or width; b number of doors or passenger seats; c colour or manufacturer.'),
+  Q('Getting started · Question 2','You want to test the hypothesis that older learners in your school do more homework than younger learners. Describe two ways to choose a representative sample of 20 learners.','Your own answer. For example: using random numbers for positions on the register, or choosing a set number from each year group.'),
+  Q('Getting started · Question 3','Explain how you could use random numbers to pick a sample of 50 people from 632 people.','Give each person a number. Generate 50 numbers between 1 and 632. Ignore any number that repeats.')
+ ],checklist:[]},
+
+{id:'6.1',title:'Data collection and sampling',src:'Section 6.1',
+ goals:['plan how to collect data to test predictions','use data to make inferences and generalisations','compare ways to choose a sample and pick the best'],
+ hook:{q:'Are taller people\'s hands bigger? How would you find out?',a:'Ask a clear question, make a prediction, decide what to measure, choose a fair sample, try it out in a small trial, then collect the data.'},
+ big:'Question → prediction → decide the data → choose a sample → small trial → collect → generalise.',
+ steps:[
+ {t:'Questions and predictions',body:`<p>Start with statistical questions, then turn them into predictions you can test.</p>
+  <div class="ex"><span class="kicker">From the book</span><p>Question: Are height and shoe size connected?</p><p>Prediction: Taller boys have a larger shoe size than shorter boys.</p><p>Question: Do people with large hands also have large feet?</p><p>Prediction: Girls with large hands also have large feet.</p></div>`,
+  vis:'plan',check:C('Which of these is a prediction you can test?',['Are arm length and leg length connected?','People with long arms also have long legs.'],1,'A prediction is a statement you can check with data. A question asks.')},
+ {t:'Deciding what data to collect',body:`<p>The same thing can be measured in different ways.</p>
+  <div class="ex"><span class="kicker">From the book</span><p>Height: continuous if you use a tape measure, or categorical if you group people as short, average or tall.</p><p>Shoe size: discrete numerical data.</p><p>Measuring arm or leg length might make people uncomfortable, so think carefully.</p></div>`,
+  vis:'datatype',check:C('Height grouped as short, average or tall is',['continuous','discrete','categorical'],2,'Groups with names are categorical.')},
+ {t:'Worked example 6.1',body:`<div class="ex"><span class="kicker">Worked example 6.1</span><p>Prediction: teenagers with small feet have small hands, and teenagers with large feet have large hands.</p><p>Feet: foot length is continuous and more accurate, but measuring feet might be embarrassing. Shoe size is easy to collect.</p><p>Hands: draw round the hand on squared paper and count squares, or measure the hand span or hand length (wrist to the end of the middle finger).</p><p>Measuring a length is easier than counting squares. Do a trial with both hand span and hand length to see which works better.</p></div>`,
+  vis:'hand',check:C('Why might shoe size be better than foot length here?',['It is more accurate','It is less embarrassing and easy to collect','It is continuous'],1,'The book says measuring feet might be embarrassing, so shoe size is more appropriate.')},
+ {t:'Choosing a sample and trialling',body:`<p>Ways to choose a sample include names from a hat, random numbers, or taking learners from different groups in the school.</p>
+  <p>Test your method in a small <b>trial</b> first. You might change your design afterwards.</p>
+  <p>Then use your results to make a <b>generalisation</b>, such as "Older learners are better at estimating."</p>`,
+  vis:'randpick',check:C('Why do a small trial first?',['To finish faster','To find problems and improve the design','To avoid collecting data'],1,'The book says you might want to change your design after a trial.')}
+ ],
+ mistakes:[['Asking a question instead of making a prediction','A prediction is a statement: "Girls with large hands also have large feet."'],['Skipping the trial','A small trial shows problems before you collect lots of data.']],
+ bq:[
+  Q('Exercise 6.1 · Question 1','Investigate learners\' ability to estimate (a line\'s length, an angle, items in a jar, a length of time, or something else).'+subs([['a','Write some questions about estimation.'],['b','Write some predictions to test.'],['c','Describe different ways to choose a sample.'],['d','Which sample method is best? Why?'],['e','Carry out a small trial. How could you improve it?'],['f','Make a generalisation from your trial.']]),'Your own answers. The book suggests, for example: questions such as "Can boys estimate more accurately than girls?" or "Can learners accurately estimate how long one minute is?"; predictions such as "Learners tend to underestimate one minute of time."; samples from names in a hat, random numbers or different groups in the school; generalisations such as "Older learners are better at estimating."'),
+  Q('Exercise 6.1 · Question 2','Investigate learners\' attitudes to the school day (lesson length, number of lessons, breaks, start and finish times).'+subs([['a','Write some questions.'],['b','Write some predictions.'],['c','Describe ways to choose a sample.'],['d','Which is best? Why?'],['e','Carry out a small trial. How could you improve it?'],['f','Make a generalisation.']]),'Your own answers. The book suggests, for example: "Are lessons too long?", "Should school start earlier?"; predictions such as "Learners want fewer lessons in a day." or "Learners would prefer to start school one hour later."; a generalisation such as "Learners think lessons should be longer."'),
+  Q('Exercise 6.1 · Question 3','Investigate news articles (readability, length, vocabulary or other aspects).'+subs([['a–f','Questions, predictions, sampling, best method, trial and generalisation, as before.'],['g','What three pieces of advice would you give someone planning a statistical investigation?']]),'Your own answers, for example about word lengths, sentence lengths, article lengths or vocabulary. Reflection: your own advice about making predictions and choosing a sample to test them.')
+ ],checklist:['I can write questions and predictions.','I can decide what data to collect.','I can choose a sample and plan a trial.']},
+
+{id:'6.2',title:'Bias',src:'Section 6.2',
+ goals:['learn about sources of bias','choose an unbiased sample','spot wrong or misleading information'],
+ hook:{q:'"Do you prefer the new recipe?" 85% said yes. Is the new recipe really better?',a:'Maybe not. The question suggests the answer "yes". That is bias. A fairer question is "Which drink do you prefer?"'},
+ big:'A sample that does not represent the whole population is biased, and biased data can give the wrong answer.',
+ steps:[
+ {t:'What is bias?',body:`<p>Results are only as good as the data. A sample that does not represent the whole population is <span class="kw">biased</span>.</p>
+  <div class="ex"><span class="kicker">Worked example 6.2</span><p>A survey about a new library is done in a supermarket from 09:00 to 12:00 on a Wednesday and Thursday.</p><p>Biased: few people who work during the day are there, and it may include people who never use the library.</p><p>Better: survey in different places and at different times, for example at the library on different days and times.</p></div>`,
+  vis:'biasspot',check:C('Why is a weekday-morning survey biased?',['People who work in the day are missed','The sample is too big','Mornings are quiet'],0,'People at work during the day are underrepresented.')},
+ {t:'A representative sample: use proportions',body:`<div class="ex"><span class="kicker">Worked example 6.3</span><p>A company has 187 men and 362 women. Choose a sample of 40.</p><p>Total: 187 + 362 = 549</p><p>Men: ${F(187,549)} × 100% = 34.1%</p><p>34.1% of 40 = 0.341 × 40 = 14 (nearest whole number)</p><p>So 14 men and 26 women.</p></div><p>Other things to consider: age, job and salary.</p>`,
+  vis:'propsample',check:C('200 girls and 150 boys. How many girls in a sample of 30?',['15','17','20','13'],1,'200 ÷ 350 × 30 = 17.1, so 17 girls and 13 boys. This is Question 1.')},
+ {t:'Biased questions',body:`<p>A question can push people towards an answer.</p>
+  <div class="ex"><span class="kicker">Exercise 6.2, Question 7</span><p>Biased: "Do you think entry to this exhibition should be free?" (people are likely to say yes)</p><p>Better: "What is a fair price for entry to this exhibition?"</p><p>Biased: "Do you agree that global warming is caused by humans?"</p><p>Better: "What do you think is the cause of global warming?"</p></div>`,
+  vis:'biasq',check:C('Which question is fairer?',['Do you prefer the new recipe?','Which drink do you prefer?'],1,'It doesn\'t suggest an answer. This is Question 6.')},
+ {t:'Who replies?',body:`<p>When only some people reply, the replies may not be representative.</p>
+  <div class="ex"><span class="kicker">Exercise 6.2, Questions 5 and 8</span><p>350 questionnaires, 105 replies: 30%. The people who reply might all have a similar opinion.</p><p>A hotel's online survey: people are more likely to reply if they have a complaint.</p></div>`,
+  check:C('105 replies out of 350. What percentage replied?',['30%','35%','10.5%','70%'],0,'105 ÷ 350 × 100 = 30%.')},
+ {t:'Misleading graphs',body:`<p>A graph is <span class="kw">misleading</span> if it gives the wrong impression. A common trick: the vertical axis doesn't start at zero, so small differences look huge.</p>
+  <div class="ex"><span class="kicker">Exercise 6.2, Question 10</span><p>Marcus's gym bar chart starts at 10. Men 18 and women 12 on Monday look very different. He also used only 30 visitors, which is too small a sample.</p></div>`,
+  vis:'axis',check:C('How do you fix a misleading bar chart?',['Start the vertical axis at 0 with an even scale','Make the bars thinner','Use brighter colours'],0,'The book: the vertical axis should start at 0 with a uniform scale.')}
+ ],
+ mistakes:[['Any big sample is unbiased','A big sample from the wrong place or time is still biased.'],['Splitting a sample equally between groups','Use proportions: 34.1% men means 14 out of 40.']],
+ bq:[
+  Q('Exercise 6.2 · Question 1','A college has 200 girls and 150 boys. You want a representative sample of 30. How many girls and boys should you choose?','17 girls and 13 boys'),
+  Q('Exercise 6.2 · Question 2','An advert says: "In a survey of 142 customers, 85% said Supremo Shampoo made their hair feel softer."'+subs([['a','What is the purpose of the advert?'],['b','List two possible sources of bias.']]),subs([['a','To encourage people to buy Supremo Shampoo.'],['b','For example: how the sample was chosen, a question that suggests an answer, people giving the answer they think the questioner wants.']])),
+  Q('Exercise 6.2 · Question 3','You need the opinions of a large sample of people.'+subs([['a','Give two advantages of using social media.'],['b','Give two disadvantages.']]),subs([['a','For example: it is cheap, it is quick, it gives a large sample.'],['b','For example: many people don\'t use social media, many won\'t reply, and people who reply might have strong opinions.']])),
+  Q('Exercise 6.2 · Question 4','The numbers of students in a college:<div class="scrollx"><table class="dt"><tr><th></th><th>Male</th><th>Female</th><th>Total</th></tr><tr><th>Age 16</th><td>50</td><td>75</td><td>125</td></tr><tr><th>Age 17</th><td>42</td><td>92</td><td>134</td></tr><tr><th>Total</th><td>92</td><td>167</td><td>259</td></tr></table></div>You want a representative sample of 40.'+subs([['a','How many should be 16-year-old males?'],['b','How many should be females?'],['c','A bar chart of the data has its vertical axis starting at 30. Why is it misleading?'],['d','Draw an improved graph.']]),subs([['a','8'],['b','26'],['c','For example: the vertical axis starts at 30, not 0.'],['d','Your own graph: start the vertical axis at 0 and use an even scale.']])),
+  Q('Exercise 6.2 · Question 5','A statistician gives out 350 questionnaires about a new housing development and gets 105 replies.'+subs([['a','Work out the percentage of replies.'],['b','How might the low percentage cause bias?']]),subs([['a','30%'],['b','The people who reply might all have a similar opinion and not be representative.']])),
+  Q('Exercise 6.2 · Question 6','People tasted the original and a new recipe of a drink and were asked, "Do you prefer the new recipe?" 85% said yes.'+subs([['a','Why might this be biased?'],['b','How could you arrange the tasting to avoid bias?']]),subs([['a','The question suggests the answer the questioner wants: "yes".'],['b','For example: don\'t say which is the new recipe, ask "Which drink do you prefer?", and give half the people the original first and half second.']])),
+  Q('Exercise 6.2 · Question 7','For each question, i explain why it gives a biased result, ii rewrite it.'+subs([['a','Do you agree that global warming is caused by humans?'],['b','Do you think entry to this exhibition should be free?'],['c','Are you overweight?'],['d','Do you think you take enough exercise?']]),subs([['a','i People might agree just to avoid conflict. ii What do you think is the cause of global warming?'],['b','i People are likely to say yes. ii What is a fair price for entry to this exhibition?'],['c','i People won\'t want to admit it, and it is too personal. ii For example: "Do you weigh less than …?" with a particular value.'],['d','i People might not know what "enough" is. ii How many times a week do you exercise, such as walking for 30 minutes, cycling or going to a gym?']])),
+  Q('Exercise 6.2 · Question 8','Hotel customers are asked to complete an online survey about service and value for money. How could the results be biased?','People are more likely to reply if they have a complaint.'),
+  Q('Exercise 6.2 · Question 9','You will survey 120 customers in a supermarket on a Sunday: equal numbers of men and women, with 25% of the sample under 30. Describe how you will choose your sample and when you will do the survey.','Choose men and women of different ages in the correct proportions, at different times of day:<div class="scrollx"><table class="dt"><tr><th></th><th>Men</th><th>Women</th></tr><tr><th>Under 30</th><td>15</td><td>15</td></tr><tr><th>30 or more</th><td>45</td><td>45</td></tr></table></div>Ask about age first. When a group is full, don\'t ask any more people in that group.'),
+  Q('Exercise 6.2 · Question 10','Marcus records the first 30 gym visitors on a Monday evening and on a Friday evening.<div class="scrollx"><table class="dt"><tr><th></th><th>Men</th><th>Women</th><th>Total</th></tr><tr><th>Monday</th><td>18</td><td>12</td><td>30</td></tr><tr><th>Friday</th><td>13</td><td>17</td><td>30</td></tr></table></div>His bar chart\'s vertical axis starts at 10. Marcus says: "More men than women use the gym on a Monday evening. More women than men use the gym on a Friday evening."'+subs([['a','Are his conclusions valid? Why?'],['b','Why is his diagram misleading?'],['c','Draw an improved diagram.']]),subs([['a','No. For example: the sample is too small to make a valid conclusion.'],['b','The scale doesn\'t start at zero, so the differences between men and women look bigger than they are.'],['c','Your own diagram: start the vertical axis at 0 and use an even scale.']]))
+ ],checklist:['I can explain why a sample is biased.','I can work out a representative sample using proportions.','I can rewrite a biased question.','I can spot a misleading graph.']}
+];
+
+const KEYWORDS6=[
+ {id:'k61',topic:'6.0',t:'continuous data',d:'Measured data that can take any value, like length.'},
+ {id:'k62',topic:'6.0',t:'discrete data',d:'Counted data with set values, like the number of doors.'},
+ {id:'k63',topic:'6.0',t:'categorical data',d:'Data in named groups, like colour.'},
+ {id:'k64',topic:'6.0',t:'representative sample',d:'A sample that has the same mix of people as the whole population.'},
+ {id:'k65',topic:'6.2',t:'bias',d:'When a sample or question doesn\'t fairly represent the whole population.'},
+ {id:'k66',topic:'6.2',t:'misleading',d:'Giving the wrong impression, for example a graph whose axis doesn\'t start at zero.'}
+];
+const CYP6=[
+ {p:'1',q:'You are finding out people\'s opinions about different types of cake.'+subs([['a','Give three examples of questions you could ask.'],['b','Write a prediction for each question.']]),a:subs([['a','For example: Which cake tastes best? Which cake looks most attractive? Do you dislike any of the cakes?'],['b','For example: People will prefer type A. Type A looks most attractive. Most people dislike type A.']])},
+ {p:'2',q:'You want to survey the parents of learners in your school. Describe a good way to select a sample of 20 parents, and give a reason.',a:'Your own answer. For example: using random numbers, or using registers and a set number from each year.'},
+ {p:'3',q:'A train company gives a questionnaire to 100 customers on the 08:00 train on a Monday morning.'+subs([['a','Describe how this sample will be biased.'],['b','Suggest a less biased sample.']]),a:subs([['a','It will be biased towards people travelling to work.'],['b','Choose people on trains on different days and at different times of day.']])}
+];
+const QUIZ6=[
+ C('Colour of a car is',['continuous','discrete','categorical'],2,'Named groups.'),
+ C('Number of passenger seats is',['continuous','discrete','categorical'],1,'Counted.'),
+ C('Length of a car is',['continuous','discrete','categorical'],0,'Measured.'),
+ C('Random numbers: one repeats. You',['ignore it','pick that person twice'],0,'Each person once.'),
+ C('Which is a prediction?',['Do tall boys have big feet?','Taller boys have a larger shoe size than shorter boys.'],1,'A testable statement.'),
+ C('A small trial helps you',['improve the design','avoid collecting data'],0,'Find problems early.'),
+ C('A sample that does not represent the population is',['random','biased','discrete'],1,'Definition of bias.'),
+ C('187 men, 362 women, sample 40. Men?',['14','20','19','26'],0,'187/549 × 40 ≈ 14.'),
+ C('200 girls, 150 boys, sample 30. Boys?',['15','13','17','10'],1,'150/350 × 30 ≈ 13.'),
+ C('"Do you prefer the new recipe?" is',['a fair question','a leading (biased) question'],1,'It suggests yes.'),
+ C('Who is most likely to reply to a hotel survey?',['People with a complaint','Everyone equally'],0,'From Question 8.'),
+ C('A bar chart\'s axis starts at 30. It is',['misleading','fine'],0,'Differences look bigger.'),
+ C('A 08:00 Monday train sample is biased towards',['people travelling to work','tourists'],0,'Check your progress Q3.'),
+ C('105 replies from 350 is',['30%','35%','40%','10%'],0,'105/350.'),
+ C('Survey of 30 gym visitors is',['too small to be sure','perfect'],0,'Marcus\'s sample.')
+];
+CHAPTERS_DATA[6]={title:'Statistical investigations',topics:TOPICS6,kw:KEYWORDS6,cyp:CYP6,quiz:QUIZ6,cypNote:'The online course does not show marks for these questions. Many answers in this chapter are your own ideas: the book gives examples, not one right answer.'};
+
 /* =================== FOUNDATIONS (before Chapter 1): extra practice, not from the book =================== */
 const TOPICS0=[
 {id:'0.1',title:'Basic division',src:'Foundations',
@@ -1659,6 +2063,132 @@ Object.assign(INIT,{
  flip(el){const M=$('#fpM',el);const f=()=>{const m=+M.value,a=2*m,b=5*m;const {h,X}=nline(-16,16,4);
    let s=h+`<circle cx="${X(a)}" cy="60" r="8" fill="${COL.sage}"/><text x="${X(a)}" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="${COL.sage}" font-family="JetBrains Mono">${ns(a)}</text><circle cx="${X(b)}" cy="60" r="8" fill="${COL.rose}"/><text x="${X(b)}" y="${a===b?22:38}" text-anchor="middle" font-size="13" font-weight="800" fill="${COL.rose}" font-family="JetBrains Mono">${ns(b)}</text>`;
    $('#fpSvg',el).innerHTML=s;const sg=a<b?'&lt;':a>b?'&gt;':'=';$('#fpOut',el).innerHTML=`2 × ${nb(m)} ${sg} 5 × ${nb(m)} → ${ns(a)} ${sg} ${ns(b)}<small>${m<0?'Multiplying by a negative flips the sign':m>0?'A positive number keeps the sign the same':'Multiplying by 0 makes both sides 0'}</small>`;};M.oninput=f;f();}
+});
+
+/* =================== CHAPTERS 5 & 6 VISUALS =================== */
+const deg=d=>d*Math.PI/180;
+function regPoly(n,cx,cy,r,rot=-90){return Array.from({length:n},(_,i)=>[cx+r*Math.cos(deg(rot+360*i/n)),cy+r*Math.sin(deg(rot+360*i/n))]);}
+const ptsStr=P=>P.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+function arcPath(V,A,B,r){let a1=Math.atan2(A[1]-V[1],A[0]-V[0]),a2=Math.atan2(B[1]-V[1],B[0]-V[0]);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return {d:`M${V[0]+r*Math.cos(a1)} ${V[1]+r*Math.sin(a1)} A${r} ${r} 0 0 ${d>0?1:0} ${V[0]+r*Math.cos(a1+d)} ${V[1]+r*Math.sin(a1+d)}`,m:a1+d/2};}
+const svgT=(x,y,t,s=14,c)=>`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${s}" font-weight="800" fill="${c||COL.espresso}" font-family="JetBrains Mono,monospace">${t}</text>`;
+
+Object.assign(VIS,{
+ trisum:()=>W_('trisum',pickRow('ts',['Triangle','Quadrilateral'])+`<svg viewBox="0 0 340 210" id="tsSvg" role="img" aria-label="Shape with its angles"></svg><div class="readout" id="tsOut"></div><div class="row" style="justify-content:center">${sl('tsA',20,120,70,'First angle')}${sl('tsB',20,120,80,'Second angle')}</div>`,'Change two angles. The last one is whatever is left over.'),
+ parallel:()=>W_('parallel',pickRow('pl',['Corresponding','Alternate','Vertically opposite','Co-interior'])+`<svg viewBox="0 0 340 220" id="plSvg" role="img" aria-label="Parallel lines and a transversal"></svg><div class="readout" id="plOut"></div>${sl('plA',25,155,60,'Angle of the crossing line')}`,'Slide to tilt the crossing line. The highlighted pair keeps its rule.'),
+ isos:()=>W_('isos',`<svg viewBox="0 0 340 200" id="isSvg" role="img" aria-label="Isosceles triangle"></svg><div class="readout" id="isOut"></div>${sl('isT',20,160,80,'Top angle')}`,'Equal sides (tick marks) mean equal base angles.'),
+ polysum:()=>W_('polysum',`<svg viewBox="0 0 340 230" id="psSvg" role="img" aria-label="Polygon split into triangles"></svg><div class="readout" id="psOut"></div>${sl('psN',3,12,5,'Number of sides, n')}`,'From one corner, a polygon splits into n − 2 triangles.'),
+ tess:()=>W_('tess',pickRow('tz',['Equilateral triangles','Squares','Regular hexagons','Regular pentagons'])+`<svg viewBox="0 0 340 200" id="tzSvg" role="img" aria-label="Shapes meeting at a point"></svg><div class="readout" id="tzOut"></div>`,'Shapes tessellate when their angles at a point make exactly 360°.'),
+ extwalk:()=>W_('extwalk',`<svg viewBox="0 0 340 250" id="ewSvg" role="img" aria-label="Regular polygon with exterior angles"></svg><div class="readout" id="ewOut"></div>${sl('ewN',3,12,5,'Number of sides, n')}<div class="row" style="justify-content:center"><button class="btn primary" id="ewGo">Walk round</button></div>`,'Each turn is an exterior angle. All the turns together make one full turn.'),
+ construct:()=>W_('construct',`<svg viewBox="0 0 340 220" id="cnSvg" role="img" aria-label="Construction steps"></svg>`+`<div id="cnBox" style="display:grid;gap:8px"></div><div class="row" style="justify-content:center"><button class="btn primary" id="cnNext">Next step</button></div>`,'Worked example 5.5: constructing 60°.'),
+ construct2:()=>VIS.construct().replace('data-w="construct"','data-w="construct" data-k="45"').replace('Worked example 5.5: constructing 60°.','Worked example 5.4: constructing 45°.'),
+ inscribe:()=>W_('inscribe',pickRow('ib',['Square','Regular hexagon','Regular octagon'])+`<svg viewBox="0 0 340 240" id="ibSvg" role="img" aria-label="Polygon inscribed in a circle"></svg><div class="readout" id="ibOut"></div>`,'Every corner sits exactly on the circle.'),
+ inscribe2:()=>VIS.inscribe().replace('data-w="inscribe"','data-w="inscribe" data-start="1"'),
+ pyth:()=>W_('pyth',`<svg viewBox="0 0 340 260" id="pySvg" role="img" aria-label="Squares on the sides of a right-angled triangle"></svg><div class="readout" id="pyOut2"></div><div class="row" style="justify-content:center">${sl('pyA',1,9,3,'Side a',0.5)}${sl('pyB',1,9,4,'Side b',0.5)}</div>`,'The two smaller squares together have the same area as the biggest square.'),
+ pythleg:()=>W_('pythleg',pickRow('pg',['Ari\'s question','Exercise 5.5 Q3a','Ladder (Q7)'])+`<div id="pgBox" style="display:grid;gap:8px"></div><div class="row" style="justify-content:center"><button class="btn primary" id="pgNext">Next step</button></div>`,'Find the hypotenuse first. If you know it, subtract.'),
+ datatype:()=>W_('datatype',`<div class="bigm" id="dtQ" style="font-size:22px"></div><div class="row" style="justify-content:center"><button class="btn" data-dt="0">Continuous</button><button class="btn" data-dt="1">Discrete</button><button class="btn" data-dt="2">Categorical</button></div><div class="readout" id="dtOut" style="font-size:16px"></div><div class="tiny" style="text-align:center" id="dtScore"></div>`,'Measured, counted, or put in groups?'),
+ randpick:()=>W_('randpick',`<div class="row" style="justify-content:center"><span class="tiny">Population</span><input class="field" id="rpN" type="number" value="632" style="width:90px"><span class="tiny">Sample</span><input class="field" id="rpK" type="number" value="10" style="width:70px"><button class="btn primary" id="rpGo">Pick</button></div><div id="rpBox" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:40px"></div><div class="readout" id="rpOut" style="font-size:15px"></div>`,'Random numbers give everyone the same chance. Repeats are ignored.'),
+ plan:()=>W_('plan',`<div id="pnBox" style="display:grid;gap:8px"></div><div class="row" style="justify-content:center"><button class="btn primary" id="pnNext">Next step</button></div>`,'The stages of a statistical investigation, using the book\'s height example.'),
+ hand:()=>W_('hand',`<svg viewBox="0 0 340 260" id="hdSvg" role="img" aria-label="Hand span and hand length"></svg>`+pickRow('hd',['Hand span','Hand length']),'Two ways to measure hand size from Worked example 6.1.'),
+ biasspot:()=>W_('biasspot',`<div class="bigm" id="bsp" style="font-size:18px;white-space:normal"></div><div class="row" style="justify-content:center"><button class="btn" data-bp="1">Biased</button><button class="btn" data-bp="0">Fair</button></div><div class="readout" id="bspOut" style="font-size:15px"></div><div class="tiny" style="text-align:center" id="bspScore"></div>`,'Who is left out? Who is more likely to answer?'),
+ propsample:()=>W_('propsample',pickRow('pp',['Company (WE 6.3)','College (Q1)'])+`<svg viewBox="0 0 340 130" id="ppSvg" role="img" aria-label="Bars comparing population and sample"></svg><div class="readout" id="ppOut"></div>${sl('ppK',10,100,40,'Sample size')}`,'The sample keeps the same proportions as the population.'),
+ biasq:()=>W_('biasq',pickRow('bq',['Global warming','Exhibition','Overweight','Exercise','New recipe'])+`<div id="bqBox" style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))"></div>`,'Exercise 6.2, Questions 6 and 7.'),
+ axis:()=>W_('axis',pickRow('ax',['Marcus\'s gym (Q10)','College (Q4)'])+`<svg viewBox="0 0 340 220" id="axSvg" role="img" aria-label="Bar chart"></svg><div class="readout" id="axOut" style="font-size:16px"></div><div class="row" style="justify-content:center"><button class="btn" id="axT">Start the axis at 0</button></div>`,'Same data, different axis. Which picture is honest?')
+});
+
+Object.assign(INIT,{
+ trisum(el){let quad=false;const A=$('#tsA',el),B=$('#tsB',el);
+   const f=()=>{let a=+A.value,b=+B.value,svg='',txt;
+    if(!quad){if(a+b>170){b=170-a;B.value=b;}const c=180-a-b;const P=[30,180],Q=[310,180];const R=gdIx(P,[P[0]+Math.cos(-deg(a))*400,P[1]+Math.sin(-deg(a))*400],Q,[Q[0]-Math.cos(-deg(b))*400,Q[1]+Math.sin(-deg(b))*400]);
+     if(R[1]<10){const s=(180-10)/(180-R[1]);R[0]=P[0]+(R[0]-P[0])*s;R[1]=10;}
+     svg=`<polygon points="${ptsStr([P,Q,R])}" fill="${COL.blush}" opacity=".5" stroke="${COL.espresso}" stroke-width="3" stroke-linejoin="round"/>`;[[P,Q,R,a,COL.sage],[Q,R,P,b,COL.rose],[R,P,Q,c,COL.taupe]].forEach(([V,X,Y,v,cl])=>{const ar=arcPath(V,X,Y,28);svg+=`<path d="${ar.d}" fill="none" stroke="${cl}" stroke-width="4"/>`+svgT(V[0]+50*Math.cos(ar.m),V[1]+50*Math.sin(ar.m),v+'°',14,cl);});
+     txt=`${a} + ${b} + <b>${c}</b> = 180°<small>The third angle is 180 − ${a} − ${b} = ${c}°</small>`;}
+    else{const c=110,d=360-a-b-c;txt=`${a} + ${b} + ${c} + <b>${d}</b> = 360°<small>The fourth angle is 360 − (${a} + ${b} + ${c}) = ${d}° · drawing not to scale</small>`;const P=regPoly(4,170,105,85,-45+ (a-90)/6);svg=`<polygon points="${ptsStr(P)}" fill="${COL.blush}" opacity=".5" stroke="${COL.espresso}" stroke-width="3"/>`+[a,b,c,d].map((v,i)=>svgT(170+(P[i][0]-170)*.62,105+(P[i][1]-105)*.62,v+'°',15,[COL.sage,COL.rose,COL.taupe,COL.espresso][i])).join('')+`<line x1="${P[0][0]}" y1="${P[0][1]}" x2="${P[2][0]}" y2="${P[2][1]}" stroke="${COL.mist}" stroke-dasharray="5 4" stroke-width="2"/>`;txt+='';}
+    $('#tsSvg',el).innerHTML=svg;$('#tsOut',el).innerHTML=txt;};
+   A.oninput=f;B.oninput=f;pickWire(el,'ts',i=>{quad=i===1;f();});f();},
+ parallel(el){let mode=0;const S=$('#plA',el);const f=()=>{const t=+S.value;const y1=70,y2=160,cx1=170+(115-y1)/Math.tan(deg(t)),cx2=170+(115-y2)/Math.tan(deg(t));
+   const dx=Math.cos(deg(t)),dy=-Math.sin(deg(t));const L=200;let h=`<line x1="10" y1="${y1}" x2="330" y2="${y1}" stroke="${COL.espresso}" stroke-width="3"/><line x1="10" y1="${y2}" x2="330" y2="${y2}" stroke="${COL.espresso}" stroke-width="3"/><path d="M250 ${y1-6} l10 6 l-10 6 M250 ${y2-6} l10 6 l-10 6" fill="none" stroke="${COL.espresso}" stroke-width="2"/><line x1="${170-dx*L}" y1="${115-dy*L}" x2="${170+dx*L}" y2="${115+dy*L}" stroke="${COL.cocoa}" stroke-width="3"/>`;
+   const P1=[cx1,y1],P2=[cx2,y2];const up=[dx,dy],dn=[-dx,-dy],R=[1,0],Lf=[-1,0];
+   const q=(P,u,v)=>{const A=[P[0]+u[0]*40,P[1]+u[1]*40],B=[P[0]+v[0]*40,P[1]+v[1]*40];return [P,A,B];};
+   // angles: at P1: top-right (up,R) ; at P2 same positions
+   const sets=[[q(P1,up,R),q(P2,up,R),'Corresponding angles are equal (F shape)'],[q(P1,dn,Lf),q(P2,up,R),'Alternate angles are equal (Z shape)'],[q(P1,up,R),q(P1,dn,Lf),'Vertically opposite angles are equal (X shape)'],[q(P1,dn,R),q(P2,up,R),'Co-interior angles add to 180° (C shape)']];
+   const [a1,a2,txt]=sets[mode];const val=a=>{const [V,A,B]=a;let x=Math.atan2(A[1]-V[1],A[0]-V[0]),y=Math.atan2(B[1]-V[1],B[0]-V[0]);let d=Math.abs(y-x);if(d>Math.PI)d=2*Math.PI-d;return Math.round(d*180/Math.PI);};
+   [[a1,COL.sage],[a2,COL.rose]].forEach(([a,c])=>{const ar=arcPath(a[0],a[1],a[2],24);h+=`<path class="fadein" d="${ar.d}" fill="none" stroke="${c}" stroke-width="5"/>`+svgT(a[0][0]+44*Math.cos(ar.m),a[0][1]+44*Math.sin(ar.m),val(a)+'°',14,c);});
+   $('#plSvg',el).innerHTML=h;$('#plOut',el).innerHTML=`${val(a1)}° and ${val(a2)}°<small>${txt}</small>`;};
+   S.oninput=f;pickWire(el,'pl',i=>{mode=i;f();});f();},
+ isos(el){const T=$('#isT',el);const f=()=>{const t=+T.value,b=(180-t)/2;const half=150*Math.sin(deg(t/2)),h=150*Math.cos(deg(t/2));const A=[170,190-h*1],B=[170-half,190],C=[170+half,190];const sc=Math.min(1,175/h);const A2=[170,190-h*sc],B2=[170-half*sc,190],C2=[170+half*sc,190];
+   let s=`<polygon points="${ptsStr([A2,B2,C2])}" fill="${COL.blush}" opacity=".5" stroke="${COL.espresso}" stroke-width="3" stroke-linejoin="round"/>`;
+   const tick=(P,Q)=>{const m=[(P[0]+Q[0])/2,(P[1]+Q[1])/2],an=Math.atan2(Q[1]-P[1],Q[0]-P[0]);return `<line x1="${m[0]-8*Math.sin(an)}" y1="${m[1]+8*Math.cos(an)}" x2="${m[0]+8*Math.sin(an)}" y2="${m[1]-8*Math.cos(an)}" stroke="${COL.espresso}" stroke-width="3"/>`;};
+   s+=tick(A2,B2)+tick(A2,C2);[[A2,B2,C2,t,COL.taupe],[B2,C2,A2,b,COL.sage],[C2,A2,B2,b,COL.sage]].forEach(([V,X,Y,v,c])=>{const ar=arcPath(V,X,Y,22);s+=`<path d="${ar.d}" fill="none" stroke="${c}" stroke-width="4"/>`+svgT(V[0]+42*Math.cos(ar.m),V[1]+42*Math.sin(ar.m),(Math.round(v*10)/10)+'°',13,c);});
+   $('#isSvg',el).innerHTML=s;$('#isOut',el).innerHTML=`(180 − ${t}) ÷ 2 = ${Math.round(b*10)/10}°<small>Each base angle</small>`;};T.oninput=f;f();},
+ polysum(el){const N=$('#psN',el);const names={3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon',7:'heptagon',8:'octagon',9:'nonagon',10:'decagon',11:'11-gon',12:'dodecagon'};
+   const f=()=>{const n=+N.value,P=regPoly(n,170,118,100);let s='';for(let i=1;i<n-1;i++){s+=`<polygon class="fadein" style="animation-delay:${i*.06}s" points="${ptsStr([P[0],P[i],P[i+1]])}" fill="${i%2?COL.blush:COL.sage}" opacity="${i%2?.55:.35}" stroke="${COL.espresso}" stroke-width="1.5"/>`;const c=[(P[0][0]+P[i][0]+P[i+1][0])/3,(P[0][1]+P[i][1]+P[i+1][1])/3];s+=svgT(c[0],c[1],i,13,COL.cocoa);}
+    s+=`<polygon points="${ptsStr(P)}" fill="none" stroke="${COL.espresso}" stroke-width="3" stroke-linejoin="round"/><circle cx="${P[0][0]}" cy="${P[0][1]}" r="6" fill="${COL.rose}"/>`;
+    const sum=(n-2)*180,each=Math.round(sum/n*100)/100;$('#psSvg',el).innerHTML=s;$('#psOut',el).innerHTML=`${names[n]}: (${n} − 2) × 180 = ${sum}°<small>${n-2} triangles · each angle of a regular ${names[n]} = ${sum} ÷ ${n} = ${each}°</small>`;};N.oninput=f;f();},
+ tess(el){const D=[[3,60,6],[4,90,4],[6,120,3],[5,108,3]];const f=i=>{const [n,a,k]=D[i];const C=[170,105];let s='';const r=n===3?62:n===4?50:n===6?42:52;
+   for(let j=0;j<k;j++){const rot=j*a;// polygon with one vertex at C, an edge along direction rot
+     const pts=[C];let dir=rot,P=C;const side=n===3?70:n===4?66:n===6?50:62;for(let m=0;m<n-1;m++){P=[P[0]+side*Math.cos(deg(dir)),P[1]-side*Math.sin(deg(dir))];pts.push(P);dir+=180-((n-2)*180/n);}
+     s+=`<polygon class="fadein" style="animation-delay:${j*.1}s" points="${ptsStr(pts)}" fill="${[COL.blush,COL.sage,COL.rose,COL.mist,COL.blush,COL.sage][j]}" opacity=".6" stroke="${COL.espresso}" stroke-width="2"/>`;}
+   const tot=a*k;if(n===5){s+=`<path d="M${C[0]} ${C[1]} L${C[0]+90*Math.cos(deg(324))} ${C[1]-90*Math.sin(deg(324))} A90 90 0 0 0 ${C[0]+90} ${C[1]} Z" fill="${COL.rose}" opacity=".18"/>`;}
+   $('#tzSvg',el).innerHTML=s+`<circle cx="${C[0]}" cy="${C[1]}" r="5" fill="${COL.espresso}"/>`;$('#tzOut',el).innerHTML=n===5?`3 × 108° = 324°<small>36° gap left over, and a 4th pentagon would overlap. Regular pentagons cannot tessellate.</small>`:`${k} × ${a}° = ${tot}°<small>A perfect fit with no gaps.</small>`;};
+   pickWire(el,'tz',f);f(0);},
+ extwalk(el){const N=$('#ewN',el);let timer=null;const draw=(n,upto)=>{const P=regPoly(n,170,130,90,90+180/n);let s=`<polygon points="${ptsStr(P)}" fill="${COL.blush}" opacity=".45" stroke="${COL.espresso}" stroke-width="3"/>`;const ext=360/n;
+   for(let i=0;i<n;i++){const A=P[i],B=P[(i+1)%n],Cn=P[(i+2)%n];const ex=[B[0]+(B[0]-A[0])*0.5,B[1]+(B[1]-A[1])*0.5];s+=`<line x1="${B[0]}" y1="${B[1]}" x2="${ex[0]}" y2="${ex[1]}" stroke="${COL.mist}" stroke-width="2" stroke-dasharray="5 4"/>`;
+    if(i<upto){const ar=arcPath(B,ex,Cn,20);s+=`<path class="fadein" d="${ar.d}" fill="none" stroke="${COL.sage}" stroke-width="4"/>`;if(n<=8)s+=svgT(B[0]+38*Math.cos(ar.m),B[1]+38*Math.sin(ar.m),Math.round(ext*10)/10+'°',11,COL.sage);}}
+   $('#ewSvg',el).innerHTML=s;const turned=Math.round(ext*upto*10)/10;$('#ewOut',el).innerHTML=`exterior angle = 360 ÷ ${n} = ${Math.round(ext*100)/100}°<small>Turned so far: ${turned}°${upto===n?' · one full turn!':''} · interior angle = 180 − ${Math.round(ext*100)/100} = ${Math.round((180-ext)*100)/100}°</small>`;};
+   const f=()=>{clearInterval(timer);draw(+N.value,+N.value);};N.oninput=f;
+   $('#ewGo',el).onclick=()=>{clearInterval(timer);const n=+N.value;let k=0;draw(n,0);timer=setInterval(()=>{k++;draw(n,k);if(k>=n)clearInterval(timer);},450);};f();},
+ construct(el){const is45=el.dataset.k==='45';const A=[70,180],B=[270,180];const r=200;const C=[170,180-Math.sqrt(r*r-100*100)];
+   const S60=[[`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${COL.espresso}" stroke-width="3"/>`+svgT(A[0]-12,A[1]+14,'A')+svgT(B[0]+12,B[1]+14,'B'),'Draw a line segment AB.'],
+    [`<circle cx="${A[0]}" cy="${A[1]}" r="4" fill="${COL.rose}"/><line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${COL.rose}" stroke-width="2" stroke-dasharray="4 4"/>`,'Open the compasses to the length of AB.'],
+    [`<path d="${arcPath(A,[A[0]+r*Math.cos(deg(-40)),A[1]+r*Math.sin(deg(-40))],[A[0]+r*Math.cos(deg(-80)),A[1]+r*Math.sin(deg(-80))],r).d}" fill="none" stroke="${COL.sage}" stroke-width="2.5"/><path d="${arcPath(B,[B[0]+r*Math.cos(deg(-100)),B[1]+r*Math.sin(deg(-100))],[B[0]+r*Math.cos(deg(-140)),B[1]+r*Math.sin(deg(-140))],r).d}" fill="none" stroke="${COL.sage}" stroke-width="2.5"/>`,'Draw arcs from A and from B. They cross at C.'],
+    [`<line x1="${A[0]}" y1="${A[1]}" x2="${C[0]}" y2="${C[1]}" stroke="${COL.espresso}" stroke-width="3"/><path d="${arcPath(A,B,C,34).d}" fill="none" stroke="${COL.rose}" stroke-width="4"/>`+svgT(C[0],C[1]-12,'C')+svgT(A[0]+52,A[1]-20,'60°',13,COL.rose),'Join A to C. Angle CAB is 60°.'],
+    [`<line x1="${B[0]}" y1="${B[1]}" x2="${C[0]}" y2="${C[1]}" stroke="${COL.espresso}" stroke-width="3"/>`+svgT(B[0]-52,B[1]-20,'60°',13,COL.rose),'Join B to C. Angle CBA is 60° too: ABC is equilateral.']];
+   const M=[170,180],T=[170,20];const r2=110;const S45=[[`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${COL.espresso}" stroke-width="3"/>`,'Draw a line segment.'],
+    [`<path d="${arcPath(A,[A[0]+150*Math.cos(deg(-75)),A[1]+150*Math.sin(deg(-75))],[A[0]+150*Math.cos(deg(-15)),A[1]+150*Math.sin(deg(-15))],150).d}" fill="none" stroke="${COL.sage}" stroke-width="2"/><path d="${arcPath(B,[B[0]+150*Math.cos(deg(-105)),B[1]+150*Math.sin(deg(-105))],[B[0]+150*Math.cos(deg(-165)),B[1]+150*Math.sin(deg(-165))],150).d}" fill="none" stroke="${COL.sage}" stroke-width="2"/><line x1="${M[0]}" y1="${M[1]}" x2="${T[0]}" y2="${T[1]}" stroke="${COL.espresso}" stroke-width="3"/><path d="M${M[0]} ${M[1]-14} h14 v14" fill="none" stroke="${COL.espresso}" stroke-width="2"/>`,'Construct its perpendicular bisector: two right angles.'],
+    [`<path d="${arcPath(M,[M[0]+60,M[1]],[M[0],M[1]-60],60).d}" fill="none" stroke="${COL.rose}" stroke-width="2.5"/>`,'Bisect one right angle: an arc from the corner cuts both arms…'],
+    [`<line x1="${M[0]}" y1="${M[1]}" x2="${M[0]+r2*Math.cos(deg(-45))}" y2="${M[1]+r2*Math.sin(deg(-45))}" stroke="${COL.rose}" stroke-width="3"/>`+svgT(M[0]+60,M[1]-18,'45°',13,COL.rose)+svgT(M[0]+20,M[1]-62,'45°',13,COL.rose),'…then join the corner to where equal arcs from those points cross. Two angles of 45°.']];
+   const S=is45?S45:S60;linePlayer(el,'#cnBox','#cnNext',S.map(x=>[x[1],'']),(l,k)=>{$('#cnSvg',el).innerHTML=S.slice(0,k+1).map(x=>x[0]).join('');});},
+ inscribe(el){const D=[[4,'Draw a diameter, then its perpendicular bisector. The 4 ends make a square.'],[6,'Step the radius round the circle 6 times. Each side equals the radius.'],[8,'Two perpendicular diameters, then bisect the right angles: 8 points.']];
+   const f=i=>{const [n,t]=D[i];const P=regPoly(n,170,120,100,n===4?-90:n===6?-90:-90);let s=`<circle cx="170" cy="120" r="100" fill="none" stroke="${COL.mist}" stroke-width="2.5"/>`;
+    if(n!==6)for(let j=0;j<n/2;j++)s+=`<line x1="${P[j][0]}" y1="${P[j][1]}" x2="${P[j+n/2][0]}" y2="${P[j+n/2][1]}" stroke="${COL.taupe}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+    else P.forEach(p=>{s+=`<line x1="170" y1="120" x2="${p[0]}" y2="${p[1]}" stroke="${COL.taupe}" stroke-width="1.5" stroke-dasharray="5 4"/>`;});
+    s+=`<polygon class="fadein" points="${ptsStr(P)}" fill="${COL.blush}" opacity=".5" stroke="${COL.espresso}" stroke-width="3"/>`+P.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${COL.rose}"/>`).join('');
+    $('#ibSvg',el).innerHTML=s;$('#ibOut',el).innerHTML=`${['','','','','Square','','Regular hexagon','','Regular octagon'][n]}: each angle ${(n-2)*180/n}°<small>${t}</small>`;};pickWire(el,'ib',f);const st=+(el.dataset.start||0);$$('[data-ib]',el).forEach((b,i)=>b.setAttribute('aria-pressed',i===st));f(st);},
+ pyth(el){const A=$('#pyA',el),B=$('#pyB',el);const f=()=>{const a=+A.value,b=+B.value,c=Math.sqrt(a*a+b*b);const u=Math.min(240/(a+2*b),240/(2*a+b),24);
+   const R=[14+a*u,12+(a+b)*u],P=[R[0],R[1]-a*u],Q=[R[0]+b*u,R[1]];const n=[a*u,-b*u];
+   const sqA=[R,P,[P[0]-a*u,P[1]],[R[0]-a*u,R[1]]],sqB=[R,Q,[Q[0],Q[1]+b*u],[R[0],R[1]+b*u]],sqC=[P,Q,[Q[0]+n[0],Q[1]+n[1]],[P[0]+n[0],P[1]+n[1]]];
+   const poly=(S,col)=>`<polygon class="fadein" points="${ptsStr(S)}" fill="${col}" opacity=".5" stroke="${COL.espresso}" stroke-width="1.5"/>`;const cen=S=>[(S[0][0]+S[2][0])/2,(S[0][1]+S[2][1])/2];
+   const r2_=v=>Math.round(v*100)/100;let s=poly(sqA,COL.sage)+poly(sqB,COL.rose)+poly(sqC,COL.blush)+`<polygon points="${ptsStr([R,P,Q])}" fill="${COL.snow}" stroke="${COL.espresso}" stroke-width="3"/><path d="M${R[0]} ${R[1]-10} h10 v10" fill="none" stroke="${COL.espresso}" stroke-width="2"/>`;
+   const cA=cen(sqA),cB=cen(sqB),cC=cen(sqC);s+=svgT(cA[0],cA[1],r2_(a*a),13)+svgT(cB[0],cB[1],r2_(b*b),13)+svgT(cC[0],cC[1],r2_(a*a+b*b),14)+svgT(R[0]-a*u-9>4?R[0]+8:R[0]+8,(R[1]+P[1])/2,'a',12,COL.cocoa)+svgT((R[0]+Q[0])/2,R[1]-8,'b',12,COL.cocoa);
+   $('#pySvg',el).innerHTML=s;const cs=r2_(c);$('#pyOut2',el).innerHTML=`${a}² + ${b}² = ${r2_(a*a)} + ${r2_(b*b)} = ${r2_(a*a+b*b)}<small>c = √${r2_(a*a+b*b)} = ${cs}${Number.isInteger(cs)?' (a whole number!)':' (round it)'}</small>`;};A.oninput=f;B.oninput=f;f();},
+ pythleg(el){const D=[[['Sides 3.5 cm and a cm, hypotenuse 6.0 cm',''],['Which side is opposite the right angle? 6.0 cm','So 6.0 is the hypotenuse, not a'],['a² + 3.5² = 6.0²',''],['a² = 36 − 12.25 = 23.75','Subtract, because a is a shorter side'],['a = √23.75 = 4.9 cm (1 d.p.)','Worked example 5.7']],
+   [['One side 9 cm, hypotenuse 15 cm',''],['a² + 9² = 15²',''],['a² = 225 − 81 = 144',''],['a = √144 = 12 cm','Exercise 5.5, Question 3a']],
+   [['Ladder 3.50 m (hypotenuse), foot 0.91 m from the wall',''],['h² + 0.91² = 3.50²',''],['h² = 12.25 − 0.8281 = 11.4219',''],['h = √11.4219 = 3.38 m (nearest cm)','Exercise 5.5, Question 7']]];
+   const P_=linePlayer(el,'#pgBox','#pgNext',D[0]);pickWire(el,'pg',i=>P_.set(D[i]));},
+ datatype(el){const I=[['length of a car',0,'It is measured'],['number of doors',1,'It is counted'],['colour of a car',2,'It is a named group'],['shoe size',1,'The book calls shoe sizes discrete numerical data'],['height with a tape measure',0,'It is measured'],['height as short, average or tall',2,'Named groups, so categorical'],['manufacturer',2,'A named group'],['number of passenger seats',1,'It is counted'],['hand span',0,'It is measured']];let k=0,sc=0,t=0;
+   const show=()=>{$('#dtQ',el).textContent=I[k%I.length][0];};el.addEventListener('click',e=>{const b=e.target.closest('[data-dt]');if(!b)return;const it=I[k%I.length];const ok=+b.dataset.dt===it[1];t++;if(ok)sc++;$('#dtOut',el).innerHTML=`<span style="color:${ok?COL.sage:COL.rose}">${ok?'Yes!':'Not quite.'}</span> ${it[0]}: ${['continuous','discrete','categorical'][it[1]]}. ${it[2]}.`;$('#dtScore',el).textContent=`Score: ${sc} out of ${t}`;k++;show();});show();},
+ randpick(el){$('#rpGo',el).onclick=()=>{const N=Math.max(2,Math.min(100000,Math.floor(+$('#rpN',el).value||632))),K=Math.max(1,Math.min(60,Math.floor(+$('#rpK',el).value||10),N));const got=new Set(),seq=[];let rep=0;while(got.size<K){const r=1+Math.floor(Math.random()*N);if(got.has(r)){rep++;seq.push([r,1]);}else{got.add(r);seq.push([r,0]);}if(seq.length>500)break;}
+   $('#rpBox',el).innerHTML=seq.map(([r,d],i)=>`<span class="fadein" style="animation-delay:${i*.03}s;padding:6px 10px;border-radius:10px;font-family:var(--mono);font-weight:700;${d?`text-decoration:line-through;color:${COL.rose}`:'box-shadow:var(--raise-s)'}">${r}</span>`).join('');$('#rpOut',el).innerHTML=`${K} people chosen from ${N}${rep?` · ${rep} repeat${rep>1?'s':''} ignored (crossed out)`:''}`;};$('#rpGo',el).click();},
+ plan(el){linePlayer(el,'#pnBox','#pnNext',[['1 Ask a question','Are height and shoe size connected?'],['2 Make a prediction','Taller boys have a larger shoe size than shorter boys.'],['3 Decide the data','Height (tape measure, continuous) and shoe size (discrete)'],['4 Choose a sample','For example: random numbers from the register, or some from each year group'],['5 Do a small trial','Change the design if something doesn\'t work'],['6 Collect and generalise','Use the results to make a generalisation']]);},
+ hand(el){const draw=i=>{let s=`<path d="M120 250 L118 170 Q95 150 70 110 Q62 96 76 92 Q88 90 98 108 L118 135 L116 55 Q116 40 128 40 Q140 40 140 55 L142 120 L146 35 Q147 20 160 20 Q173 20 173 35 L172 120 L178 45 Q180 30 192 31 Q204 33 203 48 L198 125 L210 70 Q213 57 225 59 Q236 62 233 76 L222 160 Q218 200 205 250 Z" fill="${COL.blush}" stroke="${COL.espresso}" stroke-width="2.5" stroke-linejoin="round"/>`;
+   if(i===0)s+=`<line class="fadein" x1="72" y1="96" x2="228" y2="64" stroke="${COL.sage}" stroke-width="4"/><circle cx="72" cy="96" r="5" fill="${COL.sage}"/><circle cx="228" cy="64" r="5" fill="${COL.sage}"/>`+svgT(250,96,'span',14,COL.sage);
+   else s+=`<line class="fadein" x1="160" y1="20" x2="160" y2="250" stroke="${COL.rose}" stroke-width="4"/><circle cx="160" cy="20" r="5" fill="${COL.rose}"/><circle cx="160" cy="250" r="5" fill="${COL.rose}"/>`+svgT(255,140,'wrist to the',12,COL.rose)+svgT(255,158,'middle fingertip',12,COL.rose);
+   $('#hdSvg',el).innerHTML=s;};pickWire(el,'hd',draw);draw(0);},
+ biasspot(el){const I=[['A library survey done in a supermarket, 09:00–12:00 on weekdays',1,'People who work during the day are missed (Worked example 6.2).'],['A survey at the library on different days and at different times',0,'A variety of people who actually use the library (Worked example 6.2).'],['100 customers on the 08:00 Monday train',1,'Biased towards people travelling to work (Check your progress Q3).'],['An online hotel survey that customers choose to fill in',1,'People with a complaint are more likely to reply (Q8).'],['Random numbers used to pick 50 people from 632',0,'Everyone has the same chance of being chosen.'],['350 questionnaires sent, only 105 returned',1,'The people who reply might all have a similar opinion (Q5).']];let k=0,sc=0,t=0;
+   const show=()=>{$('#bsp',el).textContent=I[k%I.length][0];};el.addEventListener('click',e=>{const b=e.target.closest('[data-bp]');if(!b)return;const it=I[k%I.length];const ok=+b.dataset.bp===it[1];t++;if(ok)sc++;$('#bspOut',el).innerHTML=`<span style="color:${ok?COL.sage:COL.rose}">${ok?'Yes!':'Not quite.'}</span> ${it[1]?'Biased':'Fair'}: ${it[2]}`;$('#bspScore',el).textContent=`Score: ${sc} out of ${t}`;k++;show();});show();},
+ propsample(el){const D=[[['Men',187],['Women',362]],[['Girls',200],['Boys',150]]];let di=0;const K=$('#ppK',el);
+   const f=()=>{const [[n1,a],[n2,b]]=D[di],k=+K.value,tot=a+b,s1=Math.round(a/tot*k),s2=k-s1;const W=300;
+    const bar=(y,x1,x2,l1,l2)=>`<rect x="20" y="${y}" width="${W*x1}" height="30" rx="8" fill="${COL.sage}" opacity=".75"/><rect x="${20+W*x1}" y="${y}" width="${W*x2}" height="30" rx="8" fill="${COL.rose}" opacity=".75"/>`+svgT(20+W*x1/2,y+15,l1,12,'#fff')+svgT(20+W*x1+W*x2/2,y+15,l2,12,'#fff');
+    $('#ppSvg',el).innerHTML=`<text x="20" y="14" font-size="12" fill="${COL.cocoa}">Population (${tot})</text>`+bar(20,a/tot,b/tot,`${n1} ${a}`,`${n2} ${b}`)+`<text x="20" y="74" font-size="12" fill="${COL.cocoa}">Sample (${k})</text>`+bar(80,s1/k,s2/k,`${s1}`,`${s2}`);
+    $('#ppOut',el).innerHTML=`${n1}: ${F(a,tot)} × ${k} = ${Math.round(a/tot*k*100)/100} ≈ ${s1}<small>${n2}: ${k} − ${s1} = ${s2}</small>`;};K.oninput=f;pickWire(el,'pp',i=>{di=i;K.value=i?30:40;f();});f();},
+ biasq(el){const D=[['Do you agree that global warming is caused by humans?','If you ask people to agree with you, they might do so just to avoid conflict.','What do you think is the cause of global warming?'],['Do you think entry to this exhibition should be free?','People are likely to say yes.','What is a fair price for entry to this exhibition?'],['Are you overweight?','People won\'t want to admit it. It is too personal.','Do you weigh less than … ? (with a particular value)'],['Do you think you take enough exercise?','People might not know what "enough exercise" is.','How many times a week do you take exercise, such as walking for 30 minutes, cycling or going to a gym?'],['Do you prefer the new recipe?','It suggests the answer the questioner wants: yes.','Which drink do you prefer? (without saying which is new)']];
+   const f=i=>{const [q,w,b]=D[i];$('#bqBox',el).innerHTML=`<div class="plain fadein" style="border-left:5px solid ${COL.rose}"><span class="kicker">Biased</span><b>${q}</b><span class="tiny">${w}</span></div><div class="plain fadein" style="border-left:5px solid ${COL.sage};animation-delay:.15s"><span class="kicker">Better</span><b>${b}</b></div>`;};pickWire(el,'bq',f);f(0);},
+ axis(el){const D=[[['Mon men',18],['Mon women',12],['Fri men',13],['Fri women',17]],10,20],D2=[[['M 16',50],['M 17',42],['F 16',75],['F 17',92]],30,100];let di=0,zero=false;
+   const f=()=>{const [bars,lo0,hi]=di?D2:D;const lo=zero?0:lo0;let s=`<line x1="40" y1="190" x2="330" y2="190" stroke="${COL.espresso}" stroke-width="2"/><line x1="40" y1="10" x2="40" y2="190" stroke="${COL.espresso}" stroke-width="2"/>`;const Y=v=>190-(v-lo)/(hi-lo)*175;
+    const step=di?10:2;for(let v=lo;v<=hi;v+=(zero?(di?20:4):step))s+=`<text x="34" y="${Y(v)+4}" text-anchor="end" font-size="10" fill="${COL.cocoa}">${v}</text><line x1="40" y1="${Y(v)}" x2="330" y2="${Y(v)}" stroke="${COL.mist}" stroke-width="0.6"/>`;
+    bars.forEach(([l,v],i)=>{const x=60+i*68;s+=`<rect class="fadein" x="${x}" y="${Y(v)}" width="44" height="${190-Y(v)}" rx="6" fill="${i%2?COL.rose:COL.sage}"/><text x="${x+22}" y="${Y(v)-6}" text-anchor="middle" font-size="12" font-weight="700" fill="${COL.espresso}">${v}</text><text x="${x+22}" y="205" text-anchor="middle" font-size="10" fill="${COL.cocoa}">${l}</text>`;});
+    $('#axSvg',el).innerHTML=s;const [a,b]=[bars[0][1],bars[1][1]];$('#axOut',el).innerHTML=zero?`Honest: axis starts at 0.<small>${bars[0][0]} ${a} is ${Math.round(a/b*100)/100} times ${bars[1][0]} ${b}.</small>`:`Misleading: axis starts at ${lo0}.<small>The ${bars[0][0]} bar looks ${Math.round((a-lo0)/(b-lo0)*10)/10} times as tall as ${bars[1][0]}, but ${a} ÷ ${b} = ${Math.round(a/b*100)/100}.</small>`;$('#axT',el).textContent=zero?`Start the axis at ${lo0} again`:'Start the axis at 0';};
+   $('#axT',el).onclick=()=>{zero=!zero;f();};pickWire(el,'ax',i=>{di=i;zero=false;f();});f();}
 });
 
 /* =================== FOUNDATIONS + 1.1 EXTRA VISUALS =================== */
