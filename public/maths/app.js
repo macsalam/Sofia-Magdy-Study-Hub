@@ -2959,7 +2959,7 @@ function selectCell(a,b,scroll=true){TTsel=[a,b];const tb=$('#ttTable');if(!tb)r
 
 /* =================== CHAPTER DROPDOWN =================== */
 function renderDropdown(){const nl=Object.keys(S.later).length,ns=Object.keys(S.stk).length,nt=Object.keys(T.marks).length;
- $('#ddK').textContent=S.view==='chapter'?`${chName(CUR)}`:(CUR===0?'Last page: Foundations':`Last chapter: ${CUR}`);$('#ddT').textContent=CHD.title;
+ $('#ddK').textContent=CUR===0?'Foundations':`Chapter ${CUR}`;$('#ddT').textContent=CHD.title;$('#ddBtn').setAttribute('aria-label',`${CUR===0?'Foundations':'Chapter '+CUR}: ${CHD.title}. Choose a chapter`);$('#ddBtn').title=CHD.title;
  $('#ddMenu').innerHTML=`<div class="ddsec">Before Chapter 1</div><button class="ddopt" role="option" data-ch="0" aria-selected="${S.view==='chapter'&&CUR===0}"><span class="n">★</span><span class="t">Foundations<br><span class="s">Basic division · Multiplying negative numbers · Games</span></span></button><div class="ddsep"></div><div class="ddsec">Chapters</div>`+BOOK_CHAPTERS.map(([n,t])=>{const ready=!!CHAPTERS_DATA[n];const sel=S.view==='chapter'&&CUR===n;
   return `<button class="ddopt" role="option" data-ch="${n}" aria-selected="${sel}" ${ready?'':'disabled'}><span class="n">${n}</span><span class="t">${t}<br><span class="s">${ready?CHAPTERS_DATA[n].topics.filter(x=>!/\.0$/.test(x.id)).map(x=>x.id).join(' · '):'Coming soon'}</span></span></button>`}).join('');
  $('#hbT').textContent=nt||'';$('#hbL').textContent=nl||'';$('#hbS').textContent=ns||'';if(typeof rvDue==='function'){const rd=rvDue(todayStr()).length,q=RV.q&&RV.q.date===todayStr()?RV.q:null;$('#hbR').textContent=q?Math.max(0,q.order.length-q.pos)||'':Math.min(rd,R_MAX)||'';$('#hbW').textContent=rm(wEarned()-wPaid());}
