@@ -334,6 +334,21 @@ table.tt th.hl{background:var(--espresso);color:#fff}
 
 footer{padding:30px 16px 40px;color:var(--ink2);font-size:14px;max-width:80ch}
 .enter{animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+.grid2{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))}
+.grid2>*{min-width:0}
+.wbar{width:100%;height:12px;border-radius:99px;box-shadow:var(--press);overflow:hidden}.wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--sage),#d9b25f);border-radius:99px;transition:width .6s}
+.safe{width:min(220px,70%);height:auto}
+.wlog{list-style:none;padding:0;margin:0;display:grid;gap:6px;max-height:340px;overflow:auto}.wlog li{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;box-shadow:var(--raise-s)}.wlog b{font-family:var(--mono);color:var(--sage)}
+.mocks{display:flex;flex-wrap:wrap;gap:12px}.mock{flex:1 1 140px;display:grid;gap:2px;padding:12px 16px;border-radius:16px;box-shadow:var(--raise-s);text-align:center}.mock b{font-family:var(--mono);font-size:22px;color:var(--espresso)}
+.rvban{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:16px;box-shadow:var(--press);margin-bottom:16px}
+.rvprog{display:grid;gap:6px;font-size:14px;color:var(--ink2)}
+.rvcard .qt{display:block}
+.toast.coin{bottom:calc(170px + env(safe-area-inset-bottom,0px));background:linear-gradient(135deg,var(--espresso),#5a3a2a)}
+.coinbig{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#d9b25f;color:var(--espresso);font-weight:800;font-family:var(--mono);box-shadow:inset -3px -3px 0 #a7822f}
+.coinfly{position:fixed;z-index:60;width:28px;height:28px;border-radius:50%;background:#d9b25f;color:var(--espresso);font:800 10px/28px var(--mono);text-align:center;box-shadow:inset -2px -2px 0 #a7822f;transition:left .9s cubic-bezier(.5,-.3,.6,1),top .9s cubic-bezier(.5,-.3,.6,1),opacity .9s,transform .9s;pointer-events:none}
+.spark{position:fixed;left:50%;top:55%;z-index:60;pointer-events:none}.spark i{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--rose);animation:spk .8s ease-out forwards;transform:rotate(var(--a)) translateY(0)}.spark i:nth-child(2n){background:#d9b25f}.spark i:nth-child(3n){background:var(--sage)}
+@keyframes spk{to{transform:rotate(var(--a)) translateY(calc(-1 * var(--d)));opacity:0}}
+.ppq{display:grid;gap:10px}.pptag{font-size:12px;font-family:var(--mono);color:var(--ink2)}
 @keyframes rise{from{opacity:0;transform:translateY(18px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 .fadein{animation:rise .45s ease-out both}
 @media (max-width:1380px){.hnav .lbl{display:none}#fontBtn .lbl{display:none}.brand small{display:none}}
@@ -361,6 +376,9 @@ footer{padding:30px 16px 40px;color:var(--ink2);font-size:14px;max-width:80ch}
       <nav class="hnav" aria-label="My pages">
         <button class="btn" data-page="times" title="Times table" aria-label="Times table"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 3v18" stroke="currentColor" stroke-width="2"/><path d="M13 13l4 4M17 13l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Times table</span><span class="hb" id="hbT"></span></button>
         <button class="btn" data-page="later" title="Study later" aria-label="Study later"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Study later</span><span class="hb" id="hbL"></span></button>
+        <button class="btn" data-page="review" title="Today's review" aria-label="Today's review"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Review</span><span class="hb" id="hbR"></span></button>
+        <button class="btn" data-page="papers" title="Past papers" aria-label="Past papers"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 2h9l4 4v16H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 11h7M9 15h7M9 7h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Past papers</span></button>
+        <button class="btn" data-page="wallet" title="My wallet" aria-label="My wallet"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M3 7l12-4 2 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="16.5" cy="13.5" r="1.6" fill="currentColor"/></svg><span class="lbl">Wallet</span><span class="hb" id="hbW"></span></button>
         <button class="btn" data-page="stickers" title="Sticker board" aria-label="Sticker board"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.8l-5.8 3.3 1.5-6.5-5-4.4 6.6-.6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Stickers</span><span class="hb" id="hbS"></span></button>
       </nav>
       <button class="btn" id="fontBtn" aria-expanded="false" title="Change the font" aria-label="Change the font">Aa<span class="lbl"> Font</span></button>

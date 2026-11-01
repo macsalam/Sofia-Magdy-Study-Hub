@@ -2483,7 +2483,7 @@ function renderDropdown(){const nl=Object.keys(S.later).length,ns=Object.keys(S.
  $('#ddK').textContent=S.view==='chapter'?`${chName(CUR)}`:(CUR===0?'Last page: Foundations':`Last chapter: ${CUR}`);$('#ddT').textContent=CHD.title;
  $('#ddMenu').innerHTML=`<div class="ddsec">Before Chapter 1</div><button class="ddopt" role="option" data-ch="0" aria-selected="${S.view==='chapter'&&CUR===0}"><span class="n">★</span><span class="t">Foundations<br><span class="s">Basic division · Multiplying negative numbers · Games</span></span></button><div class="ddsep"></div><div class="ddsec">Chapters</div>`+BOOK_CHAPTERS.map(([n,t])=>{const ready=!!CHAPTERS_DATA[n];const sel=S.view==='chapter'&&CUR===n;
   return `<button class="ddopt" role="option" data-ch="${n}" aria-selected="${sel}" ${ready?'':'disabled'}><span class="n">${n}</span><span class="t">${t}<br><span class="s">${ready?CHAPTERS_DATA[n].topics.filter(x=>!/\.0$/.test(x.id)).map(x=>x.id).join(' · '):'Coming soon'}</span></span></button>`}).join('');
- $('#hbT').textContent=nt||'';$('#hbL').textContent=nl||'';$('#hbS').textContent=ns||'';
+ $('#hbT').textContent=nt||'';$('#hbL').textContent=nl||'';$('#hbS').textContent=ns||'';if(typeof rvDue==='function'){const rd=rvDue(todayStr()).length,q=RV.q&&RV.q.date===todayStr()?RV.q:null;$('#hbR').textContent=q?Math.max(0,q.order.length-q.pos)||'':Math.min(rd,R_MAX)||'';$('#hbW').textContent=rm(wEarned()-wPaid());}
  $$('.hnav [data-page]').forEach(b=>b.setAttribute('aria-current',S.view===b.dataset.page?'page':'false'));
  $('#resetBtn').hidden=S.view!=='chapter';}
 function openDD(o){const m=$('#ddMenu'),b=$('#ddBtn');m.hidden=!o;b.setAttribute('aria-expanded',o);if(o){const s=$('.ddopt[aria-selected="true"]',m);if(s)s.scrollIntoView({block:'nearest'});}}
@@ -2494,9 +2494,9 @@ function render(){renderDropdown();
  const ch=$('#chead'),pills=$('#pills');
  if(S.view==='chapter'){ch.hidden=false;pills.hidden=false;$('#chEyebrow').textContent=`${chName(CUR)}`;$('#chTitle').textContent=CHD.title;$('#chLead').hidden=false;$('#chLead').textContent=CHD.lead||DEFAULT_LEAD;renderPills();
   const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);
-  $('#view').innerHTML=t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():sec==='games'?renderGames():renderPapers();}
+  $('#view').innerHTML=rvBanner()+(t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():sec==='games'?renderGames():renderPapers());}
  else{ch.hidden=true;pills.hidden=true;const pct=chapterPct();$('#ringArc').setAttribute('stroke-dasharray',`${(pct/100*100.5).toFixed(1)} 100.5`);$('#ringTxt').textContent=pct+'%';
-  $('#view').innerHTML=backBar()+(S.view==='later'?renderLater():S.view==='stickers'?renderStickers():renderTimes());if(S.view==='times'&&T.tab==='grid')buildTimesGrid();}
+  $('#view').innerHTML=backBar()+(S.view==='later'?renderLater():S.view==='stickers'?renderStickers():S.view==='review'?renderReview():S.view==='wallet'?renderWallet():S.view==='papers'?renderPaperHub():renderTimes());if(S.view==='times'&&T.tab==='grid')buildTimesGrid();}
  initVisuals($('#view'));}
 function secLabel(ch,sec){const D=CHAPTERS_DATA[ch];if(!D)return '';const t=D.topics.find(x=>x.id===sec);if(t)return (/\.0$/.test(t.id)?'':t.id+' ')+t.title;return {cards:'Key word cards',cyp:'Check your progress',quiz:'Mixed quiz',papers:'Past papers'}[sec]||'';}
 function backBar(){const ch=CUR,sec=S.sec[ch]||TOPICS[0].id;return `<div class="backbar"><button class="btn primary" data-back><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to where I left off</button><span class="tiny">${chName(ch)} · ${secLabel(ch,sec)}</span></div>`;}
@@ -2507,6 +2507,122 @@ const FONTS=[['Classic','Fraunces','Atkinson Hyperlegible'],['Clear','Lexend','L
 function applyFont(){document.body.dataset.font=P.font||0;}
 applyFont();
 (function fontMenu(){const menu=$('#fontMenu');menu.innerHTML=`<div class="kicker">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · 6.5 × 10⁵ = 650 000</span></button>`).join('');})();
+
+/* =================== DATES =================== */
+const dstr=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());};
+const todayStr=()=>dstr(new Date());
+const addDays=(s,n)=>{const [y,m,d]=s.split('-').map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+n);return dstr(x);};
+const dayDiff=(a,b)=>{const p=s=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d);};return Math.round((p(b)-p(a))/864e5);};
+const MOCKS=[['Mock exam 1','2026-11-30'],['Mock exam 2','2027-02-15']];
+const fmtDate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short',year:'numeric'});};
+
+/* =================== WALLET (math9-wallet) =================== */
+const WKEY='math9-wallet';
+const W_CAP=500,W_RATE={step:1,topic:5,review:2};
+let WAL={earned:{},log:[],paid:[],pin:null,pre:null,sound:true};
+try{Object.assign(WAL,JSON.parse(localStorage.getItem(WKEY)||'{}'));}catch(e){}
+const saveW=()=>{try{localStorage.setItem(WKEY,JSON.stringify(WAL));}catch(e){}};
+const wEarned=()=>Object.values(WAL.earned).reduce((a,b)=>a+b,0);
+const wPaid=()=>WAL.paid.reduce((a,p)=>a+p.amt,0);
+const rm=n=>'RM'+(Math.round(n*100)/100);
+// steps and topics already finished before the wallet started don't pay automatically (a parent can add them)
+if(!WAL.pre){WAL.pre={steps:Object.keys(S.stk),topics:[],start:todayStr()};
+ Object.values(CHAPTERS_DATA).forEach(D=>D.topics.forEach(t=>{if(t.steps.every((s,i)=>S.stk[t.id+'-'+i]))WAL.pre.topics.push(t.id);}));saveW();}
+const isPre=id=>{const [k,v]=[id.slice(0,2),id.slice(2)];return (k==='s:'&&WAL.pre.steps.includes(v))||(k==='t:'&&WAL.pre.topics.includes(v));};
+function earn(id,amt,why,silent){if(WAL.earned[id]!=null||isPre(id))return 0;const room=Math.max(0,W_CAP-wEarned());const a=Math.min(amt,room);WAL.earned[id]=a;
+ if(a>0){WAL.log.unshift({id,amt:a,why,ts:Date.now()});if(WAL.log.length>500)WAL.log.length=500;}saveW();
+ if(!silent){if(a>0)coinFly(a,why);else if(room<=0)toast('You have earned the full RM500 Maths reward. Amazing work!');}return a;}
+function topicOfStep(key){for(const n in CHAPTERS_DATA){const t=CHAPTERS_DATA[n].topics.find(t=>t&&t.id&&key.startsWith(t.id+'-')&&/^\d+$/.test(key.slice(t.id.length+1)));if(t)return t;}return null;}
+function onStepAnswered(key,correct){if(correct)cheer();
+ const a=earn('s:'+key,W_RATE.step,'Finished a step');const t=topicOfStep(key);
+ if(t&&t.steps.every((s,i)=>S.done[t.id+'-'+i]))setTimeout(()=>earn('t:'+t.id,W_RATE.topic,(/\.0$/.test(t.id)?`Finished the ${t.id==='0.0'?'Foundations':'Chapter '+t.id.split('.')[0]} warm-up`:`Finished topic ${t.id}`)),a?900:0);
+ rvAddStep(key);renderDropdown();}
+
+/* --- celebration: sound + flying coins --- */
+let AC=null;function tone(f,t0,d,v=.08){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+t0);g.gain.linearRampToValueAtTime(v,AC.currentTime+t0+.02);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t0+d);o.connect(g).connect(AC.destination);o.start(AC.currentTime+t0);o.stop(AC.currentTime+t0+d+.05);}catch(e){}}
+function cheer(){if(WAL.sound){tone(660,0,.18);tone(880,.09,.25);}sparkle();}
+function chaChing(){if(WAL.sound){tone(988,0,.12,.07);tone(1319,.08,.35,.07);tone(1568,.16,.4,.05);}}
+function sparkle(){if(reduceMotion)return;const b=document.createElement('div');b.className='spark';b.setAttribute('aria-hidden','true');b.innerHTML=Array.from({length:10},(_,i)=>`<i style="--a:${i*36}deg;--d:${40+(i%3)*14}px"></i>`).join('');document.body.appendChild(b);setTimeout(()=>b.remove(),900);}
+function coinFly(a,why){chaChing();toast(`<div class="stkwin"><span class="coinbig">RM</span><div><b>+${rm(a)} in your wallet!</b><br><span style="font-size:13px;opacity:.85">${why} · balance ${rm(wEarned()-wPaid())}</span></div></div>`,'coin');
+ if(reduceMotion)return;const tgt=$('.hnav [data-page="wallet"]');const r=tgt?tgt.getBoundingClientRect():{left:innerWidth-60,top:20,width:20,height:20};
+ for(let i=0;i<Math.min(6,2+a);i++){const c=document.createElement('div');c.className='coinfly';c.textContent='RM';c.style.left=(innerWidth/2-14+(i-2)*18)+'px';c.style.top=(innerHeight*.62)+'px';document.body.appendChild(c);
+  requestAnimationFrame(()=>{c.style.transitionDelay=(i*.08)+'s';c.style.left=(r.left+r.width/2-14)+'px';c.style.top=(r.top+r.height/2-14)+'px';c.style.opacity='.2';c.style.transform='scale(.5)';});setTimeout(()=>c.remove(),1500);}}
+
+/* --- PIN (parents) --- */
+async function hashPin(p){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('math9-'+p));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}catch(e){let h=0;for(const c of 'math9-'+p)h=(h*31+c.charCodeAt(0))|0;return 'x'+h;}}
+
+function renderWallet(){const tot=wEarned(),paid=wPaid(),bal=tot-paid,pct=Math.min(100,tot/W_CAP*100);
+ const fill=Math.round(pct);
+ const safe=`<svg viewBox="0 0 220 200" class="safe" role="img" aria-label="Savings jar ${fill}% full"><defs><clipPath id="jarc"><path d="M50 40 h120 v16 q24 10 24 40 v70 q0 22 -22 22 h-124 q-22 0 -22 -22 v-70 q0 -30 24 -40z"/></clipPath></defs>
+  <rect x="44" y="22" width="132" height="22" rx="8" fill="${COL.cocoa}"/><path d="M50 40 h120 v16 q24 10 24 40 v70 q0 22 -22 22 h-124 q-22 0 -22 -22 v-70 q0 -30 24 -40z" fill="${COL.snow}" stroke="${COL.espresso}" stroke-width="4"/>
+  <g clip-path="url(#jarc)"><rect x="20" y="${188-150*pct/100}" width="190" height="${150*pct/100+4}" fill="${COL.sage}" opacity=".85"/>${Array.from({length:Math.min(14,Math.ceil(pct/7))},(_,i)=>`<circle cx="${50+(i*37)%130}" cy="${180-((i*23)%Math.max(8,150*pct/100))}" r="9" fill="#d9b25f" stroke="#a7822f" stroke-width="2"/>`).join('')}</g>
+  <text x="110" y="122" text-anchor="middle" font-size="26" font-weight="800" fill="${COL.espresso}" font-family="JetBrains Mono,monospace">${rm(bal)}</text></svg>`;
+ const ex=WAL.log.slice(0,40).map(l=>`<li><span>${esc(l.why)}</span><span class="tiny">${new Date(l.ts).toLocaleDateString('en-US',{day:'numeric',month:'short'})}</span><b>+${rm(l.amt)}</b></li>`).join('')||'<li><span class="tiny">Finish a step to earn your first ringgit.</span></li>';
+ const pays=WAL.paid.slice().reverse().slice(0,20).map(p=>`<li><span>Paid out by a parent</span><span class="tiny">${new Date(p.ts).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span><b style="color:var(--rose)">−${rm(p.amt)}</b></li>`).join('');
+ const preN=WAL.pre.steps.filter(k=>WAL.earned['s:'+k]==null).length+WAL.pre.topics.filter(t=>WAL.earned['t:'+t]==null).length;
+ return `<div class="thead"><div class="eyebrow">My savings</div><h2>Maths wallet</h2><p class="meta">Every new step earns ${rm(W_RATE.step)}, every finished topic earns ${rm(W_RATE.topic)}, and every finished daily review earns ${rm(W_RATE.review)}. The whole Maths course can earn up to ${rm(W_CAP)}.</p></div>
+ <div class="grid2"><section class="card" style="justify-items:center;text-align:center">${safe}<div class="readout">${rm(bal)} to collect</div><p class="tiny">Earned so far ${rm(tot)} of ${rm(W_CAP)} · already paid out ${rm(paid)}</p><div class="wbar"><i style="width:${pct}%"></i></div>
+  <label class="tiny" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wSound" ${WAL.sound?'checked':''}> Reward sounds</label></section>
+ <section class="card"><h3>How I earned it</h3><ul class="wlog">${ex}${pays}</ul></section></div>
+ <section class="card"><h3>For parents</h3><p class="tiny">${WAL.pin?'Enter your PIN to record cash you have handed over.':'Choose a 4-digit PIN first. Only a parent should know it.'}</p>
+  <div class="row"><input class="field" id="wPin" type="password" inputmode="numeric" maxlength="8" placeholder="${WAL.pin?'PIN':'New PIN'}" style="width:120px">${WAL.pin?`<input class="field" id="wAmt" type="number" min="1" step="1" placeholder="Amount (RM)" style="width:150px"><button class="btn primary" id="wPay">Record payout</button>`:`<button class="btn primary" id="wSetPin">Save PIN</button>`}</div>
+  ${WAL.pin&&preN?`<p class="tiny" style="margin-top:10px">${preN} steps and topics were finished before the wallet started on ${fmtDate(WAL.pre.start)}. They don't pay unless you add them.</p><div class="row"><button class="btn" id="wPre">Add rewards for earlier progress</button></div>`:''}
+  <p class="tiny" id="wMsg" role="status"></p></section>`;}
+
+/* =================== SPACED REVIEW (math9-review) =================== */
+const RKEY='math9-review';const R_INT=[1,3,7,14,30,60];const R_MAX=20;
+let RV={cards:{},days:{},q:null};
+try{Object.assign(RV,JSON.parse(localStorage.getItem(RKEY)||'{}'));}catch(e){}
+const saveR=()=>{try{localStorage.setItem(RKEY,JSON.stringify(RV));}catch(e){}};
+function stepRef(key){for(const n in CHAPTERS_DATA){const D=CHAPTERS_DATA[n];for(const t of D.topics){if(t&&t.id&&key.startsWith(t.id+'-')){const i=+key.slice(t.id.length+1);if(t.steps[i])return {ch:+n,t,i,s:t.steps[i]};}}}return null;}
+function rvResolve(id){const [type,...rest]=id.split(':');const v=rest.join(':');
+ if(type==='c'){const r=stepRef(v);if(!r||!r.s.check)return null;return {kind:'mc',ch:r.ch,where:`${chName(r.ch)} · ${/\.0$/.test(r.t.id)?'Warm-up':r.t.id} · ${r.s.t}`,c:r.s.check,go:[r.ch,r.t.id]};}
+ if(type==='z'){const [ch,i]=v.split('-').map(Number);const D=CHAPTERS_DATA[ch];if(!D||!D.quiz||!D.quiz[i])return null;return {kind:'mc',ch,where:`${chName(ch)} · Mixed quiz`,c:D.quiz[i],go:[ch,'quiz']};}
+ if(type==='k'){const [ch,kid]=v.split('|');const D=CHAPTERS_DATA[+ch];const w=D&&D.kw&&D.kw.find(x=>x.id===kid);if(!w)return null;return {kind:'kw',ch:+ch,where:`${chName(+ch)} · Key word`,w,go:[+ch,'cards']};}
+ if(type==='t'){const [a,b]=v.split('x').map(Number);return {kind:'tt',ch:-1,where:'Times table · tricky fact',a,b};}
+ if(type==='p'){const q=typeof PPQ!=='undefined'&&PPQ[v];if(!q)return null;return {kind:'pp',ch:q.ch||-1,where:`Past paper · ${q.src}`,q};}
+ return null;}
+function rvAdd(id,due){if(RV.cards[id])return false;if(!rvResolve(id))return false;RV.cards[id]={b:0,due:due||addDays(todayStr(),1),n:0,last:null};return true;}
+function rvAddStep(key){if(rvAdd('c:'+key))saveR();}
+// pull in everything she has already met, a few new cards per day so day one isn't overwhelming
+function rvSync(){const t=todayStr();const fresh=[];
+ Object.keys(S.done).forEach(k=>{if(!RV.cards['c:'+k])fresh.push('c:'+k);});
+ Object.keys(S.later).forEach(k=>{const id='c:'+k;if(RV.cards[id]){if(RV.cards[id].b>1){RV.cards[id].b=1;}if(RV.cards[id].due>addDays(t,1))RV.cards[id].due=addDays(t,1);}else fresh.unshift(id);});
+ Object.keys(S.quiz||{}).forEach(ch=>{(S.quiz[ch].wrong||[]).forEach(i=>{const id='z:'+ch+'-'+i;if(!RV.cards[id])fresh.unshift(id);});});
+ Object.keys(T.marks).forEach(k=>{if(!RV.cards['t:'+k])fresh.unshift('t:'+k);});
+ Object.keys(CHAPTERS_DATA).forEach(ch=>{const D=CHAPTERS_DATA[ch];(D.kw||[]).forEach(w=>{const tp=D.topics.find(x=>x.id===w.topic);if(tp&&tp.steps.some((s,i)=>S.done[tp.id+'-'+i])&&!RV.cards['k:'+ch+'|'+w.id])fresh.push('k:'+ch+'|'+w.id);});});
+ let i=0;[...new Set(fresh)].forEach(id=>{if(rvAdd(id,addDays(t,1+Math.floor(i/12))))i++;});saveR();}
+function mockWindow(t){for(const [n,d] of MOCKS){const k=dayDiff(t,d);if(k>=1&&k<=7)return {n,d,start:addDays(d,-7)};}return null;}
+function rvDue(t){const mw=mockWindow(t);return Object.entries(RV.cards).filter(([id,c])=>c.due<=t||(mw&&c.n>0&&(!c.last||c.last<mw.start))).map(([id])=>id).filter(id=>rvResolve(id));}
+function rvChapterDue(ch){const t=todayStr();return rvDue(t).filter(id=>{const r=rvResolve(id);return r&&r.ch===ch;}).length;}
+function rvQueue(){const t=todayStr();if(!RV.q||RV.q.date!==t){const due=rvDue(t);const ord=shuffle(due).sort((a,b)=>RV.cards[a].b-RV.cards[b].b).slice(0,R_MAX);RV.q={date:t,order:ord,pos:0,ans:null,right:0};if(!RV.days[t])RV.days[t]={start:ord.length,done:0};saveR();}return RV.q;}
+function rvGrade(id,ok,pick){const c=RV.cards[id];if(!c)return;const t=todayStr();c.n++;c.last=t;c.b=ok?Math.min(c.b+1,R_INT.length-1):0;c.due=addDays(t,ok?R_INT[c.b]:1);const q=RV.q;q.ans={ok,pick};if(ok)q.right++;RV.days[t].done++;saveR();if(ok)cheer();}
+function rvNext(){const q=RV.q;q.pos++;q.ans=null;saveR();const t=todayStr();if(q.pos>=q.order.length&&q.order.length)earn('r:'+t,W_RATE.review,"Finished today's review");}
+function rvStats(){const all=Object.values(RV.cards);return {total:all.length,strong:all.filter(c=>c.b>=3).length,due:rvDue(todayStr()).length};}
+function streak(){let n=0,d=todayStr();const done=s=>RV.days[s]&&RV.days[s].start>0&&RV.days[s].done>=RV.days[s].start;if(!done(d))d=addDays(d,-1);while(done(d)){n++;d=addDays(d,-1);}return n;}
+function rvCardHtml(id,q){const r=rvResolve(id);const a=q.ans;let body='';
+ if(r.kind==='mc'){const c=r.c;body=`<div class="q">${c.q}</div><div class="opts">${c.opts.map((o,i)=>{let cls='';if(a){if(i===c.ans)cls='right';else if(i===a.pick)cls='wrong';}return `<button class="opt ${cls}" data-rvopt="${i}" ${a?'disabled':''}>${o}</button>`;}).join('')}</div>${a?fbHtml(a.ok,c.why):''}`;}
+ else if(r.kind==='kw'){body=`<div class="bigm" style="font-size:24px">${r.w.t}</div>${a||q.show?`<div class="plain fadein"><span class="kicker">Meaning</span><p>${r.w.d}</p></div>`:''}${a?'':q.show?`<div class="row" style="justify-content:center"><button class="btn" data-rvself="0">Not yet</button><button class="btn primary" data-rvself="1">Got it</button></div>`:`<div class="row" style="justify-content:center"><button class="btn primary" data-rvshow>Show the meaning</button></div>`}`;}
+ else if(r.kind==='tt'){body=`<div class="bigm">${r.a} × ${r.b} = ?</div>${a?fbHtml(a.ok,`${r.a} × ${r.b} = ${r.a*r.b}`):`<div class="row" style="justify-content:center"><input class="field" id="rvTT" type="number" inputmode="numeric" style="width:130px" autocomplete="off"><button class="btn primary" id="rvTTgo">Check</button></div>`}`;}
+ else if(r.kind==='pp'){body=`<div class="qt">${r.q.q}</div>${a||q.show?`<div class="ans fadein"><span>Mark scheme answer</span><div>${r.q.a}</div></div>`:''}${a?'':q.show?`<div class="row" style="justify-content:center"><button class="btn" data-rvself="0">I got it wrong</button><button class="btn primary" data-rvself="1">I got it right</button></div>`:`<textarea placeholder="Work it out here first" style="min-height:80px"></textarea><div class="row" style="justify-content:center"><button class="btn primary" data-rvshow>Show the answer</button></div>`}`;}
+ return `<div class="check rvcard fadein"><div class="tag">${r.where}</div>${body}${a?`<div class="rowend"><button class="btn primary" id="rvNext">${q.pos+1<q.order.length?'Next card':'Finish'}</button></div>`:''}</div>`;}
+function renderReview(){const t=todayStr();const q=rvQueue();const st=rvStats();const mw=mockWindow(t);
+ const mocks=MOCKS.map(([n,d])=>{const k=dayDiff(t,d);return k<0?'':`<div class="mock"><b>${k===0?'Today!':k+' day'+(k===1?'':'s')}</b><span>${n}</span><span class="tiny">${fmtDate(d)}</span></div>`;}).join('');
+ let main;
+ if(!q.order.length)main=`<div class="card empty"><h3>Nothing due today</h3><p>New cards arrive as you finish steps, get quiz questions wrong, mark tricky times table facts or save steps to Study later.</p></div>`;
+ else if(q.pos>=q.order.length)main=`<div class="card empty"><h3>Today's review is done!</h3><p>You got ${q.right} out of ${q.order.length} right first time. Come back tomorrow for the next set.</p><div class="readout">${WAL.earned['r:'+t]?'+'+rm(WAL.earned['r:'+t])+' earned':''}</div></div>`;
+ else main=`<div class="rvprog"><span>Card ${q.pos+1} of ${q.order.length}</span><div class="wbar"><i style="width:${q.pos/q.order.length*100}%"></i></div></div>`+rvCardHtml(q.order[q.pos],q);
+ return `<div class="thead"><div class="eyebrow">Spaced practice</div><h2>Today's review</h2><p class="meta">A short mix from every chapter you've started. Cards you know come back less often (after 1, 3, 7, 14, 30 and 60 days). Cards you miss come back tomorrow.${mw?` It's the week before ${mw.n}, so every card you've practised comes back once this week.`:''}</p></div>
+ <div class="mocks">${mocks}<div class="mock"><b>${streak()}</b><span>day streak</span></div><div class="mock"><b>${st.strong} / ${st.total}</b><span>cards strong</span></div></div>${main}`;}
+
+function rvBanner(){const n=rvChapterDue(CUR);return n?`<div class="rvban"><span><b>${n}</b> review card${n>1?'s':''} due from this chapter</span><button class="btn" data-rvgo>Start today's review</button></div>`:'';}
+
+/* =================== PAST PAPERS =================== */
+const PPQ={};   // past-paper questions by id, filled from the official papers
+const PAPERS=[];
+function renderPaperHub(){const t=todayStr();const mocks=MOCKS.map(([n,d])=>{const k=dayDiff(t,d);return k<0?'':`<div class="mock"><b>${k===0?'Today!':k+' day'+(k===1?'':'s')}</b><span>${n}</span><span class="tiny">${fmtDate(d)}</span></div>`;}).join('');
+ return `<div class="thead"><div class="eyebrow">Exam practice</div><h2>Past papers</h2><p class="meta">Real Cambridge Lower Secondary Checkpoint Mathematics papers, marked with the official mark schemes.</p></div><div class="mocks">${mocks}</div>
+ <div class="card empty"><h3>Papers are being added</h3><p>The questions from each paper are being typed in from the official PDFs, with the diagrams and the mark scheme answers.</p></div>`;}
 
 /* =================== SCIENTIFIC CALCULATOR =================== */
 const Calc=(function(){
@@ -2648,7 +2764,7 @@ function doReset(w){const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);let 
  save();closeReset();render();window.scrollTo({top:0});if(msg)toast(msg);}
 
 /* =================== EVENTS =================== */
-function goView(v){S.view=v;save();openDD(false);render();enterAnim();window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});}
+function goView(v){if(v==='review')rvSync();S.view=v;save();openDD(false);render();enterAnim();window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});}
 document.addEventListener('click',e=>{
  if(e.target.closest('#ddBtn')){openDD($('#ddMenu').hidden);return;}
  if(!e.target.closest('#dd')&&!$('#ddMenu').hidden)openDD(false);
@@ -2667,8 +2783,8 @@ document.addEventListener('click',e=>{
  const pill=e.target.closest('[data-sec]');if(pill){S.sec[CUR]=pill.dataset.sec;save();render();enterAnim();return;}
  const go=e.target.closest('[data-go]');if(go){S.sec[CUR]=go.dataset.go;save();render();enterAnim();window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});return;}
  const rev=e.target.closest('[data-rev]');if(rev){const bw=rev.closest('.bqi');const n=bw?$('.ans',bw):rev.nextElementSibling;n.hidden=!n.hidden;rev.setAttribute('aria-expanded',!n.hidden);rev.textContent=n.hidden?(rev.closest('.bqi')?'Show the answer':'Think first, then tap to see'):'Hide';if(!n.hidden)n.classList.add('fadein');return;}
- const opt=e.target.closest('.check .opt');if(opt&&!opt.disabled){const box=opt.closest('.check');const key=box.dataset.key;const fresh=!S.stk[key];S.checks[key]=+opt.dataset.i;S.done[key]=1;S.stk[key]=1;save();
-  const y=box.getBoundingClientRect().top;render();const nb=$(`.check[data-key="${key}"]`);if(nb)window.scrollBy(0,nb.getBoundingClientRect().top-y);if(fresh)awardSticker(key);return;}
+ const opt=e.target.closest('.check .opt');if(opt&&!opt.disabled&&!opt.closest('.rvcard')){const box=opt.closest('.check');const key=box.dataset.key;const fresh=!S.stk[key];S.checks[key]=+opt.dataset.i;S.done[key]=1;S.stk[key]=1;save();
+  const y=box.getBoundingClientRect().top;render();const nb=$(`.check[data-key="${key}"]`);if(nb)window.scrollBy(0,nb.getBoundingClientRect().top-y);if(fresh)awardSticker(key);onStepAnswered(key,+opt.dataset.i===(stepRef(key)||{s:{check:{}}}).s.check.ans);return;}
  const lb=e.target.closest('[data-later]');if(lb){const k=lb.dataset.later;
   if(S.later[k]){delete S.later[k];toast('Removed from Study later.');}
   else{const [tid,si]=k.split(/-(?=\d+$)/);const t=TOPICS.find(x=>x.id===tid);S.later[k]={ch:CUR,topic:tid,i:+si,t:t?t.steps[+si].t:''};toast('Saved to Study later. Find it in the menu at the top.');}
@@ -2679,7 +2795,7 @@ document.addEventListener('click',e=>{
  const flip=e.target.closest('[data-flip]');if(flip){flip.classList.toggle('on');return;}
  const mk=e.target.closest('[data-mark]');if(mk){S.cards[mk.dataset.mark]=mk.dataset.v;save();const f=mk.closest('.cardwrap').querySelector('.flip');f.classList.remove('known','unsure');f.classList.add(mk.dataset.v);renderPills();return;}
  if(e.target.closest('#qStart')){startQuiz();render();return;}
- const qa=e.target.closest('[data-qa]');if(qa&&QZ&&QZ.ans==null){QZ.ans=+qa.dataset.qa;const qi=QZ.order[QZ.pos];if(QZ.ans===QUIZ[qi].ans)QZ.score++;else QZ.wrong.push(qi);render();return;}
+ const qa=e.target.closest('[data-qa]');if(qa&&QZ&&QZ.ans==null){QZ.ans=+qa.dataset.qa;const qi=QZ.order[QZ.pos];if(QZ.ans===QUIZ[qi].ans){QZ.score++;cheer();}else{QZ.wrong.push(qi);if(rvAdd('z:'+CUR+'-'+qi))saveR();}render();return;}
  if(e.target.closest('#qNext')){QZ.pos++;QZ.ans=null;if(QZ.pos>=QZ.order.length){S.quiz[CUR]={best:Math.max(qb()??0,QZ.score),wrong:QZ.wrong};save();}render();return;}
  // times table
  const tt=e.target.closest('[data-tt]');if(tt){T.tab=tt.dataset.tt;saveT();render();return;}
@@ -2702,4 +2818,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#ddMenu').hi
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.bq){S.bq[t.dataset.bq]=t.value;save();}});
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.cl){S.cl[t.dataset.cl]=t.checked;save();}});
 
-useChapter(S.ch??1);if(!['chapter','later','stickers','times'].includes(S.view))S.view='chapter';render();enterAnim();
+/* review, wallet and past papers events */
+document.addEventListener('click',e=>{
+ const ro=e.target.closest('[data-rvopt]');if(ro&&!ro.disabled){const q=RV.q,id=q.order[q.pos],r=rvResolve(id);rvGrade(id,+ro.dataset.rvopt===r.c.ans,+ro.dataset.rvopt);render();return;}
+ if(e.target.closest('[data-rvshow]')){RV.q.show=true;saveR();render();return;}
+ const rs=e.target.closest('[data-rvself]');if(rs){const q=RV.q;q.show=false;rvGrade(q.order[q.pos],rs.dataset.rvself==='1');render();return;}
+ if(e.target.closest('#rvTTgo')){const q=RV.q,r=rvResolve(q.order[q.pos]);const v=+$('#rvTT').value;rvGrade(q.order[q.pos],v===r.a*r.b);render();return;}
+ if(e.target.closest('#rvNext')){rvNext();render();window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});return;}
+ if(e.target.closest('[data-rvgo]')){goView('review');return;}
+ if(e.target.closest('#wSetPin')){const p=$('#wPin').value.trim();if(!/^\d{4,8}$/.test(p)){$('#wMsg').textContent='Use 4 to 8 digits.';return;}hashPin(p).then(h=>{WAL.pin=h;saveW();render();toast('PIN saved.');});return;}
+ if(e.target.closest('#wPay')){const p=$('#wPin').value.trim(),amt=Math.round(+$('#wAmt').value*100)/100;hashPin(p).then(h=>{if(h!==WAL.pin){$('#wMsg').textContent='That PIN is not right.';return;}const bal=wEarned()-wPaid();if(!(amt>0)||amt>bal){$('#wMsg').textContent=`Enter an amount from RM1 to ${rm(bal)}.`;return;}WAL.paid.push({amt,ts:Date.now()});saveW();render();toast(`Recorded: ${rm(amt)} paid out.`);});return;}
+ if(e.target.closest('#wPre')){const p=$('#wPin').value.trim();hashPin(p).then(h=>{if(h!==WAL.pin){$('#wMsg').textContent='Enter your PIN first.';return;}const st=WAL.pre.steps.slice(),tp=WAL.pre.topics.slice();WAL.pre.steps=[];WAL.pre.topics=[];let tot=0;st.forEach(k=>{tot+=earn('s:'+k,W_RATE.step,'Step finished before the wallet started',true);});tp.forEach(t=>{tot+=earn('t:'+t,W_RATE.topic,'Topic finished before the wallet started',true);});saveW();render();if(tot)coinFly(tot,'Earlier progress added');});return;}
+});
+document.addEventListener('change',e=>{if(e.target.id==='wSound'){WAL.sound=e.target.checked;saveW();}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='rvTT')$('#rvTTgo').click();});
+rvSync();
+useChapter(S.ch??1);if(!['chapter','later','stickers','times','review','wallet','papers'].includes(S.view))S.view='chapter';render();enterAnim();
