@@ -2997,24 +2997,40 @@ const fmtDate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d
 
 /* =================== WALLET (math9-wallet) =================== */
 const WKEY='math9-wallet';
-const W_CAP=500,W_RATE={step:1,topic:5,review:2};
+const W_CAP=500,W_UNIT=30,W_STEPS=20,W_TOPICS=10,W_REVIEW=0.2,W_REVIEWS=100;
+// RM500 = Foundations and each of the 15 chapters worth RM30 (RM20 shared across its steps, RM10 across its topics,
+// the last few sen paid when the chapter is finished) + RM0.20 for each of the first 100 finished daily reviews.
+const unitOf=tid=>String(tid).split('.')[0];
+function unitInfo(u){const D=CHAPTERS_DATA[u];if(!D)return null;const S_=D.topics.reduce((a,t)=>a+t.steps.length,0),T_=D.topics.length;
+ const sv=Math.floor(W_STEPS*100/S_),tv=Math.floor(W_TOPICS*100/T_);return {steps:S_,topics:T_,step:sv/100,topic:tv/100,finish:(W_UNIT*100-sv*S_-tv*T_)/100};}
+function wValue(id){const k=id.slice(0,2),v=id.slice(2);
+ if(k==='s:'){const t=topicOfStep(v);const I=t&&unitInfo(unitOf(t.id));return I?I.step:0;}
+ if(k==='t:'){const I=unitInfo(unitOf(v));return I?I.topic:0;}
+ if(k==='c:'){const I=unitInfo(v);return I?I.finish:0;}
+ if(k==='r:')return W_REVIEW;return 0;}
 let WAL={earned:{},log:[],paid:[],pin:null,pre:null,sound:true};
 try{Object.assign(WAL,JSON.parse(localStorage.getItem(WKEY)||'{}'));}catch(e){}
 const saveW=()=>{try{localStorage.setItem(WKEY,JSON.stringify(WAL));}catch(e){}};
 const wEarned=()=>Object.values(WAL.earned).reduce((a,b)=>a+b,0);
 const wPaid=()=>WAL.paid.reduce((a,p)=>a+p.amt,0);
-const rm=n=>'RM'+(Math.round(n*100)/100);
+const rm=n=>{const c=Math.round(n*100);return 'RM'+(c%100?(c/100).toFixed(2):c/100);};
 // steps and topics already finished before the wallet started don't pay automatically (a parent can add them)
 if(!WAL.pre){WAL.pre={steps:Object.keys(S.stk),topics:[],start:todayStr()};
  Object.values(CHAPTERS_DATA).forEach(D=>D.topics.forEach(t=>{if(t.steps.every((s,i)=>S.stk[t.id+'-'+i]))WAL.pre.topics.push(t.id);}));saveW();}
 const isPre=id=>{const [k,v]=[id.slice(0,2),id.slice(2)];return (k==='s:'&&WAL.pre.steps.includes(v))||(k==='t:'&&WAL.pre.topics.includes(v));};
-function earn(id,amt,why,silent){if(WAL.earned[id]!=null||isPre(id))return 0;const room=Math.max(0,W_CAP-wEarned());const a=Math.min(amt,room);WAL.earned[id]=a;
+// recalculate every saved reward from the current rates (safe to run on every load and every device)
+function wNormalize(){const ids=Object.keys(WAL.earned);const rv=ids.filter(i=>i.startsWith('r:')).sort();
+ ids.forEach(i=>{let a=wValue(i);if(i.startsWith('r:')&&rv.indexOf(i)>=W_REVIEWS)a=0;WAL.earned[i]=Math.round(a*100)/100;});
+ WAL.log.forEach(l=>{if(WAL.earned[l.id]!=null)l.amt=WAL.earned[l.id];});WAL.log=WAL.log.filter(l=>l.amt>0);WAL.rates=2;saveW();}
+function earn(id,amt,why,silent){if(WAL.earned[id]!=null||isPre(id))return 0;if(id.startsWith('r:')&&Object.keys(WAL.earned).filter(i=>i.startsWith('r:')).length>=W_REVIEWS)amt=0;const room=Math.max(0,W_CAP-wEarned());const a=Math.min(amt,room);WAL.earned[id]=a;
  if(a>0){WAL.log.unshift({id,amt:a,why,ts:Date.now()});if(WAL.log.length>500)WAL.log.length=500;}saveW();
  if(!silent){if(a>0)coinFly(a,why);else if(room<=0)toast('You have earned the full RM500 Maths reward. Amazing work!');}return a;}
+function wCheckUnit(u,silent){const D=CHAPTERS_DATA[u];if(!D||WAL.earned['c:'+u]!=null)return;
+ const ids=D.topics.flatMap(t=>[...t.steps.map((x,i)=>'s:'+t.id+'-'+i),'t:'+t.id]);if(ids.every(i=>WAL.earned[i]!=null))earn('c:'+u,wValue('c:'+u),u==='0'?'Finished Foundations':'Finished Chapter '+u,silent);}
 function topicOfStep(key){for(const n in CHAPTERS_DATA){const t=CHAPTERS_DATA[n].topics.find(t=>t&&t.id&&key.startsWith(t.id+'-')&&/^\d+$/.test(key.slice(t.id.length+1)));if(t)return t;}return null;}
 function onStepAnswered(key,correct){if(correct)cheer();
- const a=earn('s:'+key,W_RATE.step,'Finished a step');const t=topicOfStep(key);
- if(t&&t.steps.every((s,i)=>S.done[t.id+'-'+i]))setTimeout(()=>earn('t:'+t.id,W_RATE.topic,(/\.0$/.test(t.id)?`Finished the ${t.id==='0.0'?'Foundations':'Chapter '+t.id.split('.')[0]} warm-up`:`Finished topic ${t.id}`)),a?900:0);
+ const a=earn('s:'+key,wValue('s:'+key),'Finished a step');const t=topicOfStep(key);
+ if(t&&t.steps.every((s,i)=>S.done[t.id+'-'+i]))setTimeout(()=>{earn('t:'+t.id,wValue('t:'+t.id),(/\.0$/.test(t.id)?`Finished the ${t.id==='0.0'?'Foundations':'Chapter '+t.id.split('.')[0]} warm-up`:`Finished topic ${t.id}`));wCheckUnit(unitOf(t.id));},a?900:0);
  rvAddStep(key);renderDropdown();}
 
 /* --- celebration: sound + flying coins --- */
@@ -3039,12 +3055,12 @@ function renderWallet(){const tot=wEarned(),paid=wPaid(),bal=tot-paid,pct=Math.m
  const ex=WAL.log.slice(0,40).map(l=>`<li><span>${esc(l.why)}</span><span class="tiny">${new Date(l.ts).toLocaleDateString('en-US',{day:'numeric',month:'short'})}</span><b>+${rm(l.amt)}</b></li>`).join('')||'<li><span class="tiny">Finish a step to earn your first ringgit.</span></li>';
  const pays=WAL.paid.slice().reverse().slice(0,20).map(p=>`<li><span>Paid out by a parent</span><span class="tiny">${new Date(p.ts).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span><b style="color:var(--rose)">−${rm(p.amt)}</b></li>`).join('');
  const preN=WAL.pre.steps.filter(k=>WAL.earned['s:'+k]==null).length+WAL.pre.topics.filter(t=>WAL.earned['t:'+t]==null).length;
- return `<div class="thead"><div class="eyebrow">My savings</div><h2>Maths wallet</h2><p class="meta">Every new step earns ${rm(W_RATE.step)}, every finished topic earns ${rm(W_RATE.topic)}, and every finished daily review earns ${rm(W_RATE.review)}. The whole Maths course can earn up to ${rm(W_CAP)}.</p></div>
- <div class="grid2"><section class="card" style="justify-items:center;text-align:center">${safe}<div class="readout">${rm(bal)} to collect</div><p class="tiny">Earned so far ${rm(tot)} of ${rm(W_CAP)} · already paid out ${rm(paid)}</p><div class="wbar"><i style="width:${pct}%"></i></div>
+ return `<div class="thead"><div class="eyebrow">My savings</div><h2>Maths wallet</h2><p class="meta">Foundations and each of the 15 chapters are worth ${rm(W_UNIT)}: ${rm(W_STEPS)} shared across the chapter's steps and ${rm(W_TOPICS)} across its topics, with the last few sen added when the chapter is finished. Each finished daily review earns ${rm(W_REVIEW)}, for up to ${W_REVIEWS} reviews. Finishing everything adds up to exactly ${rm(W_CAP)}.</p></div>
+ <div class="grid2"><section class="card" style="justify-items:center;text-align:center">${safe}<div class="readout">${bal>=0?rm(bal)+' to collect':'Paid ahead by '+rm(-bal)}</div><p class="tiny">Earned so far ${rm(tot)} of ${rm(W_CAP)} · already paid out ${rm(paid)}</p><div class="wbar"><i style="width:${pct}%"></i></div>
   <label class="tiny" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wSound" ${WAL.sound?'checked':''}> Reward sounds</label></section>
  <section class="card"><h3>How I earned it</h3><ul class="wlog">${ex}${pays}</ul></section></div>
- <section class="card"><h3>For parents</h3><p class="tiny">${WAL.pin?'Enter your PIN to record cash you have handed over.':'Choose a 4-digit PIN first. Only a parent should know it.'}</p>
-  <div class="row"><input class="field" id="wPin" type="password" inputmode="numeric" maxlength="8" placeholder="${WAL.pin?'PIN':'New PIN'}" style="width:120px">${WAL.pin?`<input class="field" id="wAmt" type="number" min="1" step="1" placeholder="Amount (RM)" style="width:150px"><button class="btn primary" id="wPay">Record payout</button>`:`<button class="btn primary" id="wSetPin">Save PIN</button>`}</div>
+ <section class="card"><h3>For parents</h3><p class="tiny">The wallet only counts what Sofia has earned. When you hand her the real money, record it here so her balance goes down. The PIN makes sure only a parent can record a payout or add rewards for earlier progress. ${WAL.pin?'Enter your PIN and the amount you handed over.':'Choose a PIN of 4 to 8 digits that only a parent knows.'}</p>
+  <div class="row"><input class="field" id="wPin" type="password" inputmode="numeric" maxlength="8" placeholder="${WAL.pin?'PIN':'New PIN'}" style="width:120px">${WAL.pin?`<input class="field" id="wAmt" type="number" min="0.01" step="0.01" placeholder="Amount (RM)" style="width:150px"><button class="btn primary" id="wPay">Record payout</button>`:`<button class="btn primary" id="wSetPin">Save PIN</button>`}</div>
   ${WAL.pin&&preN?`<p class="tiny" style="margin-top:10px">${preN} steps and topics were finished before the wallet started on ${fmtDate(WAL.pre.start)}. They don't pay unless you add them.</p><div class="row"><button class="btn" id="wPre">Add rewards for earlier progress</button></div>`:''}
   <p class="tiny" id="wMsg" role="status"></p></section>`;}
 
@@ -3076,7 +3092,7 @@ function rvDue(t){const mw=mockWindow(t);return Object.entries(RV.cards).filter(
 function rvChapterDue(ch){const t=todayStr();return rvDue(t).filter(id=>{const r=rvResolve(id);return r&&r.ch===ch;}).length;}
 function rvQueue(){const t=todayStr();if(!RV.q||RV.q.date!==t){const due=rvDue(t);const ord=shuffle(due).sort((a,b)=>RV.cards[a].b-RV.cards[b].b).slice(0,R_MAX);RV.q={date:t,order:ord,pos:0,ans:null,right:0};if(!RV.days[t])RV.days[t]={start:ord.length,done:0};saveR();}return RV.q;}
 function rvGrade(id,ok,pick){const c=RV.cards[id];if(!c)return;const t=todayStr();c.n++;c.last=t;c.b=ok?Math.min(c.b+1,R_INT.length-1):0;c.due=addDays(t,ok?R_INT[c.b]:1);const q=RV.q;q.ans={ok,pick};if(ok)q.right++;RV.days[t].done++;saveR();if(ok)cheer();}
-function rvNext(){const q=RV.q;q.pos++;q.ans=null;saveR();const t=todayStr();if(q.pos>=q.order.length&&q.order.length)earn('r:'+t,W_RATE.review,"Finished today's review");}
+function rvNext(){const q=RV.q;q.pos++;q.ans=null;saveR();const t=todayStr();if(q.pos>=q.order.length&&q.order.length)earn('r:'+t,W_REVIEW,"Finished today's review");}
 function rvStats(){const all=Object.values(RV.cards);return {total:all.length,strong:all.filter(c=>c.b>=3).length,due:rvDue(todayStr()).length};}
 function streak(){let n=0,d=todayStr();const done=s=>RV.days[s]&&RV.days[s].start>0&&RV.days[s].done>=RV.days[s].start;if(!done(d))d=addDays(d,-1);while(done(d)){n++;d=addDays(d,-1);}return n;}
 function rvCardHtml(id,q){const r=rvResolve(id);const a=q.ans;let body='';
@@ -3351,9 +3367,9 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-rvgo]')){goView('review');return;}
  if(e.target.closest('#wSetPin')){const p=$('#wPin').value.trim();if(!/^\d{4,8}$/.test(p)){$('#wMsg').textContent='Use 4 to 8 digits.';return;}hashPin(p).then(h=>{WAL.pin=h;saveW();render();toast('PIN saved.');});return;}
  if(e.target.closest('#wPay')){const p=$('#wPin').value.trim(),amt=Math.round(+$('#wAmt').value*100)/100;hashPin(p).then(h=>{if(h!==WAL.pin){$('#wMsg').textContent='That PIN is not right.';return;}const bal=wEarned()-wPaid();if(!(amt>0)||amt>bal){$('#wMsg').textContent=`Enter an amount from RM1 to ${rm(bal)}.`;return;}WAL.paid.push({amt,ts:Date.now()});saveW();render();toast(`Recorded: ${rm(amt)} paid out.`);});return;}
- if(e.target.closest('#wPre')){const p=$('#wPin').value.trim();hashPin(p).then(h=>{if(h!==WAL.pin){$('#wMsg').textContent='Enter your PIN first.';return;}const st=WAL.pre.steps.slice(),tp=WAL.pre.topics.slice();WAL.pre.steps=[];WAL.pre.topics=[];let tot=0;st.forEach(k=>{tot+=earn('s:'+k,W_RATE.step,'Step finished before the wallet started',true);});tp.forEach(t=>{tot+=earn('t:'+t,W_RATE.topic,'Topic finished before the wallet started',true);});saveW();render();if(tot)coinFly(tot,'Earlier progress added');});return;}
+ if(e.target.closest('#wPre')){const p=$('#wPin').value.trim();hashPin(p).then(h=>{if(h!==WAL.pin){$('#wMsg').textContent='Enter your PIN first.';return;}const st=WAL.pre.steps.slice(),tp=WAL.pre.topics.slice();WAL.pre.steps=[];WAL.pre.topics=[];let tot=0;st.forEach(k=>{tot+=earn('s:'+k,wValue('s:'+k),'Step finished before the wallet started',true);});tp.forEach(t=>{tot+=earn('t:'+t,wValue('t:'+t),'Topic finished before the wallet started',true);});Object.keys(CHAPTERS_DATA).forEach(u=>{const b0=wEarned();wCheckUnit(u,true);tot+=wEarned()-b0;});saveW();render();if(tot)coinFly(tot,'Earlier progress added');});return;}
 });
 document.addEventListener('change',e=>{if(e.target.id==='wSound'){WAL.sound=e.target.checked;saveW();}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='rvTT')$('#rvTTgo').click();});
-rvSync();
+wNormalize();Object.keys(CHAPTERS_DATA).forEach(u=>wCheckUnit(u,true));rvSync();
 useChapter(S.ch??1);if(!['chapter','later','stickers','times','review','wallet','papers'].includes(S.view))S.view='chapter';render();enterAnim();
