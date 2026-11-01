@@ -464,6 +464,92 @@ body[data-font="2"] h1,body[data-font="2"] h2{letter-spacing:0;font-weight:700}
 .key6.a span{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:#262143}
 .key6.a:hover,.key6.on{background:var(--acc)}
 .keys6+.infobox{margin-top:8px}
+/* ===== hub features (dropdown, pages, wallet, review, papers, reset, clear) ===== */
+[data-ch="review"],[data-chtheme="review"]{--acc:#5FD4F4;--acc2:#6EE7B7;--glow1:#2D6BD6;--glow2:#2FB8A0}
+[data-ch="wallet"],[data-chtheme="wallet"]{--acc:#FFD36E;--acc2:#6EE7B7;--glow1:#C9672E;--glow2:#2F8A6A}
+[data-ch="papers"],[data-chtheme="papers"]{--acc:#8FB4FF;--acc2:#FF7AC2;--glow1:#2F4FC2;--glow2:#8A2F9E}
+.topin{flex-wrap:wrap}
+.homebtn{padding:8px 10px;display:inline-grid;place-items:center}
+.dd{position:relative}
+.ddbtn{display:flex;align-items:center;gap:10px;border:1px solid color-mix(in srgb,var(--acc) 55%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 20%,var(--surface)),color-mix(in srgb,var(--acc2) 12%,var(--surface)));border-radius:12px;padding:8px 12px 8px 14px;white-space:nowrap;box-shadow:0 0 16px color-mix(in srgb,var(--acc) 25%,transparent)}
+.ddbtn .k{font-family:var(--display);font-weight:800;font-size:16px}
+.ddbtn .chev{flex:none;transition:transform .25s}
+.ddbtn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.ddmenu{position:absolute;top:calc(100% + 10px);left:0;width:min(440px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--surface);border:1px solid color-mix(in srgb,var(--acc) 40%,var(--line));border-radius:16px;padding:8px;z-index:30;box-shadow:0 24px 60px rgba(5,3,20,.6),0 0 30px color-mix(in srgb,var(--acc) 20%,transparent);animation:ddIn .2s ease-out both;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px)}}
+.ddsec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 12px 6px}
+.ddopt{width:100%;border:1px solid transparent;background:transparent;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:12px;text-align:left;font-size:15.5px;color:var(--ink)}
+.ddopt .n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,#fff 45%,var(--acc)),var(--acc) 55%,color-mix(in srgb,var(--acc2) 60%,var(--acc)));color:var(--on-acc);box-shadow:0 0 10px color-mix(in srgb,var(--acc) 45%,transparent)}
+.ddopt .t{flex:1;min-width:0}
+.ddopt .s{font-size:12px;color:var(--muted)}
+.ddopt:hover:not(:disabled){background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.ddopt[aria-selected="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.ddopt:disabled{cursor:default;opacity:.55}
+.ddopt:disabled .n{filter:grayscale(.7)}
+.hnav{display:flex;gap:6px;flex-wrap:wrap}
+.hnav .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 10px}
+.hnav .btn[aria-current="page"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 22%,var(--surface));color:var(--ink);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 35%,transparent)}
+.hb{font-family:var(--mono);font-size:11.5px;min-width:22px;padding:1px 6px;border-radius:99px;background:var(--acc);color:var(--on-acc);text-align:center;font-weight:700}
+.hb:empty{display:none}
+.backbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.backbar .btn{display:inline-flex;align-items:center;gap:6px}
+.rowend{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.clearbtn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;color:var(--acc2)}
+.clearbtn:hover{border-color:var(--acc2)}
+.resetopts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.linkbtn{border:0;background:none;padding:6px 4px;font-size:14.5px;text-decoration:underline;text-underline-offset:3px;color:var(--acc2)}
+.resetp{display:grid;gap:10px;background:linear-gradient(145deg,var(--bad-soft),var(--surface));border-color:color-mix(in srgb,var(--bad) 50%,var(--line))}
+.rvban{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:14px;border:1px dashed color-mix(in srgb,var(--acc2) 60%,var(--line));background:color-mix(in srgb,var(--acc2) 10%,transparent);margin-bottom:16px}
+.mocks{display:flex;flex-wrap:wrap;gap:12px}
+.mock{flex:1 1 140px;display:grid;gap:2px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 90%,transparent);text-align:center}
+.mock b{font-family:var(--mono);font-size:22px;color:var(--acc)}
+.rvprog{display:grid;gap:6px;font-size:14px;color:var(--muted)}
+.rvcard{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:color-mix(in srgb,var(--surface) 90%,transparent)}
+.bigm{font-family:var(--display);font-size:clamp(20px,3.6vw,28px);font-weight:800;text-align:center;padding:6px 0}
+.plain{border-radius:14px;padding:12px 16px;border:1px solid var(--line);background:var(--paper);display:grid;gap:4px}
+.kicker{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.grid2{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr))}
+.grid2>*{min-width:0}
+.field{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 12px;font:inherit;font-family:var(--mono);color:var(--ink);width:150px;max-width:100%}
+.readout{font-family:var(--mono);font-size:clamp(17px,2.8vw,21px);font-weight:700;text-align:center}
+.wbar{width:100%;height:12px;border-radius:99px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:99px;transition:width .6s}
+.safe{width:min(220px,70%);height:auto}
+.wlog{list-style:none;padding:0;margin:0;display:grid;gap:6px;max-height:340px;overflow:auto}
+.wlog li{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--paper)}
+.wlog b{font-family:var(--mono);color:var(--good)}
+.toast.coin{bottom:calc(170px + env(safe-area-inset-bottom,0px));padding:12px 18px;border-radius:16px;background:var(--surface2);color:var(--ink);border:1px solid #FFD36E;box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 30px rgba(255,211,110,.35)}
+.coinbig{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#FFD36E;color:#2A2010;font-weight:800;font-family:var(--mono);box-shadow:inset -3px -3px 0 #C99A2E}
+.coinfly{position:fixed;z-index:60;width:28px;height:28px;border-radius:50%;background:#FFD36E;color:#2A2010;font:800 10px/28px var(--mono);text-align:center;box-shadow:inset -2px -2px 0 #C99A2E,0 0 12px rgba(255,211,110,.6);transition:left .9s cubic-bezier(.5,-.3,.6,1),top .9s cubic-bezier(.5,-.3,.6,1),opacity .9s,transform .9s;pointer-events:none}
+.spark{position:fixed;left:50%;top:55%;z-index:60;pointer-events:none}
+.spark i{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--acc);animation:spk .8s ease-out forwards;transform:rotate(var(--a)) translateY(0)}
+.spark i:nth-child(2n){background:#FFD36E}.spark i:nth-child(3n){background:var(--acc2)}
+@keyframes spk{to{transform:rotate(var(--a)) translateY(calc(-1 * var(--d)));opacity:0}}
+.ppq{display:grid;gap:10px}
+.pptag{font-size:12px;font-family:var(--mono);color:var(--muted)}
+.examclock{font-family:var(--mono);font-size:clamp(44px,9vw,72px);font-weight:800;color:var(--acc)}
+.fadein{animation:enterUp .45s ease-out both}
+/* Getting started card */
+.hook{background:#6699CC;border-color:transparent}
+.hook,.hook p,.hook .reveal-text{color:#14203A}
+.hook h3{color:#14203A}
+.hook .reveal-btn{color:#14203A;border-color:#14203A}
+.hook .reveal-text{border-left-color:#14203A}
+/* chapter intro visuals */
+.cvis{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));margin-top:8px}
+.cv{display:grid;gap:8px;align-content:start;padding:12px;border-radius:var(--r);border:1px solid color-mix(in srgb,var(--acc) 35%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,var(--acc) 10%,var(--paper)),color-mix(in srgb,var(--acc2) 8%,var(--paper)));box-shadow:0 10px 30px rgba(8,5,25,.3)}
+.cv h3{font-size:17px;display:flex;align-items:center;gap:8px}
+.cv h3 .dotc{width:10px;height:10px}
+.cv canvas{width:100%;height:210px;display:block;border-radius:12px;background:#0F0C24;touch-action:manipulation}
+.cv .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cv .ctl input[type=range]{flex:1;min-width:120px;accent-color:var(--acc)}
+.cv .chips{display:flex;gap:6px;flex-wrap:wrap}
+.cv .chips .btn{font-size:12.5px;padding:4px 9px;border-radius:999px}
+.cv .chips .btn[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+@media (max-width:1100px){.hnav .lbl{display:none}}
+@media (max-width:640px){.brand .bt{display:none}.dd{order:5;flex-basis:100%}.ddbtn{width:100%;justify-content:space-between}.hnav .btn{padding:6px 8px}}
+@media (prefers-reduced-motion:reduce){.ddmenu,.fadein{animation:none}.coinfly{transition:none}}
+
 </style>
 
 <header class="top">
@@ -472,30 +558,37 @@ body[data-font="2"] h1,body[data-font="2"] h2{letter-spacing:0;font-weight:700}
       <a class="btn homebtn" href="/" aria-label="Back to Sofia Magdy Study Hub" title="Study Hub home"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></a>
       <div class="brand">
         <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><ellipse cx="17" cy="18" rx="15" ry="4.5" fill="none" stroke="var(--acc2)" stroke-width="2" transform="rotate(-18 17 18)"/><circle cx="17" cy="17" r="8.5" fill="var(--acc)"/><path d="M3.2 22.5Q17 26 31 14" fill="none" stroke="var(--acc2)" stroke-width="2" stroke-linecap="round"/><circle cx="29" cy="5" r="1.6" fill="#fff"/><circle cx="5" cy="7" r="1" fill="#fff"/></svg>
-        <div>Sofia Magdy's Science Hub<small>Cambridge Lower Secondary Science, Learner's Book 9</small></div>
+        <div class="bt">Sofia Magdy's Science Hub</div>
+      </div>
+      <div class="dd" id="dd">
+        <button class="ddbtn" id="ddBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="ddMenu"><span class="lbl"><span class="k" id="ddK">Chapter 1</span></span><svg class="chev" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="ddmenu" id="ddMenu" role="listbox" aria-label="Chapters" hidden></div>
       </div>
       <div class="spacer"></div>
+      <nav class="hnav" aria-label="My pages">
+        <button class="btn" data-page="later" title="Study later" aria-label="Study later"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="currentColor"/></svg><span class="lbl">Study later</span><span class="hb" id="hbL"></span></button>
+        <button class="btn" data-page="review" title="Today's review" aria-label="Today's review"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 15a7 7 0 0 0 12.6 2M18.5 9a7 7 0 0 0-12.6-2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg><span class="lbl">Review</span><span class="hb" id="hbR"></span></button>
+        <button class="btn" data-page="papers" title="Past papers" aria-label="Past papers"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 2h9l3 3v17H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 9h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Past papers</span></button>
+        <button class="btn" data-page="wallet" title="My wallet" aria-label="My wallet"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M15 14.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Wallet</span><span class="hb" id="hbW"></span></button>
+        <button class="btn" data-page="stickers" title="Sticker board" aria-label="Sticker board"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l2.6 6.3 6.8.6-5.2 4.5 1.6 6.6L12 16.6 6.2 20l1.6-6.6L2.6 8.9l6.8-.6z" fill="currentColor"/></svg><span class="lbl">Stickers</span><span class="hb" id="hbS"></span></button>
+      </nav>
       <button class="btn" id="fontBtn" aria-expanded="false" title="Change the font" aria-label="Change the font">Aa<span class="lbl"> Font</span></button>
       <button class="btn" id="resetBtn" aria-expanded="false">Reset</button>
       <svg class="ring" viewBox="0 0 44 44" aria-label="Chapter progress" role="img"><circle cx="22" cy="22" r="18" fill="none" class="st-line" stroke-width="5"/><circle id="ringArc" cx="22" cy="22" r="18" fill="none" style="stroke:var(--acc)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 113" transform="rotate(-90 22 22)"/><text id="ringTxt" x="22" y="26" text-anchor="middle" style="font-size:11px;font-family:var(--mono)">0%</text></svg>
     </div>
-    <div class="railwrap"><button class="pocket left off" id="railL" aria-label="Scroll chapters left"><span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><nav class="chapters" role="tablist" aria-label="Chapters" id="chapters"></nav><button class="pocket right" id="railR" aria-label="Scroll chapters right"><span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button></div>
     <div class="fontmenu" id="fontMenu" hidden></div>
   </div>
 </header>
 
 <main class="wrap">
-  <div class="card resetp" id="resetPanel" hidden><b>Start fresh?</b><p>This clears every quick check, typed answer, checklist tick, key word card and quiz score, in all chapters, on every device that uses this Study Hub. It also empties Study later and the Sticker board. Your notes and font choice are kept. It can't be undone.</p><div class="row"><button class="btn primary" id="resetYes" style="background:var(--bad);border-color:var(--bad)">Yes, reset everything</button><button class="btn" id="resetNo">Cancel</button></div></div>
+  <div class="card resetp" id="resetPanel" hidden></div>
   <div class="chead">
     <div class="eyebrow" id="chEyebrow">Chapter 1 · Book pages 8–47</div>
     <h1 id="chTitle">Photosynthesis and the carbon cycle</h1>
-    <p>Work through one topic at a time. Each step ends with a quick check, and the next step opens once you've answered it. Your progress is saved to your Study Hub, so it follows you to any device.</p>
+    <div id="chIntro" hidden></div>
   </div>
   <nav class="pills" id="pills" aria-label="Sections"></nav>
   <section class="view" id="view" aria-live="polite"></section>
-  <footer>
-    Everything here is based on the Cambridge Lower Secondary Science Learner's Book 9 (second edition, ISBN 9781108742863). Explanations are reworded and diagrams are redrawn. The book does not print answers, so every "Suggested answer" is worked out from what the book's pages say. Check them with your teacher if you're unsure.
-  </footer>
 </main>
 
 <script src="/assets/sync.js" data-app="/science/app.js"></script>

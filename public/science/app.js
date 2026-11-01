@@ -3184,6 +3184,290 @@ const CHAPTERS_DATA={
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
 function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPICS=CHD.topics;KEYWORDS=CHD.kw;CYP=CHD.cyp;QUIZ=CHD.quiz;S.ch=n;if(!S.sec[n])S.sec[n]=TOPICS[0].id;QZ=null;}
+
+/* =================== HUB FEATURES (ported from the Maths Hub) =================== */
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const chName=n=>'Chapter '+n;
+const CLR=`<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function secLabel(ch,sec){const D=CHAPTERS_DATA[ch];if(!D)return '';const t=D.topics.find(x=>x.id===sec);if(t)return 'Topic '+t.id+' '+t.title;return {cards:'Key word cards',cyp:'Check your progress',quiz:'Mixed quiz',papers:'Past papers'}[sec]||'';}
+function backBar(){const ch=CUR,sec=S.sec[ch]||TOPICS[0].id;return `<div class="backbar"><button class="btn primary" data-back><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to where I left off</button><span class="tiny">${chName(ch)} · ${secLabel(ch,sec)}</span></div>`;}
+
+/* ---------- dates ---------- */
+const dstr=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());};
+const todayStr=()=>dstr(new Date());
+const addDays=(s,n)=>{const [y,m,d]=s.split('-').map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+n);return dstr(x);};
+const dayDiff=(a,b)=>{const p=s=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d);};return Math.round((p(b)-p(a))/864e5);};
+const MOCKS=[['Mock exam 1','2026-11-30'],['Mock exam 2','2027-02-15']];
+const fmtDate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short',year:'numeric'});};
+
+/* ---------- step lookup ---------- */
+function stepRef(key){for(const n in CHAPTERS_DATA){const D=CHAPTERS_DATA[n];for(const t of D.topics){if(key.startsWith(t.id+'-')){const i=+key.slice(t.id.length+1);if(t.steps[i])return {ch:+n,t,i,s:t.steps[i]};}}}return null;}
+function topicOfStep(key){const r=stepRef(key);return r?r.t:null;}
+
+/* =================== WALLET (sci9-wallet) =================== */
+const WKEY='sci9-wallet';
+// RM500 = the 9 chapters (RM53.33 each, Chapter 9 RM53.36, so they add up to RM480) + RM0.20 for each of the first 100 finished daily reviews.
+// Inside a chapter, as in the Maths Hub: about two-thirds is shared across its steps, one-third across its topics, and the last few sen are paid when the chapter is finished.
+const W_CAP=500,W_CHAPTERS=9,W_REVIEW=0.2,W_REVIEWS=100;
+const unitCents=u=>{const base=Math.floor((W_CAP-W_REVIEW*W_REVIEWS)*100/W_CHAPTERS);const rest=Math.round((W_CAP-W_REVIEW*W_REVIEWS)*100)-base*W_CHAPTERS;return +u===W_CHAPTERS?base+rest:base;};
+const unitOf=tid=>String(tid).split('.')[0];
+function unitInfo(u){const D=CHAPTERS_DATA[u];if(!D)return null;const S_=D.topics.reduce((a,t)=>a+t.steps.length,0),T_=D.topics.length;const uc=unitCents(u);
+ const sv=Math.floor(Math.round(uc*2/3)/S_),tv=Math.floor(Math.round(uc/3)/T_);return {steps:S_,topics:T_,step:sv/100,topic:tv/100,finish:(uc-sv*S_-tv*T_)/100,unit:uc/100,stepShare:Math.round(uc*2/3)/100,topicShare:Math.round(uc/3)/100};}
+function wValue(id){const k=id.slice(0,2),v=id.slice(2);
+ if(k==='s:'){const t=topicOfStep(v);const I=t&&unitInfo(unitOf(t.id));return I?I.step:0;}
+ if(k==='t:'){const I=unitInfo(unitOf(v));return I?I.topic:0;}
+ if(k==='c:'){const I=unitInfo(v);return I?I.finish:0;}
+ if(k==='r:')return W_REVIEW;return 0;}
+let WAL={earned:{},log:[],paid:[],pin:null,pre:null,sound:true};
+try{Object.assign(WAL,JSON.parse(localStorage.getItem(WKEY)||'{}'));}catch(e){}
+const saveW=()=>{try{localStorage.setItem(WKEY,JSON.stringify(WAL));}catch(e){}};
+const wEarned=()=>Object.values(WAL.earned).reduce((a,b)=>a+b,0);
+const wPaid=()=>WAL.paid.reduce((a,p)=>a+p.amt,0);
+const rm=n=>{const c=Math.round(n*100);return 'RM'+(c%100?(c/100).toFixed(2):c/100);};
+// steps and topics finished before the wallet started don't pay automatically (a parent can add them)
+if(!WAL.pre){WAL.pre={steps:Object.keys(S.checks).filter(k=>S.checks[k]!=null),topics:[],start:todayStr()};
+ Object.values(CHAPTERS_DATA).forEach(D=>D.topics.forEach(t=>{if(t.steps.every((s,i)=>S.checks[t.id+'-'+i]!=null))WAL.pre.topics.push(t.id);}));saveW();}
+const isPre=id=>{const [k,v]=[id.slice(0,2),id.slice(2)];return (k==='s:'&&WAL.pre.steps.includes(v))||(k==='t:'&&WAL.pre.topics.includes(v));};
+function wNormalize(){const ids=Object.keys(WAL.earned);const rv=ids.filter(i=>i.startsWith('r:')).sort();
+ ids.forEach(i=>{let a=wValue(i);if(i.startsWith('r:')&&rv.indexOf(i)>=W_REVIEWS)a=0;WAL.earned[i]=Math.round(a*100)/100;});
+ WAL.log.forEach(l=>{if(WAL.earned[l.id]!=null)l.amt=WAL.earned[l.id];});WAL.log=WAL.log.filter(l=>l.amt>0);saveW();}
+function earn(id,amt,why,silent){if(WAL.earned[id]!=null||isPre(id))return 0;if(id.startsWith('r:')&&Object.keys(WAL.earned).filter(i=>i.startsWith('r:')).length>=W_REVIEWS)amt=0;const room=Math.max(0,W_CAP-wEarned());const a=Math.round(Math.min(amt,room)*100)/100;WAL.earned[id]=a;
+ if(a>0){WAL.log.unshift({id,amt:a,why,ts:Date.now()});if(WAL.log.length>500)WAL.log.length=500;}saveW();
+ if(!silent){if(a>0)coinFly(a,why);else if(room<=0)toast('You have earned the full RM500 Science reward. Amazing work!');}return a;}
+function wCheckUnit(u,silent){const D=CHAPTERS_DATA[u];if(!D||WAL.earned['c:'+u]!=null)return;
+ const ids=D.topics.flatMap(t=>[...t.steps.map((x,i)=>'s:'+t.id+'-'+i),'t:'+t.id]);if(ids.every(i=>WAL.earned[i]!=null))earn('c:'+u,wValue('c:'+u),'Finished Chapter '+u,silent);}
+function onStepAnswered(key,correct){if(correct)cheer();
+ const a=earn('s:'+key,wValue('s:'+key),'Finished a step');const t=topicOfStep(key);
+ if(t&&t.steps.every((s,i)=>S.checks[t.id+'-'+i]!=null))setTimeout(()=>{earn('t:'+t.id,wValue('t:'+t.id),'Finished topic '+t.id);wCheckUnit(unitOf(t.id));},a?900:0);
+ rvAddStep(key);renderDropdown();}
+/* --- celebration: sound + flying coins --- */
+let AC=null;function tone(f,t0,d,v=.08){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+t0);g.gain.linearRampToValueAtTime(v,AC.currentTime+t0+.02);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t0+d);o.connect(g).connect(AC.destination);o.start(AC.currentTime+t0);o.stop(AC.currentTime+t0+d+.05);}catch(e){}}
+function cheer(){if(WAL.sound){tone(660,0,.18);tone(880,.09,.25);}sparkle();}
+function chaChing(){if(WAL.sound){tone(988,0,.12,.07);tone(1319,.08,.35,.07);tone(1568,.16,.4,.05);}}
+function sparkle(){if(reduceMotion)return;const b=document.createElement('div');b.className='spark';b.setAttribute('aria-hidden','true');b.innerHTML=Array.from({length:10},(_,i)=>`<i style="--a:${i*36}deg;--d:${40+(i%3)*14}px"></i>`).join('');document.body.appendChild(b);setTimeout(()=>b.remove(),900);}
+function coinFly(a,why){chaChing();toast(`<div class="stkwin"><span class="coinbig">RM</span><div><b>+${rm(a)} in your wallet!</b><br><span style="font-size:13px;opacity:.85">${why} · balance ${rm(wEarned()-wPaid())}</span></div></div>`,'coin');
+ if(reduceMotion)return;const tgt=$('.hnav [data-page="wallet"]');const r=tgt?tgt.getBoundingClientRect():{left:innerWidth-60,top:20,width:20,height:20};
+ for(let i=0;i<Math.min(6,2+a);i++){const c=document.createElement('div');c.className='coinfly';c.textContent='RM';c.style.left=(innerWidth/2-14+(i-2)*18)+'px';c.style.top=(innerHeight*.62)+'px';document.body.appendChild(c);
+  requestAnimationFrame(()=>{c.style.transitionDelay=(i*.08)+'s';c.style.left=(r.left+r.width/2-14)+'px';c.style.top=(r.top+r.height/2-14)+'px';c.style.opacity='.2';c.style.transform='scale(.5)';});setTimeout(()=>c.remove(),1500);}}
+async function hashPin(p){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('sci9-'+p));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}catch(e){let h=0;for(const c of 'sci9-'+p)h=(h*31+c.charCodeAt(0))|0;return 'x'+h;}}
+function renderWallet(){const tot=wEarned(),paid=wPaid(),bal=tot-paid,pct=Math.min(100,tot/W_CAP*100);const I1=unitInfo(1)||{unit:unitCents(1)/100,stepShare:0,topicShare:0};
+ const safe=`<svg viewBox="0 0 220 200" class="safe" role="img" aria-label="Savings jar ${Math.round(pct)}% full"><defs><clipPath id="jarc"><path d="M50 40 h120 v16 q24 10 24 40 v70 q0 22 -22 22 h-124 q-22 0 -22 -22 v-70 q0 -30 24 -40z"/></clipPath><linearGradient id="jarf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EE7B7"/><stop offset="1" stop-color="#2FB8A0"/></linearGradient></defs>
+  <rect x="44" y="22" width="132" height="22" rx="8" fill="#A88BFF"/><path d="M50 40 h120 v16 q24 10 24 40 v70 q0 22 -22 22 h-124 q-22 0 -22 -22 v-70 q0 -30 24 -40z" fill="rgba(255,255,255,.08)" stroke="#C3A6FF" stroke-width="4"/>
+  <g clip-path="url(#jarc)"><rect x="20" y="${188-150*pct/100}" width="190" height="${150*pct/100+4}" fill="url(#jarf)" opacity=".75"/>${Array.from({length:Math.min(14,Math.ceil(pct/7))},(_,i)=>`<circle cx="${50+(i*37)%130}" cy="${180-((i*23)%Math.max(8,150*pct/100))}" r="9" fill="#FFD36E" stroke="#C99A2E" stroke-width="2"/>`).join('')}</g>
+  <text x="110" y="122" text-anchor="middle" font-size="26" font-weight="800" fill="#F2EFFF" font-family="JetBrains Mono,monospace">${rm(bal)}</text></svg>`;
+ const ex=WAL.log.slice(0,40).map(l=>`<li><span>${esc(l.why)}</span><span class="tiny">${new Date(l.ts).toLocaleDateString('en-US',{day:'numeric',month:'short'})}</span><b>+${rm(l.amt)}</b></li>`).join('')||'<li><span class="tiny">Finish a step to earn your first ringgit.</span></li>';
+ const pays=WAL.paid.slice().reverse().slice(0,20).map(p=>`<li><span>Paid out by a parent</span><span class="tiny">${new Date(p.ts).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</span><b style="color:var(--bad)">−${rm(p.amt)}</b></li>`).join('');
+ const preN=WAL.pre.steps.filter(k=>WAL.earned['s:'+k]==null).length+WAL.pre.topics.filter(t=>WAL.earned['t:'+t]==null).length;
+ return `<div class="thead"><div class="eyebrow">My savings</div><h2>Science wallet</h2><p class="meta">Each of the 9 chapters is worth ${rm(I1.unit)} (Chapter 9 is ${rm(unitCents(9)/100)}): ${rm(I1.stepShare)} shared across the chapter's steps and ${rm(I1.topicShare)} across its topics, with the last few sen added when the chapter is finished. Each finished daily review earns ${rm(W_REVIEW)}, for up to ${W_REVIEWS} reviews. Finishing everything adds up to exactly ${rm(W_CAP)}.</p></div>
+ <div class="grid2"><section class="card" style="justify-items:center;text-align:center">${safe}<div class="readout">${bal>=0?rm(bal)+' to collect':'Paid ahead by '+rm(-bal)}</div><p class="tiny">Earned so far ${rm(tot)} of ${rm(W_CAP)} · already paid out ${rm(paid)}</p><div class="wbar"><i style="width:${pct}%"></i></div>
+  <label class="tiny" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wSound" ${WAL.sound?'checked':''}> Reward sounds</label></section>
+ <section class="card"><h3>How I earned it</h3><ul class="wlog">${ex}${pays}</ul></section></div>
+ <section class="card"><h3>For parents</h3><p class="tiny">The wallet only counts what Sofia has earned in Science. When you hand her the real money, record it here so her balance goes down. The PIN makes sure only a parent can record a payout or add rewards for earlier progress. It is separate from the Maths wallet PIN. ${WAL.pin?'Enter your PIN and the amount you handed over.':'Choose a PIN of 4 to 8 digits that only a parent knows.'}</p>
+  <div class="row"><input class="field" id="wPin" type="password" inputmode="numeric" maxlength="8" placeholder="${WAL.pin?'PIN':'New PIN'}" style="width:120px">${WAL.pin?`<input class="field" id="wAmt" type="number" min="0.01" step="0.01" placeholder="Amount (RM)" style="width:150px"><button class="btn primary" id="wPay">Record payout</button>`:`<button class="btn primary" id="wSetPin">Save PIN</button>`}</div>
+  ${WAL.pin&&preN?`<p class="tiny" style="margin-top:10px">${preN} steps and topics were finished before the wallet started on ${fmtDate(WAL.pre.start)}. They don't pay unless you add them.</p><div class="row"><button class="btn" id="wPre">Add rewards for earlier progress</button></div>`:''}
+  <p class="tiny" id="wMsg" role="status"></p></section>`;}
+
+/* =================== TODAY'S REVIEW (sci9-review) =================== */
+const RKEY='sci9-review';const R_INT=[1,3,7,14,30,60];const R_MAX=20;
+let RV={cards:{},days:{},q:null};
+try{Object.assign(RV,JSON.parse(localStorage.getItem(RKEY)||'{}'));}catch(e){}
+const saveR=()=>{try{localStorage.setItem(RKEY,JSON.stringify(RV));}catch(e){}};
+function rvResolve(id){const [type,...rest]=id.split(':');const v=rest.join(':');
+ if(type==='c'){const r=stepRef(v);if(!r||!r.s.check)return null;return {kind:'mc',ch:r.ch,where:`${chName(r.ch)} · ${r.t.id} · ${r.s.t}`,c:r.s.check};}
+ if(type==='z'){const [ch,i]=v.split('-').map(Number);const D=CHAPTERS_DATA[ch];if(!D||!D.quiz||!D.quiz[i])return null;return {kind:'mc',ch,where:`${chName(ch)} · Mixed quiz`,c:D.quiz[i]};}
+ if(type==='k'){const [ch,kid]=v.split('|');const D=CHAPTERS_DATA[+ch];const w=D&&D.kw&&D.kw.find(x=>x.id===kid);if(!w)return null;return {kind:'kw',ch:+ch,where:`${chName(+ch)} · Key word`,w};}
+ if(type==='p'){const q=PPQ[v];if(!q)return null;return {kind:'pp',ch:q.ch||-1,where:`Past paper · ${q.src}`,q};}
+ return null;}
+function rvAdd(id,due){if(RV.cards[id])return false;if(!rvResolve(id))return false;RV.cards[id]={b:0,due:due||addDays(todayStr(),1),n:0,last:null};return true;}
+function rvAddStep(key){if(rvAdd('c:'+key))saveR();}
+// pull in everything she has already met, a few new cards per day so day one isn't overwhelming
+function rvSync(){const t=todayStr();const fresh=[];
+ Object.keys(S.checks).filter(k=>S.checks[k]!=null).forEach(k=>{if(!RV.cards['c:'+k])fresh.push('c:'+k);});
+ Object.keys(S.later).forEach(k=>{const id='c:'+k;if(RV.cards[id]){if(RV.cards[id].b>1)RV.cards[id].b=1;if(RV.cards[id].due>addDays(t,1))RV.cards[id].due=addDays(t,1);}else fresh.unshift(id);});
+ Object.keys(S.quiz||{}).forEach(ch=>{(S.quiz[ch].wrong||[]).forEach(i=>{const id='z:'+ch+'-'+i;if(!RV.cards[id])fresh.unshift(id);});});
+ Object.keys(CHAPTERS_DATA).forEach(ch=>{const D=CHAPTERS_DATA[ch];(D.kw||[]).forEach(w=>{const tp=w.topic&&D.topics.find(x=>x.id===w.topic);if(tp&&tp.steps.some((s,i)=>S.checks[tp.id+'-'+i]!=null)&&!RV.cards['k:'+ch+'|'+w.id])fresh.push('k:'+ch+'|'+w.id);});});
+ let i=0;[...new Set(fresh)].forEach(id=>{if(rvAdd(id,addDays(t,1+Math.floor(i/12))))i++;});saveR();}
+function mockWindow(t){for(const [n,d] of MOCKS){const k=dayDiff(t,d);if(k>=1&&k<=7)return {n,d,start:addDays(d,-7)};}return null;}
+function rvDue(t){const mw=mockWindow(t);return Object.entries(RV.cards).filter(([id,c])=>c.due<=t||(mw&&c.n>0&&(!c.last||c.last<mw.start))).map(([id])=>id).filter(id=>rvResolve(id));}
+function rvChapterDue(ch){const t=todayStr();return rvDue(t).filter(id=>{const r=rvResolve(id);return r&&r.ch===ch;}).length;}
+function rvQueue(){const t=todayStr();if(!RV.q||RV.q.date!==t){const due=rvDue(t);const ord=shuffle(due).sort((a,b)=>RV.cards[a].b-RV.cards[b].b).slice(0,R_MAX);RV.q={date:t,order:ord,pos:0,ans:null,right:0};if(!RV.days[t])RV.days[t]={start:ord.length,done:0};saveR();}return RV.q;}
+function rvGrade(id,ok,pick){const c=RV.cards[id];if(!c)return;const t=todayStr();c.n++;c.last=t;c.b=ok?Math.min(c.b+1,R_INT.length-1):0;c.due=addDays(t,ok?R_INT[c.b]:1);const q=RV.q;q.ans={ok,pick};if(ok)q.right++;RV.days[t].done++;saveR();if(ok)cheer();}
+function rvNext(){const q=RV.q;q.pos++;q.ans=null;saveR();const t=todayStr();if(q.pos>=q.order.length&&q.order.length)earn('r:'+t,W_REVIEW,"Finished today's review");}
+function rvStats(){const all=Object.values(RV.cards);return {total:all.length,strong:all.filter(c=>c.b>=3).length};}
+function streak(){let n=0,d=todayStr();const done=s=>RV.days[s]&&RV.days[s].start>0&&RV.days[s].done>=RV.days[s].start;if(!done(d))d=addDays(d,-1);while(done(d)){n++;d=addDays(d,-1);}return n;}
+function rvCardHtml(id,q){const r=rvResolve(id);const a=q.ans;let body='';
+ if(r.kind==='mc'){const c=r.c;body=`<div class="q">${c.q}</div><div class="opts">${c.opts.map((o,i)=>{let cls='';if(a){if(i===c.ans)cls='right';else if(i===a.pick)cls='wrong';}return `<button class="opt ${cls}" data-rvopt="${i}" ${a?'disabled':''}>${o}</button>`;}).join('')}</div>${a?fbHtml(a.ok,c.why):''}`;}
+ else if(r.kind==='kw'){body=`<div class="bigm">${r.w.t}</div>${a||q.show?`<div class="plain fadein"><span class="kicker">Meaning</span><p>${r.w.d}</p></div>`:''}${a?'':q.show?`<div class="row" style="justify-content:center"><button class="btn" data-rvself="0">Not yet</button><button class="btn primary" data-rvself="1">Got it</button></div>`:`<div class="row" style="justify-content:center"><button class="btn primary" data-rvshow>Show the meaning</button></div>`}`;}
+ else if(r.kind==='pp'){body=`<div class="qt">${r.q.q}</div>${a||q.show?`<div class="ans fadein"><span>Mark scheme answer</span><div>${r.q.a}</div></div>`:''}${a?'':q.show?`<div class="row" style="justify-content:center"><button class="btn" data-rvself="0">I got it wrong</button><button class="btn primary" data-rvself="1">I got it right</button></div>`:`<textarea placeholder="Work it out here first" style="min-height:80px"></textarea><div class="row" style="justify-content:center"><button class="btn primary" data-rvshow>Show the answer</button></div>`}`;}
+ return `<div class="check rvcard fadein"><div class="tag">${r.where}</div>${body}${a?`<div class="rowend"><button class="btn primary" id="rvNext">${q.pos+1<q.order.length?'Next card':'Finish'}</button></div>`:''}</div>`;}
+function mocksHtml(t){return MOCKS.map(([n,d])=>{const k=dayDiff(t,d);return k<0?'':`<div class="mock"><b>${k===0?'Today!':k+' day'+(k===1?'':'s')}</b><span>${n}</span><span class="tiny">${fmtDate(d)}</span></div>`;}).join('');}
+function renderReview(){rvSync();const t=todayStr();const q=rvQueue();const st=rvStats();const mw=mockWindow(t);let main;
+ if(!q.order.length)main=`<div class="card empty"><h3>Nothing due today</h3><p>New cards arrive as you finish steps, get quiz questions wrong or save steps to Study later.</p></div>`;
+ else if(q.pos>=q.order.length)main=`<div class="card empty"><h3>Today's review is done!</h3><p>You got ${q.right} out of ${q.order.length} right first time. Come back tomorrow for the next set.</p><div class="readout">${WAL.earned['r:'+t]?'+'+rm(WAL.earned['r:'+t])+' earned':''}</div></div>`;
+ else main=`<div class="rvprog"><span>Card ${q.pos+1} of ${q.order.length}</span><div class="wbar"><i style="width:${q.pos/q.order.length*100}%"></i></div></div>`+rvCardHtml(q.order[q.pos],q);
+ return `<div class="thead"><div class="eyebrow">Spaced practice</div><h2>Today's review</h2><p class="meta">A short mix from every chapter you've started. Cards you know come back less often (after 1, 3, 7, 14, 30 and 60 days). Cards you miss come back tomorrow.${mw?` It's the week before ${mw.n}, so every card you've practised comes back once this week.`:''}</p></div>
+ <div class="mocks">${mocksHtml(t)}<div class="mock"><b>${streak()}</b><span>day streak</span></div><div class="mock"><b>${st.strong} / ${st.total}</b><span>cards strong</span></div></div>${main}`;}
+function rvBanner(){const n=rvChapterDue(CUR);return n?`<div class="rvban"><span><b>${n}</b> review card${n>1?'s':''} due from this chapter</span><button class="btn" data-rvgo>Start today's review</button></div>`:'';}
+
+/* =================== PAST PAPERS (sci9-papers) =================== */
+// Official Cambridge Lower Secondary Checkpoint Science papers go here, one addPaper() call per paper, with answers only from the official mark scheme.
+const PPQ={};const PAPERS=[];
+function addPaper(meta,qs){meta.qs=[];qs.forEach(([n,m,ch,tp,q,a])=>{const id=meta.id+'-'+n;PPQ[id]={id,paper:meta.id,n,m,ch,tp,q,a,src:`${meta.label} Paper ${meta.p} Q${n}`};meta.qs.push(id);});meta.max=meta.qs.reduce((s,id)=>s+PPQ[id].m,0);PAPERS.push(meta);}
+const PKEY2='sci9-papers';
+let PP={att:{},pr:{},exam:null,view:null,mk:{}};
+try{Object.assign(PP,JSON.parse(localStorage.getItem(PKEY2)||'{}'));}catch(e){}
+const savePP=()=>{try{localStorage.setItem(PKEY2,JSON.stringify(PP));}catch(e){}};
+const paperById=id=>PAPERS.find(p=>p.id===id);
+const fmtClock=s=>{s=Math.max(0,Math.round(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+function ppQHtml(id){const q=PPQ[id];const st=PP.pr[id];
+ return `<div class="bqi ppq" id="ppq-${id}"><div class="qh"><span class="pg">${q.src}</span><span class="pptag">[${q.m} mark${q.m>1?'s':''}]${st?` · last time: ${st.ok?'right':'not yet'}`:''}</span></div><div class="qt">${q.q}</div>
+ <textarea data-ppans="${id}" placeholder="Work it out here">${esc((PP.mk['t:'+id])||'')}</textarea>
+ <div class="rowend"><button class="reveal-btn" data-pprev="${id}" aria-expanded="false">Show the mark scheme</button></div>
+ <div class="ans" hidden><span>Official mark scheme</span><div>${q.a}</div><div class="row" style="margin-top:8px"><button class="btn" data-ppself="${id}" data-ok="0">I got it wrong</button><button class="btn primary" data-ppself="${id}" data-ok="1">I got it right</button></div></div></div>`;}
+function ppSelf(id,ok){PP.pr[id]={ok,ts:Date.now()};savePP();const c='p:'+id;if(!RV.cards[c]){RV.cards[c]={b:ok?1:0,due:addDays(todayStr(),ok?3:1),n:1,last:todayStr()};}else{RV.cards[c].b=ok?Math.min(RV.cards[c].b+1,R_INT.length-1):0;RV.cards[c].due=addDays(todayStr(),ok?R_INT[RV.cards[c].b]:1);}saveR();if(ok)cheer();toast(ok?'Nice! It will come back in your review later.':'No problem. It will come back in your review tomorrow.');}
+const PP_EMPTY=`<div class="card empty"><h3>No Science past papers added yet</h3><p>This page is ready for official Cambridge Lower Secondary Checkpoint Science papers and their mark schemes. Once they are added, each question is tagged to its chapter and topic, you can practise paper by paper or sit a timed paper in exam mode, and any question you miss comes back in Today's review.</p></div>`;
+function renderPapers(){const ids=Object.keys(PPQ).filter(id=>PPQ[id].ch===CUR).sort((a,b)=>String(PPQ[a].tp||'9').localeCompare(String(PPQ[b].tp||'9'),undefined,{numeric:true})||PPQ[b].paper.localeCompare(PPQ[a].paper));
+ if(!ids.length)return `<div class="thead"><div class="eyebrow">${chName(CUR)}</div><h2>Past paper questions</h2></div><div class="card empty"><h3>No past paper questions on this chapter yet</h3><p>When official Checkpoint Science papers are added, every question is tagged to the chapter it tests and shows up here.</p><button class="btn" data-page="papers">Open the Past papers page</button></div>`;
+ const groups={};ids.forEach(id=>{const k=PPQ[id].tp||'';(groups[k]=groups[k]||[]).push(id);});
+ return `<div class="thead"><div class="eyebrow">${chName(CUR)}</div><h2>Past paper questions</h2><p class="meta">Real Checkpoint questions on this chapter (${ids.length} so far), with the official mark scheme. Every question you try comes back later in Today's review.</p></div>`+Object.entries(groups).map(([k,v])=>`<section class="card"><h3>${k?secLabel(CUR,k):'Mixed topics'}</h3>${v.map(id=>ppQHtml(id)).join('')}</section>`).join('');}
+function paperScore(id){const a=PP.att[id]||[];return a.length?Math.max(...a.map(x=>x.score)):null;}
+function renderPaperHub(){const t=todayStr();
+ if(PP.exam)return renderExam();if(PP.view&&paperById(PP.view))return renderPaperPractice(PP.view);
+ const head=`<div class="thead"><div class="eyebrow">Exam practice</div><h2>Past papers</h2><p class="meta">Real Cambridge Lower Secondary Checkpoint Science papers with the official mark schemes. Practise the questions paper by paper, or sit a whole paper in timed exam mode and mark it yourself.</p></div><div class="mocks">${mocksHtml(t)}</div>`;
+ if(!PAPERS.length)return head+PP_EMPTY;
+ const sess={};PAPERS.forEach(p=>{(sess[p.label]=sess[p.label]||[]).push(p);});
+ const order=Object.keys(sess).sort((a,b)=>sess[b][0].sess.localeCompare(sess[a][0].sess));
+ return head+order.map(s=>`<section class="card"><h3>${s}</h3><div class="grid2">${sess[s].sort((a,b)=>a.p-b.p).map(p=>{const best=paperScore(p.id),n=(PP.att[p.id]||[]).length,tried=p.qs.filter(id=>PP.pr[id]).length;return `<div class="plain"><span class="kicker">Paper ${p.p} · ${p.mins} minutes</span><b>${p.qs.length} questions · ${p.max} marks</b>${p.noms?'<span class="tiny">No official mark scheme</span>':''}<span class="tiny">${n?`Exam attempts: ${n} · best ${best} / ${p.max}`:'No exam attempt yet'} · practised ${tried} of ${p.qs.length}</span><div class="row"><button class="btn" data-ppopen="${p.id}">Practise the questions</button><button class="btn primary" data-ppexam="${p.id}">Exam mode</button></div></div>`;}).join('')}</div></section>`).join('');}
+function renderPaperPractice(id){const p=paperById(id);return `<div class="row"><button class="btn" data-ppback>← All papers</button></div><div class="thead"><div class="eyebrow">${p.label} · Paper ${p.p}</div><h2>Practise the questions</h2><p class="meta">${p.noms?'There is no official mark scheme for this paper, so check your answers with your teacher or a parent.':'Try each question, then check the official mark scheme.'}</p></div>${p.qs.map(q=>ppQHtml(q)).join('')}`;}
+function renderExam(){const e=PP.exam,p=paperById(e.id);if(!p){PP.exam=null;savePP();return renderPaperHub();}
+ if(!e.done){const left=e.end-Date.now();return `<div class="thead"><div class="eyebrow">Exam mode · ${p.label} Paper ${p.p}</div><h2>Exam in progress</h2><p class="meta">Work on the printed paper${p.qp?' (or open it below)':''}. When the time is up, or you finish early, press Finish and mark your answers with the mark scheme.</p></div>
+  <section class="card" style="justify-items:center;text-align:center"><div class="examclock" id="exClock">${fmtClock(left/1000)}</div><div class="row">${p.qp?`<a class="btn" href="${p.qp}" target="_blank" rel="noopener">Open the question paper</a>`:''}<button class="btn primary" id="exFinish">Finish and mark</button><button class="btn" id="exQuit">Stop without marking</button></div></section>`;}
+ const tot=p.qs.reduce((s,id)=>s+(e.marks[id]||0),0);
+ return `<div class="thead"><div class="eyebrow">Marking · ${p.label} Paper ${p.p}</div><h2>Mark your paper</h2><p class="meta">For each question, compare your answer with the official mark scheme and choose the marks you earned. Be honest: the review will help with the ones you missed.</p></div>
+  <div class="mocks"><div class="mock"><b id="exTot">${tot} / ${p.max}</b><span>your score</span></div><div class="mock"><b>${fmtClock((e.used||0)/1000)}</b><span>time used</span></div></div>
+  ${p.qs.map(id=>{const q=PPQ[id];return `<div class="bqi"><div class="qh"><span class="pg">Question ${q.n}</span><span class="pptag">[${q.m}]</span></div><div class="ans"><span>Mark scheme</span><div>${q.a}</div></div><div class="row">${Array.from({length:q.m+1},(_,k)=>`<button class="btn" data-exm="${id}" data-xv="${k}" aria-pressed="${e.marks[id]===k}">${k}</button>`).join('')}</div></div>`;}).join('')}
+  <div class="row" style="justify-content:center"><button class="btn primary" id="exSave">Save my score</button></div>`;}
+let exTimer=null;function exTick(){clearInterval(exTimer);exTimer=setInterval(()=>{const el=$('#exClock');if(!el||!PP.exam||PP.exam.done){clearInterval(exTimer);return;}const left=(PP.exam.end-Date.now())/1000;el.textContent=fmtClock(left);if(left<=0){clearInterval(exTimer);PP.exam.done=true;PP.exam.used=PP.exam.end-PP.exam.start;savePP();toast('Time is up! Now mark your answers.');render();}},1000);}
+
+/* =================== CHAPTER DROPDOWN + HEADER BADGES =================== */
+function renderDropdown(){const nl=Object.keys(S.later).length,ns=allSteps().filter(s=>S.checks[s.key]!=null).length;
+ $('#ddK').textContent=`Chapter ${CUR}`;$('#ddBtn').setAttribute('aria-label',`Chapter ${CUR}: ${CHD.title}. Choose a chapter`);$('#ddBtn').title=CHD.title;
+ $('#ddMenu').innerHTML=`<div class="ddsec">Chapters</div>`+CHAPTERS.map(([n,t])=>{const ready=!!CHAPTERS_DATA[n];const sel=S.view==='chapter'&&CUR===n;
+  return `<button class="ddopt" role="option" data-ch="${n}" aria-selected="${sel}" ${ready?'':'disabled'}><span class="n">${n}</span><span class="t">${t}<br><span class="s">${ready?CHAPTERS_DATA[n].topics.map(x=>x.id).join(' · '):'Coming soon'}</span></span></button>`}).join('');
+ $('#hbL').textContent=nl||'';$('#hbS').textContent=ns||'';
+ const rd=rvDue(todayStr()).length,q=RV.q&&RV.q.date===todayStr()?RV.q:null;$('#hbR').textContent=q?Math.max(0,q.order.length-q.pos)||'':Math.min(rd,R_MAX)||'';$('#hbW').textContent=rm(wEarned()-wPaid());
+ $$('.hnav [data-page]').forEach(b=>b.setAttribute('aria-current',S.view===b.dataset.page?'page':'false'));
+ $('#resetBtn').hidden=S.view!=='chapter';}
+function openDD(o){const m=$('#ddMenu'),b=$('#ddBtn');m.hidden=!o;b.setAttribute('aria-expanded',o);if(o){const s=$('.ddopt[aria-selected="true"]',m);if(s)s.scrollIntoView({block:'nearest'});}}
+function goView(v){if(v==='review')rvSync();S.view=v;save();openDD(false);closeReset();render();enterAnim();window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});}
+
+/* =================== RESET (topic, chapter or whole hub) =================== */
+function closeReset(){const p=$('#resetPanel');if(!p)return;p.hidden=true;$('#resetBtn').setAttribute('aria-expanded','false');}
+function renderReset(stage){const p=$('#resetPanel');const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);const lbl=secLabel(CUR,sec);
+ if(stage==='chapter'){p.innerHTML=`<b>Reset all of ${chName(CUR)}?</b><p>This clears every quick check, typed answer, tick, key word card and quiz score in ${chName(CUR)}, and closes its steps again. Your stickers, wallet, notes and other chapters are kept.</p><div class="resetopts"><button class="btn primary" data-resetconfirm="chapter">Yes, reset ${chName(CUR)}</button><button class="btn" id="resetNo">Cancel</button></div>`;return;}
+ if(stage==='all'){p.innerHTML=`<b>Reset the whole Science Hub?</b><p>This clears everything in every chapter, on every device that uses this Study Hub, and empties Study later and the Sticker board. Your notes, wallet, review cards and font are kept. It can't be undone.</p><div class="resetopts"><button class="btn primary" data-resetconfirm="all">Yes, reset everything</button><button class="btn" id="resetNo">Cancel</button></div>`;return;}
+ let what,btn;
+ if(t){what=`This clears your quick check answers, typed answers and ticks in ${lbl}, and closes its steps again so you can start the topic fresh. Your stickers stay on your Sticker board.`;btn='Reset this topic';}
+ else if(sec==='cards'){what=`This clears your "Got it" and "Not yet" marks on the ${chName(CUR)} key word cards.`;btn='Reset the key word cards';}
+ else if(sec==='cyp'){what=`This clears your typed answers to the ${chName(CUR)} Check your progress questions.`;btn='Reset Check your progress';}
+ else if(sec==='quiz'){what=`This clears your best score and the questions you got wrong in the ${chName(CUR)} mixed quiz.`;btn='Reset the quiz';}
+ else{what='There is nothing to reset on this page.';btn='';}
+ p.innerHTML=`<b>${btn?btn+'?':'Reset'}</b><p>${what}</p><div class="resetopts">${btn?`<button class="btn primary" data-resetconfirm="section">${btn}</button>`:''}<button class="btn" id="resetNo">Cancel</button></div><div class="resetopts"><span class="tiny">Need a bigger reset?</span><button class="linkbtn" data-reset="chapter">Reset all of ${chName(CUR)}</button><button class="linkbtn" data-reset="all">Reset the whole Science Hub</button></div>`;}
+function resetTopic(t){t.steps.forEach((s,i)=>{delete S.checks[t.id+'-'+i];});t.bq.forEach((q,i)=>delete S.bq[t.id+'-'+i]);t.checklist.forEach((c,i)=>delete S.cl[t.id+'-'+i]);}
+function doReset(w){const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);let msg='';
+ if(w==='all'){try{localStorage.removeItem(KEY);}catch(err){}S=DEF();useChapter(1);msg='The Science Hub has been reset. Fresh start!';}
+ else if(w==='chapter'){TOPICS.forEach(resetTopic);KEYWORDS.forEach(k=>delete S.cards[k.id]);CYP.forEach((c,i)=>delete S.bq['c'+CUR+'-cyp-'+i]);delete S.quiz[CUR];QZ=null;S.sec[CUR]=TOPICS[0].id;msg=`${chName(CUR)} has been reset.`;}
+ else if(t){resetTopic(t);msg=`${secLabel(CUR,sec)} has been reset.`;}
+ else if(sec==='cards'){KEYWORDS.forEach(k=>delete S.cards[k.id]);msg='Key word cards reset.';}
+ else if(sec==='cyp'){CYP.forEach((c,i)=>delete S.bq['c'+CUR+'-cyp-'+i]);msg='Check your progress answers cleared.';}
+ else if(sec==='quiz'){delete S.quiz[CUR];QZ=null;msg='Quiz score cleared.';}
+ save();closeReset();render();window.scrollTo({top:0});if(msg)toast(msg);}
+
+/* =================== CHAPTER INTRO VISUALS =================== */
+const INTRO={};const INTRO_INIT={};
+const cvFit=cv=>{const dpr=Math.min(2,devicePixelRatio||1);const W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return [g,W,H];};
+const cvLoop=(cv,fn)=>{let last=performance.now();const f=t=>{if(!document.body.contains(cv))return;const dt=Math.min(.05,(t-last)/1000);last=t;fn(t/1000,dt);if(!reduceMotion)requestAnimationFrame(f);};requestAnimationFrame(f);return ()=>{if(reduceMotion)requestAnimationFrame(f);};};
+function renderIntro(){const box=$('#chIntro');if(!box)return;const k='ch'+CUR;if(INTRO[k]){box.innerHTML=INTRO[k]();box.hidden=false;try{INTRO_INIT[k](box);}catch(e){console.error(e);}}else{box.innerHTML='';box.hidden=true;}}
+
+/* ---------- Chapter 1 ---------- */
+INTRO.ch1=()=>`<div class="cvis">
+ <figure class="cv" style="margin:0"><h3><span class="dotc"></span>Light makes food</h3><canvas id="i1a" aria-label="Animation: a leaf takes in carbon dioxide and water, uses light to make glucose, and gives out oxygen"></canvas>
+  <div class="ctl"><span>Dark</span><input type="range" id="i1aL" min="0" max="100" value="70" aria-label="Light intensity"><span>Bright</span></div></figure>
+ <figure class="cv" style="margin:0"><h3><span class="dotc"></span>Carbon on the move</h3><canvas id="i1b" aria-label="Animation: carbon atoms moving around the carbon cycle"></canvas>
+  <div class="chips" id="i1bC">${[['all','All'],['ps','Photosynthesis'],['fd','Feeding'],['rs','Respiration'],['dc','Decomposition'],['ff','Fossil fuels'],['cb','Combustion']].map(([k,l],i)=>`<button class="btn" data-cyc="${k}" aria-pressed="${i===0}">${l}</button>`).join('')}</div></figure>
+ <figure class="cv" style="margin:0"><h3><span class="dotc"></span>A warming world</h3><canvas id="i1c" aria-label="Animation: more carbon dioxide traps more heat, the Earth warms, ice melts and the sea rises"></canvas>
+  <div class="ctl"><span>Less CO₂</span><input type="range" id="i1cL" min="0" max="100" value="35" aria-label="Carbon dioxide in the atmosphere"><span>More CO₂</span></div></figure>
+</div>`;
+INTRO_INIT.ch1=box=>{
+ const txt=(g,s,x,y,c='#F2EFFF',sz=11,al='left')=>{g.font=`700 ${sz}px "Atkinson Hyperlegible",system-ui,sans-serif`;g.fillStyle=c;g.textAlign=al;g.fillText(s,x,y);g.textAlign='left';};
+ /* A: photosynthesis */
+ {const cv=$('#i1a',box),L=$('#i1aL',box);let P=[],acc=0,sugar=0,flash=0;
+  cvLoop(cv,(t,dt)=>{const [g,W,H]=cvFit(cv);const light=+L.value/100;const lx=W*.58,ly=H*.46;
+   g.clearRect(0,0,W,H);const sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,`rgba(40,60,120,${.25+light*.5})`);sky.addColorStop(1,'#0F0C24');g.fillStyle=sky;g.fillRect(0,0,W,H);
+   // sun and rays
+   const sx=34,sy=32;if(light>0){g.save();g.globalAlpha=.15+light*.35;g.fillStyle='#FFD36E';g.beginPath();g.moveTo(sx,sy);g.lineTo(lx-30,ly-36);g.lineTo(lx+40,ly-10);g.closePath();g.fill();g.restore();}
+   g.fillStyle=`rgba(255,211,110,${.25+light*.75})`;g.beginPath();g.arc(sx,sy,14+light*5,0,7);g.fill();
+   for(let i=0;i<8;i++){const a=i*Math.PI/4+t*.3;g.strokeStyle=`rgba(255,211,110,${light*.8})`;g.lineWidth=2;g.beginPath();g.moveTo(sx+Math.cos(a)*22,sy+Math.sin(a)*22);g.lineTo(sx+Math.cos(a)*(28+light*6),sy+Math.sin(a)*(28+light*6));g.stroke();}
+   // stem + ground
+   g.fillStyle='#3A2A22';g.fillRect(0,H-16,W,16);g.strokeStyle='#4FC98A';g.lineWidth=5;g.beginPath();g.moveTo(lx-10,H-16);g.quadraticCurveTo(lx-14,ly+40,lx-6,ly+18);g.stroke();
+   // leaf
+   g.save();g.translate(lx,ly);g.rotate(-.35);const lg=g.createLinearGradient(-70,0,70,0);lg.addColorStop(0,'#2FB86A');lg.addColorStop(1,'#6EE7B7');g.fillStyle=lg;g.beginPath();g.ellipse(0,0,W*.2,34,0,0,7);g.fill();
+   g.strokeStyle='rgba(20,60,40,.6)';g.lineWidth=1.5;g.beginPath();g.moveTo(-W*.2+6,0);g.lineTo(W*.2-6,0);g.stroke();for(let i=-2;i<=2;i++){g.beginPath();g.moveTo(i*W*.06,0);g.lineTo(i*W*.06+12,-22);g.moveTo(i*W*.06,0);g.lineTo(i*W*.06+12,22);g.stroke();}
+   // glucose stores
+   for(let i=0;i<Math.min(10,Math.floor(sugar));i++){const hx=-W*.13+(i%5)*W*.065,hy=i<5?-10:10;g.fillStyle='#FFF2C2';g.beginPath();for(let k=0;k<6;k++){const a=k*Math.PI/3;g[k?'lineTo':'moveTo'](hx+Math.cos(a)*5,hy+Math.sin(a)*5);}g.closePath();g.fill();}
+   if(flash>0){g.fillStyle=`rgba(255,255,255,${flash*.35})`;g.beginPath();g.ellipse(0,0,W*.2,34,0,0,7);g.fill();}
+   g.restore();flash=Math.max(0,flash-dt*2);
+   // spawn inputs
+   acc+=dt*light*3.2;while(acc>1){acc--;P.push({k:'c',x:-10,y:H*.3+Math.random()*H*.35,tx:lx-W*.12,ty:ly+6,v:40+Math.random()*20});P.push({k:'w',x:lx-10,y:H-16,tx:lx-6,ty:ly+16,v:30+Math.random()*10});}
+   P.forEach(p=>{if(p.k==='o'){p.x+=p.vx*dt;p.y-=p.v*dt;p.life-=dt*.35;return;}const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);if(d<4){p.done=1;if(p.k==='c'){sugar+=.34;flash=1;P.push({k:'o',x:lx+W*.1,y:ly-18,vx:18+Math.random()*16,v:24+Math.random()*12,life:1});}if(sugar>=10.5)sugar=0;}else{p.x+=dx/d*p.v*dt;p.y+=dy/d*p.v*dt;}});
+   P=P.filter(p=>!p.done&&(p.k!=='o'||p.life>0));
+   P.forEach(p=>{if(p.k==='c'){g.fillStyle='#A9AFC0';g.beginPath();g.arc(p.x,p.y,4,0,7);g.fill();g.fillStyle='#FF6B6B';g.beginPath();g.arc(p.x-5,p.y,2.6,0,7);g.arc(p.x+5,p.y,2.6,0,7);g.fill();}
+    else if(p.k==='w'){g.fillStyle='#7DB7FF';g.beginPath();g.arc(p.x,p.y,3.2,0,7);g.fill();}
+    else{g.strokeStyle=`rgba(200,240,255,${p.life})`;g.lineWidth=1.5;g.beginPath();g.arc(p.x,p.y,4.5,0,7);g.stroke();}});
+   txt(g,'carbon dioxide',6,H*.3-6,'#C9CDD9');txt(g,'water',lx+6,H-22,'#9FCBFF');txt(g,'oxygen',W-8,24,'#C8F0FF',11,'right');txt(g,'glucose',lx,ly+52,'#FFF2C2',11,'center');
+   if(light===0)txt(g,'No light, no photosynthesis',W/2,H/2+4,'#FFD36E',13,'center');});
+  L.addEventListener('input',()=>{if(reduceMotion)L.dispatchEvent(new Event('redraw'));});}
+ /* B: carbon cycle */
+ {const cv=$('#i1b',box);let mode='all';const N={air:[.5,.14,'Air (CO₂)','#C3A6FF'],pl:[.16,.5,'Plants','#4FC98A'],an:[.84,.5,'Animals','#FF9E64'],dc:[.7,.86,'Decomposers','#D9AE80'],ff:[.3,.86,'Fossil fuels','#A9AFC0']};
+  const E=[['air','pl','ps',-.25],['pl','an','fd',.25],['pl','air','rs',-.25],['an','air','rs',.25],['dc','air','rs',.12],['pl','dc','dc',-.15],['an','dc','dc',.2],['pl','ff','ff',-.15],['an','ff','ff',.1],['ff','air','cb',.12]];
+  const NAMES={ps:'photosynthesis',fd:'feeding',rs:'respiration',dc:'decomposition',ff:'fossil fuels form',cb:'combustion'};
+  let A=E.map((e,i)=>({e:i,u:Math.random()}));
+  $('#i1bC',box).addEventListener('click',ev=>{const b=ev.target.closest('[data-cyc]');if(!b)return;mode=b.dataset.cyc;$$('[data-cyc]',box).forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  const pt=(W,H,k)=>[N[k][0]*W,N[k][1]*H];
+  const ctrl=(a,b,bend)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1];return [mx-dy*bend,my+dx*bend];};
+  const qp=(a,c,b,u)=>[(1-u)*(1-u)*a[0]+2*(1-u)*u*c[0]+u*u*b[0],(1-u)*(1-u)*a[1]+2*(1-u)*u*c[1]+u*u*b[1]];
+  cvLoop(cv,(t,dt)=>{const [g,W,H]=cvFit(cv);g.clearRect(0,0,W,H);g.fillStyle='#0F0C24';g.fillRect(0,0,W,H);
+   E.forEach(([f,to,k,bend],i)=>{const a=pt(W,H,f),b=pt(W,H,to),c=ctrl(a,b,bend);const on=mode==='all'||mode===k;g.strokeStyle=on?'rgba(255,255,255,.35)':'rgba(255,255,255,.07)';g.lineWidth=on&&mode!=='all'?2.5:1.5;g.setLineDash([4,5]);g.beginPath();g.moveTo(a[0],a[1]);g.quadraticCurveTo(c[0],c[1],b[0],b[1]);g.stroke();g.setLineDash([]);
+    if(on&&mode!=='all'){const m=qp(a,c,b,.5);txt(g,NAMES[k],m[0],m[1]-6,'#FFD36E',11,'center');}});
+   Object.entries(N).forEach(([k,[x,y,l,c]])=>{const X=x*W,Y=y*H;const gr=g.createRadialGradient(X-5,Y-5,2,X,Y,18);gr.addColorStop(0,'#fff');gr.addColorStop(.35,c);gr.addColorStop(1,c+'55');g.fillStyle=gr;g.beginPath();g.arc(X,Y,15,0,7);g.fill();txt(g,l,X,Y+(y>.8?-21:28),'#F2EFFF',11,'center');});
+   A.forEach(p=>{const [f,to,k,bend]=E[p.e];const on=mode==='all'||mode===k;if(!on)return;p.u+=dt*(mode==='all'?.32:.55);if(p.u>1)p.u-=1;const a=pt(W,H,f),b=pt(W,H,to),c=ctrl(a,b,bend);const q=qp(a,c,b,p.u);g.fillStyle='#FFD36E';g.shadowColor='#FFD36E';g.shadowBlur=10;g.beginPath();g.arc(q[0],q[1],4,0,7);g.fill();g.shadowBlur=0;txt(g,'C',q[0],q[1]+3.5,'#2A2010',7,'center');});
+   if(mode!=='all'&&A.filter(p=>E[p.e][2]===mode).length<6)E.forEach((e,i)=>{if(e[2]===mode)A.push({e:i,u:Math.random()});});});}
+ /* C: greenhouse and warming */
+ {const cv=$('#i1c',box),L=$('#i1cL',box);let R=[],acc=0,temp=.35;
+  cvLoop(cv,(t,dt)=>{const [g,W,H]=cvFit(cv);const co2=+L.value/100;temp+=(co2-temp)*Math.min(1,dt*.8);if(reduceMotion)temp=co2;
+   g.clearRect(0,0,W,H);g.fillStyle='#0F0C24';g.fillRect(0,0,W,H);
+   const atY=34,atH=34;g.fillStyle='rgba(125,183,255,.12)';g.fillRect(0,atY,W,atH);
+   const n=Math.round(4+co2*26);for(let i=0;i<n;i++){const x=(i*97.3%W+t*6*(i%2?1:-1)+W)%W,y=atY+6+(i*37%(atH-12));g.fillStyle='#A9AFC0';g.beginPath();g.arc(x,y,2.6,0,7);g.fill();g.fillStyle='#FF6B6B';g.beginPath();g.arc(x-3.5,y,1.6,0,7);g.arc(x+3.5,y,1.6,0,7);g.fill();}
+   txt(g,'carbon dioxide',6,atY-6,'#B6ADDA',10);
+   const gy=H-34;const sea=gy-4-temp*18;const sx=W*.6;
+   g.fillStyle='#3E6B3A';g.fillRect(0,gy,sx,H-gy);g.fillStyle='#2D5D9E';g.fillRect(sx,Math.min(sea,gy),W-sx,H-Math.min(sea,gy));
+   g.fillStyle='rgba(255,255,255,.25)';g.fillRect(sx,Math.min(sea,gy),W-sx,2);
+   const ice=Math.max(0,1-temp*1.1);if(ice>0){g.fillStyle='#E8F4FF';g.beginPath();g.moveTo(sx-10-70*ice,gy);g.quadraticCurveTo(sx-10-35*ice,gy-26*ice,sx-10,gy);g.fill();txt(g,'ice on land',sx-12-35*ice,gy-28*ice-4,'#E8F4FF',10,'center');}
+   txt(g,'sea level',W-6,Math.min(sea,gy)-6,'#9FCBFF',10,'right');
+   // thermometer
+   const tx=W-16,ty=atY+atH+12,th=gy-ty-24;g.strokeStyle='#F2EFFF';g.lineWidth=1.5;g.strokeRect(tx-4,ty,8,th);const lv=th*(.2+temp*.75);g.fillStyle='#FF7A8E';g.fillRect(tx-3,ty+th-lv,6,lv);g.beginPath();g.arc(tx,ty+th+6,7,0,7);g.fill();
+   // rays
+   acc+=dt*3;while(acc>1){acc--;R.push({x:W*(.08+Math.random()*.42),y:0,vx:12,vy:70,k:'in'});}
+   R.forEach(r=>{r.x+=r.vx*dt;r.y+=r.vy*dt;
+    if(r.k==='in'&&r.y>=gy){r.k='heat';r.vy=-55;r.vx=10+Math.random()*16;}
+    else if(r.k==='heat'&&r.y<=atY+atH/2&&!r.tested){r.tested=1;if(Math.random()<.15+co2*.7){r.k='back';r.vy=55;r.vx=-10;}}
+    else if(r.k==='back'&&r.y>=gy){r.dead=1;}
+    if(r.y<-10||r.x>W+10)r.dead=1;});
+   R=R.filter(r=>!r.dead);
+   R.forEach(r=>{g.strokeStyle=r.k==='in'?'#FFD36E':'#FF7A8E';g.lineWidth=2;g.beginPath();const len=9;const s=Math.hypot(r.vx,r.vy);g.moveTo(r.x,r.y);g.lineTo(r.x-r.vx/s*len,r.y-r.vy/s*len);g.stroke();});
+   txt(g,co2>.66?'More heat trapped: Earth warms':co2<.25?'More heat escapes to space':'Some heat is trapped',8,H-12,'#F2EFFF',11);});}
+};
+
 /* =================== RENDER =================== */
 const sectionsList=()=>[...TOPICS.map(t=>({id:t.id,label:t.title,num:t.id})),{id:'cards',label:'Key word cards',num:'Aa'},{id:'cyp',label:'Check your progress',num:'✓'},{id:'quiz',label:'Mixed quiz',num:'?'},{id:'papers',label:'Past papers',num:'P'}];
 function topicProg(t){const n=t.steps.length;let d=0;t.steps.forEach((s,i)=>{if(S.checks[t.id+'-'+i]!=null)d++;});return d/n;}
@@ -3201,7 +3485,7 @@ function checkHtml(key,c,tag='Quick check'){
  const done=S.checks[key];
  return `<div class="check" data-key="${key}"><div class="tag">${tag}</div><div class="q">${c.q}</div>
  <div class="opts">${c.opts.map((o,i)=>{let cls='';if(done!=null){if(i===c.ans)cls='right';else if(i===done)cls='wrong';}return `<button class="opt ${cls}" data-i="${i}" ${done!=null?'disabled':''}>${o}</button>`}).join('')}</div>
- ${done!=null?fbHtml(done===c.ans,c.why):''}</div>`;
+ ${done!=null?fbHtml(done===c.ans,c.why)+`<div class="rowend"><button class="clearbtn" data-clearcheck="${key}">${CLR}Clear and try again</button></div>`:''}</div>`;
 }
 const fbHtml=(ok,why)=>`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Correct.':'Not quite.'}</b> ${why}</div>`;
 
@@ -3260,8 +3544,6 @@ function renderQuiz(){
  <div class="opts">${q.opts.map((o,i)=>{let cls='';if(QZ.ans!=null){if(i===q.ans)cls='right';else if(i===QZ.ans)cls='wrong';}return `<button class="opt ${cls}" data-qa="${i}" ${QZ.ans!=null?'disabled':''}>${o}</button>`}).join('')}</div>
  ${QZ.ans!=null?fbHtml(QZ.ans===q.ans,q.why)+`<button class="btn primary" id="qNext" style="justify-self:end">${QZ.pos+1<QZ.order.length?'Next question':'See my score'} →</button>`:''}</div>`;
 }
-function renderPapers(){return `<div class="thead"><div class="eyebrow">Chapter ${CUR}</div><h2>Past paper questions</h2></div>
- <div class="card empty"><h3>No past paper questions yet</h3><p>Only questions from official Cambridge Lower Secondary Checkpoint Science papers will go here, each tagged to the topic it tests. They'll be added once official papers are shared, from Cambridge's specimen set or from school.</p><p class="tiny">Until then, Check your progress (book pages 45–47) is the best exam-style practice.</p></div>`;}
 
 
 /* =================== WIDGET INIT =================== */
@@ -3424,34 +3706,22 @@ function renderStickers(){
 }
 function overallPct(){const st=allSteps();return st.length?Math.round(st.filter(s=>S.checks[s.key]!=null).length/st.length*100):0;}
 
-/* ---------- chapter rail with pockets ---------- */
-function renderChapters(){
- const nav=$('#chapters');const keep=nav.scrollLeft;
- const nl=Object.keys(S.later).length,ns=allSteps().filter(s=>S.checks[s.key]!=null).length;
- nav.innerHTML=CHAPTERS.map(([n,t])=>{const on=!!CHAPTERS_DATA[n];return `<button class="chap" role="tab" data-ch="${n}" data-chtheme="${n}" aria-selected="${S.view==='chapter'&&n===CUR}" ${on?'':'disabled'} title="${on?'':'Coming soon'}"><b>${n}</b>${t}${on?'':' <span class="soon">soon</span>'}</button>`}).join('')
-  +`<span class="railsep" aria-hidden="true"></span><button class="chap special" role="tab" data-page="later" data-chtheme="later" aria-selected="${S.view==='later'}"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" fill="currentColor"/></svg>Study later<span class="badge">${nl}</span></button><button class="chap special" role="tab" data-page="stickers" data-chtheme="stickers" aria-selected="${S.view==='stickers'}"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2l2.6 6.3 6.8.6-5.2 4.5 1.6 6.6L12 16.6 6.2 20l1.6-6.6L2.6 8.9l6.8-.6z" fill="currentColor"/></svg>Sticker board<span class="badge">${ns}</span></button>`;
- nav.scrollLeft=keep;
- const sel=nav.querySelector('[aria-selected="true"]');
- if(sel){const l=sel.offsetLeft-nav.clientWidth/2+sel.offsetWidth/2;if(sel.offsetLeft<nav.scrollLeft+50||sel.offsetLeft+sel.offsetWidth>nav.scrollLeft+nav.clientWidth-50)nav.scrollTo({left:l,behavior:'smooth'});}
- setTimeout(updatePockets,350);updatePockets();
-}
-function updatePockets(){const nav=$('#chapters');if(!nav)return;const L=$('#railL'),R=$('#railR');
- L.classList.toggle('off',nav.scrollLeft<6);R.classList.toggle('off',nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-6);}
-
 /* ---------- main render ---------- */
 function render(){
  const special=S.view!=='chapter';
  document.body.dataset.chtheme=special?S.view:String(CUR);
- renderChapters();
+ renderDropdown();
  $('.chead').hidden=special;$('#pills').hidden=special;
  if(special){
-  $('#view').innerHTML=S.view==='later'?renderLater():renderStickers();
+  $('#view').innerHTML=backBar()+(S.view==='later'?renderLater():S.view==='stickers'?renderStickers():S.view==='review'?renderReview():S.view==='wallet'?renderWallet():renderPaperHub());
   const pct=overallPct();$('#ringArc').setAttribute('stroke-dasharray',`${(pct/100*113).toFixed(1)} 113`);$('#ringTxt').textContent=pct+'%';
+  if(S.view==='papers'&&PP.exam&&!PP.exam.done)exTick();
  } else {
   $('#chEyebrow').innerHTML=`Chapter ${CUR} · Book pages ${CHD.pages} <span class="themechip">${THEME_NAMES[CUR]||''}</span>`;$('#chTitle').textContent=CHD.title;
+  renderIntro();
   renderPills();
   const v=$('#view');const sec=S.sec[CUR];const t=TOPICS.find(x=>x.id===sec);
-  v.innerHTML=t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():renderPapers();
+  v.innerHTML=(t?rvBanner():'')+(t?renderTopic(t):sec==='cards'?renderCards():sec==='cyp'?renderCyp():sec==='quiz'?renderQuiz():renderPapers());
   initWidgets();
  }
 }
@@ -3472,11 +3742,12 @@ function enterAnim(){['.chead','#pills','#view'].forEach(s=>{const el=$(s);if(!e
  f();
 })();
 
-/* ---------- header extras: pockets, font picker ---------- */
+/* ---------- header extras: dropdown, font picker ---------- */
 (function header(){
- const nav=$('#chapters');nav.addEventListener('scroll',updatePockets,{passive:true});addEventListener('resize',updatePockets);
- $('#railL').onclick=()=>nav.scrollBy({left:-nav.clientWidth*.7,behavior:'smooth'});
- $('#railR').onclick=()=>nav.scrollBy({left:nav.clientWidth*.7,behavior:'smooth'});
+ const dd=$('#dd'),ddBtn=$('#ddBtn'),ddMenu=$('#ddMenu');
+ ddBtn.onclick=()=>openDD(ddMenu.hidden);
+ document.addEventListener('click',e=>{if(!ddMenu.hidden&&!e.target.closest('#dd')){openDD(false);}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ddMenu.hidden){openDD(false);ddBtn.focus();}});
  const menu=$('#fontMenu');
  menu.innerHTML=`<div class="eyebrow">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · Photosynthesis makes glucose</span></button>`).join('');
  $('#fontBtn').onclick=()=>{menu.hidden=!menu.hidden;$('#fontBtn').setAttribute('aria-expanded',!menu.hidden);};
@@ -3492,7 +3763,7 @@ document.addEventListener('click',e=>{
  const lb=e.target.closest('[data-later]');if(lb){const k=lb.dataset.later;const art=lb.closest('article');
   if(S.later[k]){delete S.later[k];toast('Removed from Study later.');}
   else{const [tid,si]=k.split(/-(?=\d+$)/);const t=TOPICS.find(x=>x.id===tid);S.later[k]={ch:CUR,topic:tid,i:+si,t:t?t.steps[+si].t:''};toast('Saved to <b>Study later</b>. Find it after the chapters at the top.');}
-  save();lb.outerHTML=laterBtn(k);renderChapters();return;}
+  save();lb.outerHTML=laterBtn(k);renderDropdown();return;}
  const un=e.target.closest('[data-unlater]');if(un){delete S.later[un.dataset.unlater];save();render();return;}
  const go=e.target.closest('[data-goto]');if(go){const k=go.dataset.goto;const it=S.later[k];S.view='chapter';useChapter(+go.dataset.goch);S.sec[CUR]=it.topic;save();render();enterAnim();
   requestAnimationFrame(()=>{const a=document.getElementById('st-'+k);if(a){a.scrollIntoView({behavior:'smooth',block:'start'});a.classList.add('pulse');setTimeout(()=>a.classList.remove('pulse'),2400);}});return;}
@@ -3500,7 +3771,7 @@ document.addEventListener('click',e=>{
 
 /* sticker reward, called after a quick check is answered for the first time */
 function awardSticker(key){const st=allSteps();const idx=st.findIndex(s=>s.key===key);if(idx<0)return;const info=stickerInfo(idx);
- toast(`<div class="stkwin">${stickerSVG(idx,72)}<div><b>New sticker!</b><br>${info.name}<br><span class="tiny">Added to your Sticker board</span></div></div>`,'big');renderChapters();}
+ toast(`<div class="stkwin">${stickerSVG(idx,72)}<div><b>New sticker!</b><br>${info.name}<br><span class="tiny">Added to your Sticker board</span></div></div>`,'big');renderDropdown();}
 
 /* ---------- notes ---------- */
 (function notes(){
@@ -3565,23 +3836,54 @@ function awardSticker(key){const st=allSteps();const idx=st.findIndex(s=>s.key==
 
 /* =================== EVENTS =================== */
 document.addEventListener('click',e=>{
- const chb=e.target.closest('[data-ch]');if(chb&&!chb.disabled){S.view='chapter';useChapter(+chb.dataset.ch);save();render();enterAnim();window.scrollTo({top:0,behavior:'smooth'});return;}
- if(e.target.closest('#resetBtn')){const p=$('#resetPanel');p.hidden=!p.hidden;$('#resetBtn').setAttribute('aria-expanded',!p.hidden);if(!p.hidden)window.scrollTo({top:0,behavior:'smooth'});return;}
- if(e.target.closest('#resetNo')){$('#resetPanel').hidden=true;$('#resetBtn').setAttribute('aria-expanded','false');return;}
- if(e.target.closest('#resetYes')){try{localStorage.removeItem(KEY);}catch(err){}S=DEF();useChapter(1);save();$('#resetPanel').hidden=true;$('#resetBtn').setAttribute('aria-expanded','false');render();window.scrollTo({top:0});
-  const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent='Everything has been reset. Fresh start!';document.body.appendChild(t);setTimeout(()=>t.remove(),2600);return;}
+ const chb=e.target.closest('[data-ch]');if(chb&&!chb.disabled){S.view='chapter';useChapter(+chb.dataset.ch);save();openDD(false);closeReset();render();enterAnim();window.scrollTo({top:0,behavior:'smooth'});return;}
+ if(e.target.closest('#resetBtn')){const p=$('#resetPanel');const open=p.hidden;if(open)renderReset();
+  p.hidden=!open;$('#resetBtn').setAttribute('aria-expanded',String(open));if(open)window.scrollTo({top:0,behavior:'smooth'});return;}
+ if(e.target.closest('#resetNo')){closeReset();return;}
+ const rst=e.target.closest('[data-reset]');if(rst){renderReset(rst.dataset.reset);window.scrollTo({top:0,behavior:'smooth'});return;}
+ const rstc=e.target.closest('[data-resetconfirm]');if(rstc){doReset(rstc.dataset.resetconfirm);return;}
+ const back=e.target.closest('[data-back]');if(back){S.view='chapter';save();render();enterAnim();window.scrollTo({top:0,behavior:'smooth'});return;}
  const pill=e.target.closest('[data-sec]');if(pill){S.sec[CUR]=pill.dataset.sec;save();render();window.scrollTo({top:0,behavior:'smooth'});return;}
  const go=e.target.closest('[data-go]');if(go){S.sec[CUR]=go.dataset.go;save();render();window.scrollTo({top:0,behavior:'smooth'});return;}
  const rev=e.target.closest('[data-rev]');if(rev){const n=rev.nextElementSibling;n.hidden=!n.hidden;rev.textContent=n.hidden?(rev.textContent.includes('answer')?'Show suggested answer':'Think first, then tap to see'):'Hide';return;}
- const opt=e.target.closest('.check .opt');if(opt&&!opt.disabled){const box=opt.closest('.check');const key=box.dataset.key;const [tid,si]=key.split(/-(?=\d+$)/);const t=TOPICS.find(x=>x.id===tid);const fresh=S.checks[key]==null;S.checks[key]=+opt.dataset.i;save();
-  const y=box.getBoundingClientRect().top;render();const nb=$(`.check[data-key="${key}"]`);if(nb){window.scrollBy(0,nb.getBoundingClientRect().top-y);}if(fresh)awardSticker(key);return;}
+ const clr=e.target.closest('[data-clearcheck]');if(clr){const key=clr.dataset.clearcheck;const box=clr.closest('.check');const y=box?box.getBoundingClientRect().top:0;delete S.checks[key];save();render();
+  const nb=$(`.check[data-key="${key}"]`);if(nb){window.scrollBy(0,nb.getBoundingClientRect().top-y);const fb=nb.querySelector('.opt');if(fb)fb.focus();}return;}
+ const opt=e.target.closest('.check .opt');if(opt&&!opt.disabled){const box=opt.closest('.check');const key=box.dataset.key;const [tid,si]=key.split(/-(?=\d+$)/);const t=TOPICS.find(x=>x.id===tid);const stepC=t&&t.steps[+si]&&t.steps[+si].check;const fresh=S.checks[key]==null;const right=stepC&&+opt.dataset.i===stepC.ans;S.checks[key]=+opt.dataset.i;save();
+  const y=box.getBoundingClientRect().top;render();const nb=$(`.check[data-key="${key}"]`);if(nb){window.scrollBy(0,nb.getBoundingClientRect().top-y);}if(fresh){awardSticker(key);onStepAnswered(key,!!right);}return;}
  const flip=e.target.closest('[data-flip]');if(flip){flip.classList.toggle('on');return;}
  const mk=e.target.closest('[data-mark]');if(mk){S.cards[mk.dataset.mark]=mk.dataset.v;save();const f=mk.closest('.cardwrap').querySelector('.flip');f.classList.remove('known','unsure');f.classList.add(mk.dataset.v);renderPills();return;}
  if(e.target.closest('#qStart')){startQuiz();render();return;}
  const qa=e.target.closest('[data-qa]');if(qa&&QZ&&QZ.ans==null){QZ.ans=+qa.dataset.qa;const qi=QZ.order[QZ.pos];if(QZ.ans===QUIZ[qi].ans)QZ.score++;else QZ.wrong.push(qi);render();return;}
  if(e.target.closest('#qNext')){QZ.pos++;QZ.ans=null;if(QZ.pos>=QZ.order.length){S.quiz[CUR]={best:Math.max(qb()??0,QZ.score),wrong:QZ.wrong};save();}render();return;}
+ /* today's review */
+ const rvopt=e.target.closest('[data-rvopt]');if(rvopt&&RV.q&&RV.q.ans==null){const id=RV.q.order[RV.q.pos];const r=rvResolve(id);const pick=+rvopt.dataset.rvopt;rvGrade(id,pick===r.c.ans,pick);render();return;}
+ if(e.target.closest('[data-rvshow]')){RV.q.show=true;render();return;}
+ const rvself=e.target.closest('[data-rvself]');if(rvself){const id=RV.q.order[RV.q.pos];rvGrade(id,rvself.dataset.rvself==='1',null);RV.q.show=false;render();return;}
+ if(e.target.closest('#rvNext')){rvNext();RV.q.show=false;render();window.scrollTo({top:0,behavior:'smooth'});return;}
+ if(e.target.closest('[data-rvgo]')){S.view='review';save();render();enterAnim();window.scrollTo({top:0,behavior:'smooth'});return;}
+ /* wallet */
+ if(e.target.closest('#wSetPin')){const v=$('#wPin').value.trim();const msg=$('#wMsg');if(v.length<4||v.length>8||!/^\d+$/.test(v)){msg.textContent='Choose a PIN of 4 to 8 digits.';return;}hashPin(v).then(h=>{WAL.pin=h;saveW();render();});return;}
+ if(e.target.closest('#wPay')){const pin=$('#wPin').value.trim();const amt=+$('#wAmt').value;const msg=$('#wMsg');if(!amt||amt<=0){msg.textContent='Enter an amount above zero.';return;}
+  hashPin(pin).then(h=>{if(h!==WAL.pin){msg.textContent='That PIN is not right.';render();$('#wMsg').textContent='That PIN is not right.';return;}WAL.paid.push({amt:Math.round(amt*100)/100,ts:Date.now()});saveW();render();toast('Payout recorded. Nice work, Sofia!');});return;}
+ if(e.target.closest('#wPre')){const pin=$('#wPin').value.trim();const msg=$('#wMsg');hashPin(pin).then(h=>{if(h!==WAL.pin){render();$('#wMsg').textContent='That PIN is not right.';return;}
+  WAL.pre.steps.slice().forEach(k=>{WAL.pre.steps=WAL.pre.steps.filter(x=>x!==k);earn('s:'+k,wValue('s:'+k),'Earlier progress',true);});
+  WAL.pre.topics.slice().forEach(tid=>{WAL.pre.topics=WAL.pre.topics.filter(x=>x!==tid);earn('t:'+tid,wValue('t:'+tid),'Earlier progress',true);});
+  Object.keys(CHAPTERS_DATA).forEach(u=>wCheckUnit(u,true));saveW();render();toast('Earlier progress added to the wallet.');});return;}
+ /* past papers */
+ const ppo=e.target.closest('[data-ppopen]');if(ppo){PP.view=ppo.dataset.ppopen;savePP();render();window.scrollTo({top:0,behavior:'smooth'});return;}
+ if(e.target.closest('[data-ppback]')){PP.view=null;savePP();render();window.scrollTo({top:0,behavior:'smooth'});return;}
+ const ppx=e.target.closest('[data-ppexam]');if(ppx){const p=paperById(ppx.dataset.ppexam);const now=Date.now();PP.exam={id:p.id,start:now,end:now+p.mins*60000,marks:{},done:false,used:0};savePP();render();window.scrollTo({top:0,behavior:'smooth'});exTick();return;}
+ const pprev=e.target.closest('[data-pprev]');if(pprev){const ans=pprev.nextElementSibling;ans.hidden=!ans.hidden;pprev.setAttribute('aria-expanded',!ans.hidden);pprev.textContent=ans.hidden?'Show the mark scheme':'Hide the mark scheme';return;}
+ const ppself=e.target.closest('[data-ppself]');if(ppself){ppSelf(ppself.dataset.ppself,ppself.dataset.ok==='1');render();return;}
+ if(e.target.closest('#exFinish')){PP.exam.done=true;PP.exam.used=Date.now()-PP.exam.start;savePP();render();return;}
+ if(e.target.closest('#exQuit')){PP.exam=null;savePP();render();return;}
+ const exm=e.target.closest('[data-exm]');if(exm){PP.exam.marks[exm.dataset.exm]=+exm.dataset.xv;savePP();render();return;}
+ if(e.target.closest('#exSave')){const p=paperById(PP.exam.id);const score=p.qs.reduce((s,id)=>s+(PP.exam.marks[id]||0),0);PP.att[p.id]=PP.att[p.id]||[];PP.att[p.id].push({score,ts:Date.now()});
+  p.qs.forEach(id=>ppSelf(id,(PP.exam.marks[id]||0)>=PPQ[id].m*.6));PP.exam=null;savePP();render();toast('Score saved: '+score+' / '+p.max);return;}
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.bq){S.bq[t.dataset.bq]=t.value;save();}});
-document.addEventListener('change',e=>{const t=e.target;if(t.dataset.cl){S.cl[t.dataset.cl]=t.checked;save();}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.cl){S.cl[t.dataset.cl]=t.checked;save();}if(t.id==='wSound'){WAL.sound=t.checked;saveW();}});
 
-useChapter(S.ch||1);render();
+wNormalize();Object.keys(CHAPTERS_DATA).forEach(u=>wCheckUnit(u,true));rvSync();useChapter(S.ch||1);
+if(!['chapter','later','stickers','review','wallet','papers'].includes(S.view))S.view='chapter';
+render();enterAnim();
