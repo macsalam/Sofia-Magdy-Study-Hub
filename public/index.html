@@ -14,7 +14,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6;
   background-image:radial-gradient(ellipse 70% 55% at 8% 0%,color-mix(in srgb,var(--glow1) 40%,transparent),transparent 70%),
    radial-gradient(ellipse 60% 50% at 100% 30%,color-mix(in srgb,var(--glow2) 30%,transparent),transparent 70%);
   background-attachment:fixed;transition:background-color .35s,color .35s}
@@ -23,14 +23,14 @@ h1,h2,h3{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance}
 p{margin:0}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:12px}
 .wrap{position:relative;z-index:1;width:100%;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+header.top{position:sticky;top:0;z-index:120;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .topin{display:flex;align-items:center;gap:12px;padding-block:14px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:21px;min-width:0}
-.brand small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--ink2)}
+.brand{display:flex;align-items:center;gap:14px;font-family:var(--display);font-weight:800;font-size:23px;min-width:0;line-height:1.15}
+.brand small{display:block;font-family:var(--body);font-weight:600;font-size:14px;color:var(--ink2);margin-top:3px}
 .spacer{flex:1}
 .hero{padding:34px 0 10px;min-height:min(34vh,300px);display:flex;flex-direction:column;justify-content:center}
-.eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--kick);font-weight:800;margin:0}
-.hero h1{font-size:clamp(30px,5.4vw,52px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--kick);font-weight:800;margin:0}
+.hero h1{font-size:clamp(32px,5.6vw,56px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
 .hero p{color:var(--ink2);max-width:62ch}
 main{padding-bottom:120px}
 footer{color:var(--ink2);font-size:13px;padding:26px 0 40px}
@@ -61,27 +61,27 @@ window.HubPage={render(){
  const H=window.Hub;if(!H||!H.CURRICULA)return;const esc=H.esc;
  const rows=document.getElementById('homeRows');
  const t=H.today();
- function card(lbl,big,sub,extra,bar){
-  return `<div class="hub-card"><span class="lbl">${lbl}</span><div class="big">${big}</div>${sub?`<div class="sub">${sub}</div>`:''}
+ function card(lbl,big,sub,extra,bar,k){
+  return `<div class="hub-card ${k}"><span class="lbl">${lbl}</span><div class="big">${big}</div>${sub?`<div class="sub">${sub}</div>`:''}
    ${extra||''}${bar!=null?`<div class="hbar"><i style="width:${bar}%"></i></div>`:''}<span class="motif">${H.markSvg(72)}</span></div>`;
  }
  function row(c){
   const sum=H.sumOf(c.id);
   const pct=sum&&sum.total?Math.round(sum.done/sum.total*100):0;
   const prog=c.live
-   ? card('Progress',pct+'%',sum&&sum.total?`${sum.done} of ${sum.total} steps finished`:'No steps finished yet','',pct)
-   : card('Progress','Not started','This hub is still being built','',0);
+   ? card('Progress',pct+'%',sum&&sum.total?`${sum.done} of ${sum.total} steps finished`:'No steps finished yet','',pct,'k1')
+   : card('Progress','Not started','This hub is still being built','',0,'k1');
   const last=sum&&sum.last
    ? card('Last studied',esc(sum.last.label),sum.lastAt?('on '+esc(H.fmtDay(sum.lastAt))):'',
-      `<a class="hub-btn cta" style="align-self:flex-start;margin-top:10px;text-decoration:none" href="${c.href||'#'}">Continue</a>`)
-   : card('Last studied','Nothing yet',c.live?'Open the hub to make a start':'Coming soon');
+      `<a class="hub-btn" style="align-self:flex-start;margin-top:12px;text-decoration:none" href="${c.href||'#'}">Continue</a>`,null,'k2')
+   : card('Last studied','Nothing yet',c.live?'Open the hub to make a start':'Coming soon','',null,'k2');
   const sess=H.PLAN.sessions.filter(s=>s.cur===c.id&&s.date===t).sort((a,b)=>a.from.localeCompare(b.from));
   const next=H.upcoming().filter(s=>s.cur===c.id)[0];
   const planBody=sess.length
    ? `<div class="hub-mini" style="margin-top:8px">${sess.map(s=>`<div class="hub-sess" style="--c:${c.c}"><b>${esc(s.from)}–${esc(s.to)}</b>${esc(s.label)}</div>`).join('')}</div>`
    : `<div class="hub-mini" style="margin-top:8px">${next?`<div class="hub-sess" style="--c:${c.c}"><b>${esc(H.fmtDay(next.date))} · ${esc(next.from)}</b>${esc(next.label)}</div>`:''}
-      <button class="hub-btn" style="align-self:flex-start;margin-top:6px" data-plan>Build your plan</button></div>`;
-  const plan=`<div class="hub-card"><span class="lbl">Today's plan</span><div class="big">${sess.length?sess.length+(sess.length===1?' session':' sessions'):'Nothing today'}</div>${planBody}</div>`;
+      <button class="hub-btn" style="align-self:flex-start;margin-top:8px" data-plan>Build your plan</button></div>`;
+  const plan=`<div class="hub-card k3"><span class="lbl">Today's plan</span><div class="big">${sess.length?sess.length+(sess.length===1?' session':' sessions'):'Nothing today'}</div>${planBody}</div>`;
   const cardEl=c.live
    ? `<a class="hub-curr" href="${c.href}"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="go">Open <span aria-hidden="true">→</span></span><span class="motif">${H.markSvg(120)}</span></a>`
    : `<div class="hub-curr" aria-disabled="true"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="soon">Coming soon</span><span class="motif">${H.markSvg(120)}</span></div>`;

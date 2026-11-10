@@ -3749,11 +3749,11 @@ function enterAnim(){['.chead','#pills','#view'].forEach(s=>{const el=$(s);if(!e
  document.addEventListener('click',e=>{if(!ddMenu.hidden&&!e.target.closest('#dd')){openDD(false);}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ddMenu.hidden){openDD(false);ddBtn.focus();}});
  const menu=$('#fontMenu');
- menu.innerHTML=`<div class="eyebrow">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · Photosynthesis makes glucose</span></button>`).join('');
+ if(menu){menu.innerHTML=`<div class="eyebrow">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · Photosynthesis makes glucose</span></button>`).join('');
  $('#fontBtn').onclick=()=>{menu.hidden=!menu.hidden;$('#fontBtn').setAttribute('aria-expanded',!menu.hidden);};
  menu.addEventListener('click',e=>{const b=e.target.closest('[data-font]');if(!b)return;P.font=+b.dataset.font;saveP();applyFont();$$('.fontopt',menu).forEach(x=>x.setAttribute('aria-pressed',x===b));});
  document.addEventListener('click',e=>{if(!menu.hidden&&!e.target.closest('#fontMenu')&&!e.target.closest('#fontBtn')){menu.hidden=true;$('#fontBtn').setAttribute('aria-expanded','false');}});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){menu.hidden=true;$('#fontBtn').setAttribute('aria-expanded','false');$('#fontBtn').focus();}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){menu.hidden=true;$('#fontBtn').setAttribute('aria-expanded','false');$('#fontBtn').focus();}});}
  applyFont();
 })();
 

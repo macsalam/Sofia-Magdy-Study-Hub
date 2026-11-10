@@ -93,6 +93,25 @@ const THEMES=[
      good:'#3F6D96',bad:'#B23B36',kick:'#B23B36',focus:'#3F6D96',sun:'#B59455',sky:'#3F6D96',leaf:'#4E7B74',earth:'#8A7A5E',stage:'#F0F4F8'}}}
 ];
 
+
+/* Card colours: the three cards beside each subject are solid, so they stay readable
+   whatever the backdrop shows. [card1, ink, card2, ink, card3, ink] */
+const CARDS={
+ galaxy:{dark:['linear-gradient(140deg,#3B2C7A,#1D1937)','#F2EFFF','#2F2852','#F2EFFF','linear-gradient(140deg,#5FD4F4,#9B7BFF)','#18132F'],
+         light:['linear-gradient(140deg,#6A4BD6,#3B2C7A)','#FFFFFF','#FFFFFF','#231E42','linear-gradient(140deg,#A9DCEC,#C3B0FF)','#231E42']},
+ cherry:{light:['linear-gradient(140deg,#B78993,#8F7C78)','#FFFFFF','#EFEDEE','#3A2522','linear-gradient(140deg,#D0BDBF,#9DB098)','#3A2522'],
+         dark:['linear-gradient(140deg,#D79AA6,#8E5F6B)','#241A19','#3F302D','#EFEDEE','linear-gradient(140deg,#A8C0A2,#6F8A6B)','#17100F']},
+ woodland:{light:['linear-gradient(140deg,#29594d,#1b3d2c)','#F0E9DA','#e3dac7','#1b3d2c','linear-gradient(140deg,#977359,#61402f)','#F0E9DA'],
+           dark:['linear-gradient(140deg,#dbd1bc,#c9bb9e)','#17331F','#133825','#dbd1bc','linear-gradient(140deg,#688d57,#29594d)','#F0E9DA']},
+ mythical:{light:['linear-gradient(140deg,#2d4b65,#192d45)','#E8E1D8','#e5ddd5','#192d45','linear-gradient(140deg,#d0ac72,#906b41)','#17120B'],
+           dark:['linear-gradient(140deg,#d0ac72,#906b41)','#17120B','#192d45','#dcd3ca','linear-gradient(140deg,#769aba,#2d4b65)','#F2EDE7']},
+ spiderman:{light:['linear-gradient(140deg,#1B4FA0,#14203A)','#FFFFFF','#FFFFFF','#14203A','linear-gradient(140deg,#D7263D,#8E1526)','#FFFFFF'],
+            dark:['linear-gradient(140deg,#E23636,#8E1526)','#FFFFFF','#1B2438','#F2F4F8','linear-gradient(140deg,#3C7BE0,#17315F)','#FFFFFF']},
+ lemonshark:{light:['linear-gradient(140deg,#1D7A8C,#0E3B4A)','#F3F7F6','#FFFDF2','#0E3B4A','linear-gradient(140deg,#F2D14E,#C9A41C)','#0E3B4A'],
+             dark:['linear-gradient(140deg,#F2D14E,#C9A41C)','#06222C','#103A49','#F3F7F6','linear-gradient(140deg,#4FBBD1,#1D7A8C)','#06222C']},
+ rainywinter:{dark:['linear-gradient(140deg,#2C4159,#14202F)','#D9E4EF','#1C2B3D','#D9E4EF','linear-gradient(140deg,#C2413C,#7E2B27)','#FFFFFF'],
+              light:['linear-gradient(140deg,#3F6D96,#22435F)','#FFFFFF','#E8EEF5','#16263A','linear-gradient(140deg,#B23B36,#8A2C28)','#FFFFFF']}
+};
 const mix=(c,p,on)=>`color-mix(in srgb,${c} ${p}%,${on})`;
 function buildVars(m){
  const raise=`7px 7px 16px ${m.lo},-7px -7px 16px ${m.hi}`;
@@ -145,6 +164,8 @@ const palette=()=>{const t=theme();return t.modes[P.mode]||t.modes.dark||t.modes
 
 function applyTheme(){
  const t=theme(),m=palette(),v=buildVars(m);
+ const cc=(CARDS[t.id]||{})[P.mode]||(CARDS[t.id]||{}).dark||(CARDS[t.id]||{}).light;
+ if(cc){v['--c1']=cc[0];v['--c1-ink']=cc[1];v['--c2']=cc[2];v['--c2-ink']=cc[3];v['--c3']=cc[4];v['--c3-ink']=cc[5];}
  const b=document.body,h=document.documentElement;
  h.dataset.hubTheme=t.id;h.dataset.hubMode=P.mode;h.dataset.hubFont=P.font||0;
  h.style.colorScheme=P.mode;
@@ -179,7 +200,6 @@ function markSvg(size){const art=themeArt();if(!art||!art.mark)return '';
 function logoSvg(size){const art=themeArt();if(!art||!art.logo)return '';
  return `<svg viewBox="${art.logo[0]}" width="${size}" height="${size}" aria-hidden="true">${art.logo[1]}</svg>`;}
 function applyFont(){
- if(!document.getElementById('hubControlsHost'))return; /* sub-hubs keep their own font control */
  document.documentElement.dataset.hubFont=P.font||0;
  let st=$('#hubFontCSS');
  if(!st){st=document.createElement('style');st.id='hubFontCSS';document.head.appendChild(st);
@@ -254,13 +274,16 @@ function controlsHtml(){
  </div>`;
 }
 function fontMenuHtml(){
- return `<div class="hub-sec">Choose a font</div>`+H.FONTS.map((f,i)=>
-  `<button class="hub-opt" data-font="${i}" aria-pressed="${(H.prefs.font||0)===i}"><span class="t"><span style="font-family:'${f[1]}';font-weight:800;font-size:17px">${esc(f[0])}</span><span class="s">${esc(f[1])}${f[2]!==f[1]?' + '+esc(f[2]):''}</span></span></button>`).join('');
+ return `<div class="hub-sec">Font</div>`+H.FONTS.map((f,i)=>
+  `<button class="hub-opt" data-font="${i}" aria-pressed="${(H.prefs.font||0)===i}"><span class="t">
+   <span class="fname" style="font-family:'${f[1]}'">${esc(f[0])}</span>
+   <span class="s" style="font-family:'${f[2]}'">${esc(f[1])}${f[2]!==f[1]?' + '+esc(f[2]):''}</span></span></button>`).join('');
 }
 function themeMenuHtml(){
- return `<div class="hub-sec">Choose a theme</div>`+H.THEMES.map(t=>
-  `<button class="hub-opt" data-theme="${t.id}" aria-pressed="${H.prefs.theme===t.id}"><span class="hub-chips">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="t"><b>${esc(t.name)}</b><span class="s">${esc(t.desc)}</span></span></button>`).join('')
-;
+ return `<div class="hub-sec">Theme</div>`+H.THEMES.map(t=>
+  `<button class="hub-opt" data-theme="${t.id}" aria-pressed="${H.prefs.theme===t.id}">
+   <span class="hub-chips">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span>
+   <span class="t"><span class="fname">${esc(t.name)}</span><span class="s">${esc(t.desc)}</span></span></button>`).join('');
 }
 function refreshControls(){
  const host=$('#hubControls');if(!host)return;
@@ -720,7 +743,7 @@ H.makeNotes=makeNotes;
 const H=window.Hub;
 function boot(){
  H.applyTheme();
- if(document.getElementById('hubControlsHost')){H.ensureFontLink();H.applyFont();H.mountControls();}
+ H.ensureFontLink();H.applyFont();H.mountControls();
  const own=document.documentElement.getAttribute('data-hub-notes')==='own';
  const existing=document.querySelector('.notes');
  if(existing){H.attachPad(existing);}

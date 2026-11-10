@@ -2985,7 +2985,7 @@ function enterAnim(){['#chead','#pills','#view'].forEach(s=>{const el=$(s);if(!e
 const FONTS=[['Classic','Fraunces','Atkinson Hyperlegible'],['Clear','Lexend','Lexend'],['Rounded','Nunito','Nunito'],['Playful','Fredoka','Quicksand'],['Cinema','Playfair Display','Figtree'],['Modern','Figtree','Figtree']];
 function applyFont(){document.body.dataset.font=P.font||0;}
 applyFont();
-(function fontMenu(){const menu=$('#fontMenu');menu.innerHTML=`<div class="kicker">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · 6.5 × 10⁵ = 650 000</span></button>`).join('');})();
+(function fontMenu(){const menu=$('#fontMenu');if(!menu)return;menu.innerHTML=`<div class="kicker">Choose a font</div>`+FONTS.map((f,i)=>`<button class="fontopt" data-font="${i}" aria-pressed="${(P.font||0)===i}"><span style="font-family:'${f[1]}';font-weight:700;font-size:19px">${f[0]}</span><span style="font-family:'${f[2]}';font-size:14px" class="tiny">${f[1]}${f[2]!==f[1]?' + '+f[2]:''} · 6.5 × 10⁵ = 650 000</span></button>`).join('');})();
 
 /* =================== DATES =================== */
 const dstr=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());};
@@ -3309,9 +3309,9 @@ document.addEventListener('click',e=>{
  if(!e.target.closest('#dd')&&!$('#ddMenu').hidden)openDD(false);
  const chb=e.target.closest('[data-ch]');if(chb&&!chb.disabled){useChapter(+chb.dataset.ch);goView('chapter');return;}
  const pg=e.target.closest('[data-page]');if(pg){goView(pg.dataset.page);return;}
- if(e.target.closest('#fontBtn')){const m=$('#fontMenu');m.hidden=!m.hidden;$('#fontBtn').setAttribute('aria-expanded',!m.hidden);return;}
+ if(e.target.closest('#fontBtn')){const m=$('#fontMenu');if(m){m.hidden=!m.hidden;$('#fontBtn').setAttribute('aria-expanded',!m.hidden);}return;}
  const fo=e.target.closest('.fontopt[data-font]');if(fo){P.font=+fo.dataset.font;saveP();applyFont();$$('.fontopt[data-font]').forEach(b=>b.setAttribute('aria-pressed',b===fo));return;}
- if(!e.target.closest('#fontMenu')&&!$('#fontMenu').hidden){$('#fontMenu').hidden=true;$('#fontBtn').setAttribute('aria-expanded','false');}
+ const fm=$('#fontMenu');if(fm&&!e.target.closest('#fontMenu')&&!fm.hidden){fm.hidden=true;const fb=$('#fontBtn');if(fb)fb.setAttribute('aria-expanded','false');}
  if(e.target.closest('#resetBtn')){const p=$('#resetPanel');if(p.hidden)renderReset();p.hidden=!p.hidden;$('#resetBtn').setAttribute('aria-expanded',!p.hidden);if(!p.hidden)window.scrollTo({top:0,behavior:'smooth'});return;}
  if(e.target.closest('#resetNo')){closeReset();return;}
  const rs=e.target.closest('[data-reset]');if(rs){const w=rs.dataset.reset;if(w==='chapter'||w==='all'){renderReset(w);return;}doReset(w);return;}
@@ -3351,7 +3351,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#fcKeep')){T.fc.pos++;T.fc.show=false;render();return;}
  if(e.target.closest('#fcGot')){const k=T.fc.order[T.fc.pos%T.fc.order.length];delete T.marks[k];saveT();T.fc.order=T.fc.order.filter(x=>x!==k);T.fc.show=false;if(!T.fc.order.length)T.fc=null;toast(`Nice! ${k.replace('x',' × ')} is off your tricky list.`);render();return;}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#ddMenu').hidden){openDD(false);$('#ddBtn').focus();}if(!$('#fontMenu').hidden)$('#fontMenu').hidden=true;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#ddMenu').hidden){openDD(false);$('#ddBtn').focus();}const fm2=$('#fontMenu');if(fm2&&!fm2.hidden)fm2.hidden=true;}
  if(e.key==='Enter'&&(e.target.id==='ttR'||e.target.id==='ttC'))$('#ttJump').click();if(e.key==='Enter'&&e.target.id==='oneN')$('#oneGo').click();
  if(!$('#ddMenu').hidden&&(e.key==='ArrowDown'||e.key==='ArrowUp')){const o=$$('.ddopt:not(:disabled)',$('#ddMenu'));const i=o.indexOf(document.activeElement);e.preventDefault();(o[(i+(e.key==='ArrowDown'?1:-1)+o.length)%o.length]||o[0]).focus();}});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.bq){S.bq[t.dataset.bq]=t.value;save();}});
