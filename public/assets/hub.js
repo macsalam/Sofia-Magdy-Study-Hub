@@ -157,9 +157,29 @@ function applyTheme(){
   else b.style.setProperty(k,v[k]);
  }
  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',m.bg);
+ renderDecor();
  document.dispatchEvent(new CustomEvent('hubtheme',{detail:{theme:t.id,mode:P.mode}}));
 }
+
+/* ---------- theme artwork ---------- */
+function themeArt(){const A=window.HubArt&&window.HubArt.ART;return A?A[P.theme]:null;}
+function renderDecor(){
+ if(!document.body)return;
+ const art=themeArt();
+ let host=document.getElementById('hubDecor');
+ if(!host){host=document.createElement('div');host.id='hubDecor';host.setAttribute('aria-hidden','true');document.body.insertBefore(host,document.body.firstChild);}
+ host.innerHTML=art?`<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">${art.decor(P.mode)}</svg>`:'';
+ /* each hub has one animated canvas of its own: keep it only with the theme it belongs to */
+ const sky=document.getElementById('skyC'),snow=document.getElementById('snow');
+ if(sky)sky.style.display=P.theme==='galaxy'?'':'none';
+ if(snow)snow.style.display=P.theme==='cherry'?'':'none';
+}
+function markSvg(size){const art=themeArt();if(!art||!art.mark)return '';
+ return `<svg class="hub-mark" viewBox="${art.mark[0]}" width="${size}" height="${size}" aria-hidden="true">${art.mark[1]}</svg>`;}
+function logoSvg(size){const art=themeArt();if(!art||!art.logo)return '';
+ return `<svg viewBox="${art.logo[0]}" width="${size}" height="${size}" aria-hidden="true">${art.logo[1]}</svg>`;}
 function applyFont(){
+ if(!document.getElementById('hubControlsHost'))return; /* sub-hubs keep their own font control */
  document.documentElement.dataset.hubFont=P.font||0;
  let st=$('#hubFontCSS');
  if(!st){st=document.createElement('style');st.id='hubFontCSS';document.head.appendChild(st);
@@ -167,8 +187,7 @@ function applyFont(){
 }
 function ensureFontLink(){if($('#hubFonts'))return;const l=document.createElement('link');l.id='hubFonts';l.rel='stylesheet';l.href=FONT_HREF;document.head.appendChild(l);}
 
-window.Hub={THEMES,FONTS,prefs:P,saveP,theme,palette,buildVars,applyTheme,applyFont,ensureFontLink,$,$$,esc,ymd,today,parseYmd,fmtDay,read,write,CHEV};
-ensureFontLink();applyFont();
+window.Hub={THEMES,FONTS,prefs:P,saveP,theme,palette,buildVars,applyTheme,applyFont,ensureFontLink,renderDecor,markSvg,logoSvg,$,$$,esc,ymd,today,parseYmd,fmtDay,read,write,CHEV};
 if(document.body)applyTheme();else document.addEventListener('DOMContentLoaded',applyTheme);
 })();
 
@@ -241,9 +260,7 @@ function fontMenuHtml(){
 function themeMenuHtml(){
  return `<div class="hub-sec">Choose a theme</div>`+H.THEMES.map(t=>
   `<button class="hub-opt" data-theme="${t.id}" aria-pressed="${H.prefs.theme===t.id}"><span class="hub-chips">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="t"><b>${esc(t.name)}</b><span class="s">${esc(t.desc)}</span></span></button>`).join('')
-  +`<div class="hub-sec">Light or dark</div>
-   <button class="hub-opt" data-mode="light" aria-pressed="${H.prefs.mode==='light'}"><span class="t"><b>Light mode</b><span class="s">Bright background</span></span></button>
-   <button class="hub-opt" data-mode="dark" aria-pressed="${H.prefs.mode==='dark'}"><span class="t"><b>Dark mode</b><span class="s">Easier at night</span></span></button>`;
+;
 }
 function refreshControls(){
  const host=$('#hubControls');if(!host)return;
@@ -258,15 +275,12 @@ H.refreshControls=refreshControls;
 
 function mountControls(){
  if($('#hubControls'))return;
- let host=$('#hubControlsHost');
+ /* Only pages that ask for the hub bar get it. The Science and Maths hubs keep
+    their own top bar untouched; the theme still reaches them. */
+ const host=$('#hubControlsHost');
+ if(!host)return;
  const frag=document.createElement('div');frag.innerHTML=controlsHtml();
- const node=frag.firstElementChild;
- if(host){host.appendChild(node);}
- else{
-  const fontBtn=$('#fontBtn');
-  if(fontBtn&&fontBtn.parentNode){fontBtn.parentNode.insertBefore(node,fontBtn);fontBtn.hidden=true;const fm=$('#fontMenu');if(fm)fm.hidden=true;}
-  else{const bar=$('header.top .topin')||$('header .topin');if(bar)bar.appendChild(node);else document.body.insertBefore(node,document.body.firstChild);}
- }
+ host.appendChild(frag.firstElementChild);
  $('#hubPlanBtn').onclick=()=>{closeMenus();H.openPlan();};
  $('#hubModeBtn').onclick=()=>{H.prefs.mode=H.prefs.mode==='dark'?'light':'dark';H.saveP();H.applyTheme();refreshControls();};
  const fb=$('#hubFontBtn'),fm=$('#hubFontMenu'),tb=$('#hubThemeBtn'),tm=$('#hubThemeMenu');
@@ -436,33 +450,96 @@ H.openPlan=openPlan;
 /* ================= 5 · MY NOTES + DRAWING PAD ================= */
 (function(){
 const H=window.Hub,{$,$$,esc,read,write}=H;
+const Calc=(function(){
+ // safe parser: numbers, + − × ÷ ^, brackets, functions, π, e, Ans; no eval
+ function tokenize(s){const t=[];let i=0;s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+  while(i<s.length){const c=s[i];
+   if(/\s/.test(c)){i++;continue;}
+   if(/[0-9.]/.test(c)){let j=i;while(j<s.length&&/[0-9.]/.test(s[j]))j++;const v=s.slice(i,j);if((v.match(/\./g)||[]).length>1||v==='.')throw Error('number');t.push({k:'n',v:parseFloat(v)});i=j;continue;}
+   if(/[a-zπ√∛]/i.test(c)){let m=s.slice(i).match(/^(sin|cos|tan|log|ln|Ans|π|e|√|∛)/);if(!m)throw Error('name');const w=m[1];i+=w.length;
+    if(w==='π')t.push({k:'n',v:Math.PI});else if(w==='e')t.push({k:'n',v:Math.E});else if(w==='Ans')t.push({k:'ans'});else t.push({k:'f',v:w});continue;}
+   if('+-*/^()'.includes(c)){t.push({k:c});i++;continue;}
+   if(c==='²'){t.push({k:'^'});t.push({k:'n',v:2});i++;continue;}
+   throw Error('char');}
+  return t;}
+ function parse(tokens,ans,deg){let p=0;const peek=()=>tokens[p],eat=k=>{if(!tokens[p]||tokens[p].k!==k)throw Error('expected '+k);return tokens[p++];};
+  const rad=x=>deg?x*Math.PI/180:x;
+  const FN={sin:x=>Math.sin(rad(x)),cos:x=>Math.cos(rad(x)),tan:x=>Math.tan(rad(x)),log:Math.log10,ln:Math.log,'√':Math.sqrt,'∛':Math.cbrt};
+  function expr(){let v=term();while(peek()&&(peek().k==='+'||peek().k==='-')){const o=tokens[p++].k;const r=term();v=o==='+'?v+r:v-r;}return v;}
+  function term(){let v=unary();for(;;){const t=peek();if(!t)break;if(t.k==='*'||t.k==='/'){p++;const r=unary();v=t.k==='*'?v*r:v/r;}else if(t.k==='n'||t.k==='('||t.k==='f'||t.k==='ans'){v=v*unary();}else break;}return v;}
+  function unary(){const t=peek();if(t&&t.k==='-'){p++;return -unary();}if(t&&t.k==='+'){p++;return unary();}return power();}
+  function power(){const b=atom();if(peek()&&peek().k==='^'){p++;const e=unary();return Math.pow(b,e);}return b;}
+  function atom(){const t=peek();if(!t)throw Error('end');
+   if(t.k==='n'){p++;return t.v;}if(t.k==='ans'){p++;return ans;}
+   if(t.k==='('){p++;const v=expr();if(peek()&&peek().k===')')p++;return v;}
+   if(t.k==='f'){p++;const arg=(peek()&&peek().k==='(')?(p++,(()=>{const v=expr();if(peek()&&peek().k===')')p++;return v;})()):power();return FN[t.v](arg);}
+   throw Error('unexpected');}
+  const v=expr();if(p<tokens.length)throw Error('extra');return v;}
+ function fmt(v){if(!isFinite(v))return 'Math error';if(v===0)return '0';const a=Math.abs(v);
+  if(a>=1e10||a<1e-6){const [m,e]=v.toExponential(9).split('e');return `${String(+m)} × 10^${(+e).toString().replace('-','−')}`;}
+  return String(+v.toPrecision(10)).replace('-','−');}
+ return{run:(s,ans,deg)=>fmt(parse(tokenize(s),ans,deg)),num:(s,ans,deg)=>parse(tokenize(s),ans,deg),fmt};
+})();
+
+function calcHtml(){const K=[['sin','fn','sin('],['cos','fn','cos('],['tan','fn','tan('],['log','fn','log('],['ln','fn','ln('],['DEL','op','del'],
+ ['√','fn','√('],['∛','fn','∛('],['x²','fn','²'],['xʸ','fn','^'],['x⁻¹','fn','^(−1)'],['AC','op','ac'],
+ ['7','',  '7'],['8','','8'],['9','','9'],['(','op','('],[')','op',')'],['÷','op','÷'],
+ ['4','','4'],['5','','5'],['6','','6'],['π','fn','π'],['Ans','fn','Ans'],['×','op','×'],
+ ['1','','1'],['2','','2'],['3','','3'],['×10ˣ','fn','×10^('],['(−)','fn','−'],['−','op','−'],
+ ['0','','0'],['.','','.'],['e','fn','e'],['=','eq','='],['=','eq','='],['+','op','+']];
+ return `<div class="calc" id="calc" hidden><div class="crow"><span class="tiny">Scientific calculator</span><button class="nbtn" id="cDeg" aria-pressed="true" title="Angle unit for sin, cos and tan">DEG</button></div>
+ <div class="cdisp" aria-live="polite"><div class="cexp" id="cExp"></div><div class="cres" id="cRes">0</div></div>
+ <div class="ckeys">${K.map((k,i)=>i===34?'':`<button class="${k[1]}" data-ck="${esc(k[2])}" ${i===33?'style="grid-column:span 2"':''} aria-label="${k[0]==='='?'equals':esc(k[0])}">${k[0]}</button>`).join('')}</div>
+ <div class="row" style="justify-content:flex-end"><button class="nbtn" id="cIns" title="Put this calculation into my notes">Insert into notes</button></div></div>`;}
+
+/* =================== NOTES (with calculator) =================== */
+
+/* ---------------- drawing pad ---------------- */
 const DKEY='hub-draw';
+const QUICK=['#1A1A1A','#D32F2F','#F4511E','#FDD835','#7CB342','#009688','#039BE5','#1E5FBF','#8E24AA','#D81B60','#6D4C41','#FFFFFF'];
 const PALETTE=['#000000','#434343','#7A7A7A','#B7B7B7','#FFFFFF','#8B2F2F','#D32F2F','#F4511E','#FB8C00','#FDD835',
  '#C0CA33','#7CB342','#2E7D32','#009688','#00ACC1','#039BE5','#1E5FBF','#1A237E','#5E35B1','#8E24AA',
  '#D81B60','#FF80AB','#FFB4A2','#FFD6A5','#FFF3B0','#CDEAC0','#A8E6CF','#B3E5FC','#C5CAE9','#E1BEE7',
- '#6D4C41','#A1887F','#D7CCC8','#C2413C','#F2D14E','#1D7A8C','#688d57','#d0ac72','#B78993','#9B7BFF'];
+ '#6D4C41','#A1887F','#D7CCC8','#C2413C','#F2D14E','#1D7A8C','#688D57','#D0AC72','#B78993','#9B7BFF'];
 const STICKERS=['⭐','🌟','✨','❤️','💛','💚','💙','💜','🔥','⚡','🌈','☀️','🌙','☁️','❄️','🌸','🌷','🌻','🍀','🌴',
  '🦋','🐱','🐶','🐼','🦄','🐙','🐢','🐝','🦉','🐬','🍎','🍓','🍋','🍉','🧁','🍪','🍩','🎈','🎉','🎀',
  '✅','❌','❓','❗','💡','📌','📎','✏️','📚','🏆','👍','👏','😀','😍','🤔','😴','🤩','🥳','🧠','🎯'];
-const SHAPES=[['pen','Pen'],['marker','Marker'],['eraser','Eraser'],['line','Line'],['rect','Box'],['ellipse','Circle'],
- ['tri','Triangle'],['star','Star'],['heart','Heart'],['arrow','Arrow'],['cloud','Cloud'],['bubble','Speech']];
+const TOOLS=[['pen','Pen','M3 21l4-1 11-11a2.1 2.1 0 0 0-3-3L4 17z'],['marker','Marker','M4 20h16M6 16l9-9 3 3-9 9z'],['eraser','Eraser','M8 20h12M4 15l7-7 6 6-6 6H7z'],
+ ['line','Line','M4 20L20 4'],['arrow','Arrow','M4 20L20 4M13 4h7v7'],['rect','Box','M4 6h16v12H4z'],['ellipse','Circle','M12 5a7 7 0 1 0 .1 0'],
+ ['tri','Triangle','M12 4l8 16H4z'],['star','Star','M12 3l2.6 6.3 6.8.6-5.2 4.5 1.6 6.6L12 17.6 6.2 21l1.6-6.6L2.6 9.9l6.8-.6z'],
+ ['heart','Heart','M12 20S4 15 4 9.5A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 8 2.5C20 15 12 20 12 20z'],
+ ['cloud','Cloud','M7 18h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6-1.3A3.5 3.5 0 0 0 7 18z'],
+ ['bubble','Speech','M4 5h16v10H9l-4 4v-4H4z']];
+const ic=d=>`<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function padHtml(){
  return `<div class="hub-pad" id="hubPad">
-  <div class="hub-padtools" role="toolbar" aria-label="Drawing tools">
-   ${SHAPES.map((s,i)=>`<button data-tool="${s[0]}" aria-pressed="${i===0}" title="${s[1]}">${s[1]}</button>`).join('')}
-   <button data-fill aria-pressed="false" title="Fill the shape">Fill</button>
-   <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px">Size
-    <input class="hub-size" type="range" min="1" max="40" value="4" data-size aria-label="Brush size"></label>
-   <button data-undo title="Undo">Undo</button><button data-clear title="Clear the page">Clear</button><button data-save title="Save as a picture">Save</button>
+  <div class="hub-padbar" role="toolbar" aria-label="Drawing tools">
+   ${TOOLS.map((t,i)=>`<button class="hub-tool" data-tool="${t[0]}" aria-pressed="${i===0}" title="${t[1]}">${ic(t[2])}<span>${t[1]}</span></button>`).join('')}
   </div>
-  <div class="hub-swatches" role="toolbar" aria-label="Colours">
-   ${PALETTE.map((c,i)=>`<button data-color="${c}" aria-pressed="${i===0}" style="background:${c}" title="${c}" aria-label="Colour ${c}"></button>`).join('')}
-   <label title="Any colour you like" style="display:inline-flex;align-items:center;gap:4px;font-size:12px">More
-    <input type="color" data-custom value="#ff00aa" aria-label="Pick any colour" style="width:26px;height:26px;border:0;background:none;padding:0;cursor:pointer"></label>
+  <div class="hub-padbar">
+   <span class="hub-quick">${QUICK.map((c,i)=>`<button data-color="${c}" aria-pressed="${i===0}" style="background:${c}" title="${c}" aria-label="Colour ${c}"></button>`).join('')}</span>
+   <button class="hub-tool" id="padMore" aria-expanded="false" title="All the colours">${ic('M12 3a9 9 0 1 0 0 18 2 2 0 0 0 0-4 2 2 0 0 1 0-4h2a5 5 0 0 0 5-5c0-3-3-5-7-5z')}<span>Colours</span></button>
+   <button class="hub-tool" id="padStick" aria-expanded="false" title="Stickers">😀<span>Stickers</span></button>
+   <button class="hub-tool" data-fill aria-pressed="false" title="Fill the shape">${ic('M5 12l7-7 7 7-7 7z')}<span>Fill</span></button>
+   <label class="hub-tool" title="How thick the line is">${ic('M4 8h16M4 13h16M4 17h16')}<input class="hub-size" type="range" min="1" max="40" value="4" data-size aria-label="Brush size"></label>
+   <span class="hub-padspacer"></span>
+   <button class="hub-tool" data-undo title="Undo">${ic('M4 12a8 8 0 1 1 2.4 5.7M4 20v-5h5')}<span>Undo</span></button>
+   <button class="hub-tool" data-clear title="Clear the page">${ic('M6 6l12 12M18 6L6 18')}<span>Clear</span></button>
+   <button class="hub-tool" data-save title="Save as a picture">${ic('M12 4v11M8 11l4 4 4-4M5 20h14')}<span>Save</span></button>
   </div>
-  <div class="hub-stickbar" role="toolbar" aria-label="Stickers">${STICKERS.map(s=>`<button data-sticker="${s}" aria-pressed="false" title="Sticker ${s}">${s}</button>`).join('')}</div>
-  <div class="hub-canvaswrap"><canvas id="hubCanvas" aria-label="Drawing pad"></canvas></div>
+  <div class="hub-canvaswrap">
+   <canvas id="hubCanvas" aria-label="Drawing pad"></canvas>
+   <div class="hub-tray" id="padColorTray" hidden>
+    <div class="hub-trayhead">Every colour<button class="hub-x" data-closetray aria-label="Close">×</button></div>
+    <div class="hub-traygrid colors">${PALETTE.map(c=>`<button data-color="${c}" style="background:${c}" title="${c}" aria-label="Colour ${c}"></button>`).join('')}</div>
+    <label class="hub-custom">Mix your own <input type="color" data-custom value="#ff3ba7" aria-label="Pick any colour"></label>
+   </div>
+   <div class="hub-tray" id="padStickTray" hidden>
+    <div class="hub-trayhead">Stickers<button class="hub-x" data-closetray aria-label="Close">×</button></div>
+    <div class="hub-traygrid stickers">${STICKERS.map(st=>`<button data-sticker="${st}" title="Sticker ${st}">${st}</button>`).join('')}</div>
+   </div>
+  </div>
  </div>`;
 }
 
@@ -477,21 +554,21 @@ function attachPad(panel){
  const wrap=document.createElement('div');wrap.innerHTML=padHtml();const pad=wrap.firstElementChild;panel.appendChild(pad);
 
  const cv=pad.querySelector('#hubCanvas'),ctx=cv.getContext('2d');
- let tool='pen',color='#000000',size=4,fill=false,sticker=null,drawing=false,sx=0,sy=0,snap=null;
+ let tool='pen',color=QUICK[0],size=4,fill=false,sticker=null,drawing=false,sx=0,sy=0,snap=null;
  const undo=[];
- const saved=()=>{try{return localStorage.getItem(DKEY);}catch(e){return null;}};
  const store=()=>{try{localStorage.setItem(DKEY,cv.toDataURL('image/png'));}catch(e){}};
  let storeT=null;const storeSoon=()=>{clearTimeout(storeT);storeT=setTimeout(store,500);};
+ const markColor=()=>{$$('[data-color]',pad).forEach(b=>b.setAttribute('aria-pressed',b.dataset.color===color));};
 
  function fit(){
-  const r=cv.parentNode.getBoundingClientRect();const w=Math.max(200,Math.round(r.width)),h=Math.max(160,Math.round(r.height));
+  const r=cv.parentNode.getBoundingClientRect();const w=Math.max(240,Math.round(r.width)),h=Math.max(200,Math.round(r.height));
   if(cv.width===w&&cv.height===h)return;
-  const old=cv.width?cv.toDataURL():null;cv.width=w;cv.height=h;
-  ctx.lineCap='round';ctx.lineJoin='round';
+  const old=cv.width?cv.toDataURL():null;cv.width=w;cv.height=h;ctx.lineCap='round';ctx.lineJoin='round';
   if(old){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,w,h);im.src=old;}
  }
- function loadSaved(){const d=saved();if(!d)return;const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,cv.width,cv.height);im.src=d;}
- function push(){try{undo.push(cv.toDataURL());if(undo.length>12)undo.shift();}catch(e){}}
+ function loadSaved(){let d=null;try{d=localStorage.getItem(DKEY);}catch(e){}
+  if(!d)return;const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,cv.width,cv.height);im.src=d;}
+ function push(){try{undo.push(cv.toDataURL());if(undo.length>14)undo.shift();}catch(e){}}
  function restore(d){const im=new Image();im.onload=()=>{ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(im,0,0);};im.src=d;}
  const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height];};
 
@@ -505,7 +582,6 @@ function attachPad(panel){
  function arrow(x0,y0,x1,y1){const a=Math.atan2(y1-y0,x1-x0),hd=Math.max(10,size*3);
   ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
   ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x1-hd*Math.cos(a-.4),y1-hd*Math.sin(a-.4));ctx.lineTo(x1-hd*Math.cos(a+.4),y1-hd*Math.sin(a+.4));ctx.closePath();ctx.fillStyle=color;ctx.fill();}
-
  function shape(x0,y0,x1,y1){
   ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=size;ctx.globalAlpha=1;
   const cx=(x0+x1)/2,cy=(y0+y1)/2,R=Math.max(Math.abs(x1-x0),Math.abs(y1-y0))/2;
@@ -522,8 +598,8 @@ function attachPad(panel){
  }
 
  cv.addEventListener('pointerdown',e=>{
-  cv.setPointerCapture(e.pointerId);const [x,y]=pt(e);push();
-  if(sticker){ctx.globalAlpha=1;ctx.font=Math.max(18,size*7)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(sticker,x,y);storeSoon();return;}
+  closeTrays();cv.setPointerCapture(e.pointerId);const [x,y]=pt(e);push();
+  if(sticker){ctx.globalAlpha=1;ctx.font=Math.max(20,size*8)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(sticker,x,y);storeSoon();return;}
   drawing=true;sx=x;sy=y;
   if(tool==='pen'||tool==='marker'||tool==='eraser'){
    ctx.globalCompositeOperation=tool==='eraser'?'destination-out':'source-over';
@@ -536,48 +612,64 @@ function attachPad(panel){
   if(tool==='pen'||tool==='marker'||tool==='eraser'){ctx.lineTo(x,y);ctx.stroke();}
   else{if(snap)ctx.putImageData(snap,0,0);shape(sx,sy,x,y);}
  });
- const end=e=>{if(!drawing)return;drawing=false;ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;snap=null;storeSoon();};
- cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);cv.addEventListener('pointerleave',end);
+ const end=()=>{if(!drawing)return;drawing=false;ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;snap=null;storeSoon();};
+ ['pointerup','pointercancel','pointerleave'].forEach(ev=>cv.addEventListener(ev,end));
+
+ const colorTray=pad.querySelector('#padColorTray'),stickTray=pad.querySelector('#padStickTray');
+ function closeTrays(){colorTray.hidden=true;stickTray.hidden=true;
+  pad.querySelector('#padMore').setAttribute('aria-expanded','false');
+  pad.querySelector('#padStick').setAttribute('aria-expanded','false');}
 
  pad.addEventListener('click',e=>{
-  const t=e.target.closest('[data-tool],[data-color],[data-sticker],[data-fill],[data-undo],[data-clear],[data-save]');
+  if(e.target.closest('[data-closetray]')){closeTrays();return;}
+  const t=e.target.closest('[data-tool],[data-color],[data-sticker],[data-fill],[data-undo],[data-clear],[data-save],#padMore,#padStick');
   if(!t)return;
+  if(t.id==='padMore'){const open=colorTray.hidden;closeTrays();colorTray.hidden=!open;t.setAttribute('aria-expanded',open);return;}
+  if(t.id==='padStick'){const open=stickTray.hidden;closeTrays();stickTray.hidden=!open;t.setAttribute('aria-expanded',open);return;}
   if(t.dataset.tool!==undefined){tool=t.dataset.tool;sticker=null;
    $$('[data-tool]',pad).forEach(b=>b.setAttribute('aria-pressed',b===t));
-   $$('[data-sticker]',pad).forEach(b=>b.setAttribute('aria-pressed','false'));return;}
-  if(t.dataset.color!==undefined){color=t.dataset.color;$$('[data-color]',pad).forEach(b=>b.setAttribute('aria-pressed',b===t));return;}
-  if(t.dataset.sticker!==undefined){const on=t.getAttribute('aria-pressed')==='true';
-   $$('[data-sticker]',pad).forEach(b=>b.setAttribute('aria-pressed','false'));
-   sticker=on?null:t.dataset.sticker;t.setAttribute('aria-pressed',!on);return;}
+   pad.querySelector('#padStick').setAttribute('aria-pressed','false');return;}
+  if(t.dataset.color!==undefined){color=t.dataset.color;markColor();return;}
+  if(t.dataset.sticker!==undefined){sticker=t.dataset.sticker;
+   $$('[data-sticker]',pad).forEach(b=>b.setAttribute('aria-pressed',b===t));
+   pad.querySelector('#padStick').setAttribute('aria-pressed','true');closeTrays();return;}
   if(t.hasAttribute('data-fill')){fill=!fill;t.setAttribute('aria-pressed',fill);return;}
   if(t.hasAttribute('data-undo')){const d=undo.pop();if(d){restore(d);storeSoon();}return;}
   if(t.hasAttribute('data-clear')){push();ctx.clearRect(0,0,cv.width,cv.height);storeSoon();return;}
   if(t.hasAttribute('data-save')){const a=document.createElement('a');a.download='sofia-drawing.png';a.href=cv.toDataURL('image/png');a.click();return;}
  });
  pad.querySelector('[data-size]').addEventListener('input',e=>{size=+e.target.value;});
- pad.querySelector('[data-custom]').addEventListener('input',e=>{color=e.target.value;$$('[data-color]',pad).forEach(b=>b.setAttribute('aria-pressed','false'));});
+ pad.querySelector('[data-custom]').addEventListener('input',e=>{color=e.target.value;markColor();});
 
- let ro=null;
- btn.onclick=()=>{
-  const on=panel.classList.toggle('drawing');
-  pad.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);
-  if(on){requestAnimationFrame(()=>{fit();loadSaved();});
-   if(!ro&&window.ResizeObserver){ro=new ResizeObserver(()=>{if(panel.classList.contains('drawing'))fit();});ro.observe(cv.parentNode);}}
+ /* the pad and the calculator share the window, so opening one puts the other away */
+ const calcBtn=panel.querySelector('#nCalc');
+ let ro=null,syncing=false;
+ const setDraw=on=>{
+  panel.classList.toggle('drawing',on);pad.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);
+  if(on){
+   if(calcBtn&&calcBtn.getAttribute('aria-pressed')==='true'){syncing=true;calcBtn.click();syncing=false;}
+   requestAnimationFrame(()=>{fit();loadSaved();});
+   if(!ro&&window.ResizeObserver){ro=new ResizeObserver(()=>{if(panel.classList.contains('drawing'))fit();});ro.observe(cv.parentNode);}
+  } else closeTrays();
  };
+ btn.onclick=()=>setDraw(!panel.classList.contains('drawing'));
+ if(calcBtn)calcBtn.addEventListener('click',()=>{if(!syncing&&panel.classList.contains('drawing'))setDraw(false);},true);
 }
 H.attachPad=attachPad;
 
-/* a notes panel for pages that have none (the home page) */
+/* ---------------- a notes window for pages that have none of their own ---------------- */
 function makeNotes(){
  if(document.querySelector('.notes'))return document.querySelector('.notes');
  const NK='hub-notes';
- let N=Object.assign({html:'',open:false},read(NK,{}));
+ let N=Object.assign({html:'',open:false,calc:false},read(NK,{}));
  const saveN=()=>write(NK,N);
  const fab=document.createElement('button');fab.className='fab';fab.id='hubNotesFab';fab.title='My notes';fab.setAttribute('aria-label','Open my notes');
  fab.innerHTML='<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M5 3h10l4 4v14H5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 10h8M8 14h8M8 18h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
  const pn=document.createElement('section');pn.className='notes';pn.id='hubNotesPanel';pn.hidden=true;pn.setAttribute('role','dialog');pn.setAttribute('aria-label','My notes');
- pn.innerHTML=`<div class="nhead" id="hubNDrag"><b>My notes</b><span class="tiny" id="hubNStatus">Saved</span><span class="spacer" style="flex:1"></span>
+ pn.innerHTML=`<div class="nhead"><b>My notes</b><span class="tiny" id="hubNStatus">Saved</span><span class="spacer" style="flex:1"></span>
+   <button class="nbtn" id="nCalc" aria-pressed="false" title="Scientific calculator"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2M16 12v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Calculator</button>
    <button class="nbtn" id="nMin" title="Minimise" aria-label="Minimise notes">–</button></div>
+  ${calcHtml()}
   <div class="ntools" role="toolbar" aria-label="Formatting">
    <button data-cmd="bold" title="Bold"><b>B</b></button><button data-cmd="italic" title="Italic"><i>I</i></button><button data-cmd="underline" title="Underline"><u>U</u></button>
    <button data-cmd="h3" title="Heading">H</button><button data-cmd="insertUnorderedList" title="Bullet list">• List</button><button data-cmd="insertOrderedList" title="Numbered list">1. List</button></div>
@@ -592,6 +684,31 @@ function makeNotes(){
   b.onclick=()=>{ed.focus();const c=b.dataset.cmd;
    if(c==='h3'){const cur=document.queryCommandValue('formatBlock').toLowerCase();document.execCommand('formatBlock',false,cur==='h3'?'div':'h3');}
    else document.execCommand(c,false,null);ed.dispatchEvent(new Event('input'));};});
+
+ /* scientific calculator, the same one the Maths Hub uses */
+ const calc=pn.querySelector('#calc'),cb=pn.querySelector('#nCalc');
+ let expr='',ans=0,deg=true,last=null;
+ const showCalc=o=>{N.calc=o;calc.hidden=!o;cb.setAttribute('aria-pressed',o);saveN();};
+ cb.onclick=()=>showCalc(!N.calc);showCalc(!!N.calc);
+ const cExp=()=>pn.querySelector('#cExp'),cRes=()=>pn.querySelector('#cRes');
+ const upd=res=>{cExp().textContent=expr||' ';
+  if(res!=null)cRes().textContent=res;
+  else{try{cRes().textContent=expr?Calc.run(expr,ans,deg):'0';}catch(e){}cRes().style.opacity=.55;}};
+ const doEq=()=>{if(!expr)return;try{const v=Calc.num(expr,ans,deg);const r=Calc.fmt(v);last={expr,r};if(isFinite(v))ans=v;cRes().style.opacity=1;upd(r);expr='';}
+  catch(e){cRes().style.opacity=1;upd('Syntax error');}};
+ calc.addEventListener('click',e=>{
+  const b=e.target.closest('[data-ck]');
+  if(e.target.closest('#cDeg')){deg=!deg;const d=pn.querySelector('#cDeg');d.textContent=deg?'DEG':'RAD';d.setAttribute('aria-pressed',deg);upd();return;}
+  if(e.target.closest('#cIns')){if(!last)return;ed.focus();
+   const sel=getSelection(),r=document.createRange();r.selectNodeContents(ed);r.collapse(false);sel.removeAllRanges();sel.addRange(r);
+   document.execCommand('insertHTML',false,`<div>${esc(last.expr)} = <b>${esc(last.r)}</b></div>`);ed.dispatchEvent(new Event('input'));return;}
+  if(!b)return;const k=b.dataset.ck;
+  if(k==='ac'){expr='';last=null;cRes().style.opacity=1;upd('0');return;}
+  if(k==='del'){expr=expr.replace(/(sin\(|cos\(|tan\(|log\(|ln\(|√\(|∛\(|×10\^\(|Ans|\^\(−1\)|.)$/,'');upd();return;}
+  if(k==='='){doEq();return;}
+  expr+=k;upd();
+ });
+ upd();
  if(N.open)show(true);
  return pn;
 }
@@ -602,7 +719,8 @@ H.makeNotes=makeNotes;
 (function(){
 const H=window.Hub;
 function boot(){
- H.applyTheme();H.applyFont();H.mountControls();
+ H.applyTheme();
+ if(document.getElementById('hubControlsHost')){H.ensureFontLink();H.applyFont();H.mountControls();}
  const own=document.documentElement.getAttribute('data-hub-notes')==='own';
  const existing=document.querySelector('.notes');
  if(existing){H.attachPad(existing);}

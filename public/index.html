@@ -22,13 +22,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 h1,h2,h3{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance}
 p{margin:0}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:12px}
-.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+.wrap{position:relative;z-index:1;width:100%;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .topin{display:flex;align-items:center;gap:12px;padding-block:14px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:21px;min-width:0}
 .brand small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--ink2)}
 .spacer{flex:1}
-.hero{padding:26px 0 8px}
+.hero{padding:34px 0 10px;min-height:min(34vh,300px);display:flex;flex-direction:column;justify-content:center}
 .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--kick);font-weight:800;margin:0}
 .hero h1{font-size:clamp(30px,5.4vw,52px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
 .hero p{color:var(--ink2);max-width:62ch}
@@ -39,7 +39,7 @@ footer{color:var(--ink2);font-size:13px;padding:26px 0 40px}
 <body>
 <header class="top"><div class="wrap"><div class="topin">
   <div class="brand">
-    <svg width="48" height="48" viewBox="0 0 34 34" aria-hidden="true"><ellipse cx="17" cy="18" rx="15" ry="4.5" fill="none" stroke="var(--acc2)" stroke-width="1.8" transform="rotate(-18 17 18)"/><circle cx="17" cy="17" r="7" fill="var(--acc)"/><circle cx="28" cy="9" r="1.6" fill="var(--sun)"/></svg>
+    <span id="brandLogo" class="hub-mark" style="width:52px;height:52px;display:block"></span>
     <div>Sofia Magdy Study Hub<small>Cambridge Lower Secondary · Stage 9</small></div>
   </div>
   <div class="spacer"></div>
@@ -58,12 +58,12 @@ footer{color:var(--ink2);font-size:13px;padding:26px 0 40px}
 
 <script>
 window.HubPage={render(){
- const H=window.Hub,esc=H.esc;
+ const H=window.Hub;if(!H||!H.CURRICULA)return;const esc=H.esc;
  const rows=document.getElementById('homeRows');
  const t=H.today();
  function card(lbl,big,sub,extra,bar){
   return `<div class="hub-card"><span class="lbl">${lbl}</span><div class="big">${big}</div>${sub?`<div class="sub">${sub}</div>`:''}
-   ${extra||''}${bar!=null?`<div class="hbar"><i style="width:${bar}%"></i></div>`:''}</div>`;
+   ${extra||''}${bar!=null?`<div class="hbar"><i style="width:${bar}%"></i></div>`:''}<span class="motif">${H.markSvg(72)}</span></div>`;
  }
  function row(c){
   const sum=H.sumOf(c.id);
@@ -83,16 +83,17 @@ window.HubPage={render(){
       <button class="hub-btn" style="align-self:flex-start;margin-top:6px" data-plan>Build your plan</button></div>`;
   const plan=`<div class="hub-card"><span class="lbl">Today's plan</span><div class="big">${sess.length?sess.length+(sess.length===1?' session':' sessions'):'Nothing today'}</div>${planBody}</div>`;
   const cardEl=c.live
-   ? `<a class="hub-curr" href="${c.href}"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="go">Open <span aria-hidden="true">→</span></span></a>`
-   : `<div class="hub-curr" aria-disabled="true"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="soon">Coming soon</span></div>`;
+   ? `<a class="hub-curr" href="${c.href}"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="go">Open <span aria-hidden="true">→</span></span><span class="motif">${H.markSvg(120)}</span></a>`
+   : `<div class="hub-curr" aria-disabled="true"><span class="ico">${c.icon}</span><h2>${esc(c.name)}</h2><p>${esc(c.blurb)}</p><span class="soon">Coming soon</span><span class="motif">${H.markSvg(120)}</span></div>`;
   return `<div class="hub-row">${cardEl}<div class="hub-sub">${prog}${last}${plan}</div></div>`;
  }
  rows.innerHTML=H.CURRICULA.map(row).join('');
+ const bl=document.getElementById('brandLogo');if(bl)bl.innerHTML=H.logoSvg(52);
  if(!rows.dataset.wired){rows.dataset.wired='1';rows.addEventListener('click',e=>{if(e.target.closest('[data-plan]'))H.openPlan();});}
 }};
 document.addEventListener('hubplan',()=>window.HubPage.render());
-document.addEventListener('hubtheme',()=>{});
+document.addEventListener('hubtheme',()=>window.HubPage.render());
 </script>
-<script src="/assets/sync.js" data-app="/assets/hub.js"></script>
+<script src="/assets/sync.js" data-app="/assets/hub.js" data-also="/assets/hub-art.js"></script>
 </body>
 </html>
