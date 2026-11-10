@@ -63,7 +63,9 @@
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') flush(true); });
   window.addEventListener('online', function () { flush(); });
 
+  var ALSO = (me && me.getAttribute('data-also') || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
   function start() {
+    ALSO.forEach(function (src) { var e = document.createElement('script'); e.src = src; document.body.appendChild(e); });
     if (!APP) return;
     var s = document.createElement('script'); s.src = APP; document.body.appendChild(s);
   }

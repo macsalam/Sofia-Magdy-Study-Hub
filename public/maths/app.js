@@ -3373,3 +3373,36 @@ document.addEventListener('change',e=>{if(e.target.id==='wSound'){WAL.sound=e.ta
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='rvTT')$('#rvTTgo').click();});
 wNormalize();Object.keys(CHAPTERS_DATA).forEach(u=>wCheckUnit(u,true));rvSync();
 useChapter(S.ch??1);if(!['chapter','later','stickers','times','review','wallet','papers'].includes(S.view))S.view='chapter';render();enterAnim();
+
+/* =================== STUDY HUB BRIDGE ===================
+   Publishes this hub's chapter/topic index and progress summary so the
+   Study Hub home page and the shared Build Your Plan calendar can use them. */
+(function hubBridge(){
+ try{
+  const chapters=[];
+  (typeof BOOK_CHAPTERS!=='undefined'?BOOK_CHAPTERS:[]).forEach(c=>chapters.push({n:c[0],title:c[1],topics:[]}));
+  Object.keys(CHAPTERS_DATA).map(Number).forEach(n=>{
+   const D=CHAPTERS_DATA[n];let row=chapters.find(c=>c.n===n);
+   if(!row){row={n,title:D.title,topics:[]};chapters.push(row);}
+   row.title=D.title;row.topics=D.topics.map(t=>({id:t.id,title:t.title}));
+  });
+  chapters.sort((a,b)=>a.n-b.n);
+  localStorage.setItem('hub-idx-math',JSON.stringify({chapters}));
+ }catch(e){}
+ function publish(){
+  try{
+   const st=allSteps(),done=st.filter(s=>S.done[s.key]).length;
+   const ch=S.ch||1,D=CHAPTERS_DATA[ch];
+   const sec=(S.sec&&S.sec[ch])||'';
+   const tp=D&&D.topics.find(t=>t.id===sec);
+   const prev=JSON.parse(localStorage.getItem('hub-sum-math')||'{}');
+   const z=n=>String(n).padStart(2,'0'),d=new Date();
+   localStorage.setItem('hub-sum-math',JSON.stringify({
+    total:st.length,done,pct:st.length?Math.round(done/st.length*100):0,
+    last:{label:'Chapter '+ch+(tp?' · '+tp.title:(D?' · '+D.title:'')),ch},
+    lastAt:done!==prev.done||!prev.lastAt?`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`:prev.lastAt}));
+  }catch(e){}
+ }
+ const inner=save;save=function(){inner.apply(this,arguments);publish();};
+ publish();
+})();

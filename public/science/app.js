@@ -3887,3 +3887,35 @@ document.addEventListener('change',e=>{const t=e.target;if(t.dataset.cl){S.cl[t.
 wNormalize();Object.keys(CHAPTERS_DATA).forEach(u=>wCheckUnit(u,true));rvSync();useChapter(S.ch||1);
 if(!['chapter','later','stickers','review','wallet','papers'].includes(S.view))S.view='chapter';
 render();enterAnim();
+
+/* =================== STUDY HUB BRIDGE ===================
+   Publishes this hub's chapter/topic index and progress summary so the
+   Study Hub home page and the shared Build Your Plan calendar can use them. */
+(function hubBridge(){
+ try{
+  const chapters=[];
+  (typeof CHAPTERS!=='undefined'?CHAPTERS:[]).forEach(c=>chapters.push({n:c[0],title:c[1],topics:[]}));
+  Object.keys(CHAPTERS_DATA).map(Number).forEach(n=>{
+   const D=CHAPTERS_DATA[n];let row=chapters.find(c=>c.n===n);
+   if(!row){row={n,title:D.title,topics:[]};chapters.push(row);}
+   row.title=D.title;row.topics=D.topics.map(t=>({id:t.id,title:t.title}));
+  });
+  chapters.sort((a,b)=>a.n-b.n);
+  localStorage.setItem('hub-idx-sci',JSON.stringify({chapters}));
+ }catch(e){}
+ function publish(){
+  try{
+   const st=allSteps(),done=st.filter(s=>S.checks[s.key]!=null).length;
+   const ch=S.ch||1,sec=(S.sec&&S.sec[ch])||'';
+   const label=(typeof secLabel==='function'&&secLabel(ch,sec))||'';
+   const prev=JSON.parse(localStorage.getItem('hub-sum-sci')||'{}');
+   const z=n=>String(n).padStart(2,'0'),d=new Date();
+   localStorage.setItem('hub-sum-sci',JSON.stringify({
+    total:st.length,done,pct:st.length?Math.round(done/st.length*100):0,
+    last:{label:'Chapter '+ch+(label?' · '+label:''),ch},
+    lastAt:done!==prev.done||!prev.lastAt?`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`:prev.lastAt}));
+  }catch(e){}
+ }
+ const inner=save;save=function(){inner.apply(this,arguments);publish();};
+ publish();
+})();
