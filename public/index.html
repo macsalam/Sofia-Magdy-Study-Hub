@@ -23,8 +23,8 @@ h1,h2,h3{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance}
 p{margin:0}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:12px}
 .wrap{position:relative;z-index:1;width:100%;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-header.top{position:sticky;top:0;z-index:120;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.topin{display:flex;align-items:center;gap:12px;padding-block:14px;flex-wrap:wrap}
+header.top{position:relative;z-index:100;background:transparent}
+.topin{display:flex;align-items:center;gap:14px;padding-block:18px 6px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:14px;font-family:var(--display);font-weight:800;font-size:23px;min-width:0;line-height:1.15}
 .brand small{display:block;font-family:var(--body);font-weight:600;font-size:14px;color:var(--ink2);margin-top:3px}
 .spacer{flex:1}

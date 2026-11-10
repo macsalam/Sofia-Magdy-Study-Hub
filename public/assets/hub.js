@@ -264,33 +264,40 @@ H.closeMenus=closeMenus;
 
 function controlsHtml(){
  const t=H.theme(),dark=H.prefs.mode==='dark';
+ const sun='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/>'+[0,1,2,3,4,5,6,7].map(i=>`<circle cx="${(12+Math.cos(i*Math.PI/4)*9).toFixed(1)}" cy="${(12+Math.sin(i*Math.PI/4)*9).toFixed(1)}" r="1.5" fill="currentColor"/>`).join('')+'</svg>';
+ const moon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg>';
+ const lab=dark?'Switch to light mode':'Switch to dark mode';
  return `<div class="hub-controls" id="hubControls">
-  <button class="hub-btn cta" id="hubPlanBtn" title="Build your study plan">${ICONS.plan}<span class="lbl">Build Your Plan</span></button>
-  <button class="hub-btn icon" id="hubModeBtn" aria-pressed="${dark}" title="${dark?'Switch to light mode':'Switch to dark mode'}" aria-label="${dark?'Switch to light mode':'Switch to dark mode'}">${dark?ICONS.sun:ICONS.moon}</button>
-  <div class="hub-dd"><button class="hub-btn" id="hubFontBtn" aria-expanded="false" aria-haspopup="true" title="Choose a font">Aa<span class="lbl">Font</span>${CHEV}</button>
-   <div class="hub-menu" id="hubFontMenu" hidden></div></div>
-  <div class="hub-dd"><button class="hub-btn" id="hubThemeBtn" aria-expanded="false" aria-haspopup="true" title="Choose a theme"><span class="hub-sw" style="background:${t.sw[1]}"></span><span class="lbl">Theme</span>${CHEV}</button>
-   <div class="hub-menu" id="hubThemeMenu" hidden></div></div>
+  <button class="hub-btn acc tb" id="hubPlanBtn" title="Build your study plan"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Build your plan</button>
+  <button class="hub-round" id="hubModeBtn" aria-label="${lab}" title="${lab}">${dark?sun:moon}</button>
+  <div class="hub-dd"><button class="hub-round" id="hubFontBtn" aria-label="Choose a font" title="Choose a font" aria-expanded="false"><span style="font-weight:800;font-size:16px">Aa</span></button>
+   <div class="hub-menu right" id="hubFontMenu" hidden></div></div>
+  <div class="hub-dd"><button class="hub-round" id="hubThemeBtn" aria-label="Choose a theme" title="Choose a theme" aria-expanded="false"><span class="hub-swatch" style="background:conic-gradient(${t.sw.map((c,k)=>`${c} 0 ${(k+1)*20}%`).join(',')})"></span></button>
+   <div class="hub-menu right" id="hubThemeMenu" hidden></div></div>
  </div>`;
 }
 function fontMenuHtml(){
  return `<div class="hub-sec">Font</div>`+H.FONTS.map((f,i)=>
-  `<button class="hub-opt" data-font="${i}" aria-pressed="${(H.prefs.font||0)===i}"><span class="t">
-   <span class="fname" style="font-family:'${f[1]}'">${esc(f[0])}</span>
-   <span class="s" style="font-family:'${f[2]}'">${esc(f[1])}${f[2]!==f[1]?' + '+esc(f[2]):''}</span></span></button>`).join('');
+  `<button class="hub-fontopt" data-font="${i}" aria-pressed="${(H.prefs.font||0)===i}">
+   <span style="font-family:'${f[1]}';font-weight:700;font-size:17px">${esc(f[0])}</span>
+   <span class="hub-tiny" style="font-family:'${f[2]}'">${esc(f[1])}${f[2]!==f[1]?' + '+esc(f[2]):''}</span></button>`).join('');
 }
 function themeMenuHtml(){
- return `<div class="hub-sec">Theme</div>`+H.THEMES.map(t=>
-  `<button class="hub-opt" data-theme="${t.id}" aria-pressed="${H.prefs.theme===t.id}">
-   <span class="hub-chips">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span>
-   <span class="t"><span class="fname">${esc(t.name)}</span><span class="s">${esc(t.desc)}</span></span></button>`).join('');
+ const A=window.HubArt&&window.HubArt.ART;
+ return `<div class="hub-sec">Theme</div>`+H.THEMES.map(t=>{
+  const lg=A&&A[t.id]&&A[t.id].logo;
+  const icon=lg?`<svg viewBox="${lg[0]}" aria-hidden="true">${lg[1]}</svg>`
+   :`<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="${t.sw[1]}"/></svg>`;
+  return `<button class="hub-themeopt" data-theme="${t.id}" aria-pressed="${H.prefs.theme===t.id}">${icon}<span>${esc(t.name)}<br><span class="hub-tiny">${esc(t.desc)}</span></span></button>`;}).join('');
 }
 function refreshControls(){
  const host=$('#hubControls');if(!host)return;
  const t=H.theme(),dark=H.prefs.mode==='dark',mb=$('#hubModeBtn');
- if(mb){mb.innerHTML=dark?ICONS.sun:ICONS.moon;mb.setAttribute('aria-pressed',dark);
+ if(mb){const host=$('#hubControlsHost')||mb.parentNode;
+  const frag=document.createElement('div');frag.innerHTML=controlsHtml();
+  const fresh=frag.querySelector('#hubModeBtn');mb.innerHTML=fresh.innerHTML;
   const lab=dark?'Switch to light mode':'Switch to dark mode';mb.title=lab;mb.setAttribute('aria-label',lab);}
- const sw=$('#hubThemeBtn .hub-sw');if(sw)sw.style.background=t.sw[1];
+ const sw=$('#hubThemeBtn .hub-swatch');if(sw)sw.style.background=`conic-gradient(${t.sw.map((c,k)=>`${c} 0 ${(k+1)*20}%`).join(',')})`;
  const fm=$('#hubFontMenu');if(fm&&!fm.hidden)fm.innerHTML=fontMenuHtml();
  const tm=$('#hubThemeMenu');if(tm&&!tm.hidden)tm.innerHTML=themeMenuHtml();
 }
