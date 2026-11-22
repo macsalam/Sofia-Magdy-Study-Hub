@@ -3174,13 +3174,365 @@ function initWidgets6(){
 }
 
 /* =================== CHAPTER REGISTRY =================== */
+/* =================== CHAPTER 7: GENES AND INHERITANCE =================== */
+const KEYWORDS7=[
+ {id:'chromosomes',t:'chromosomes',topic:'7.1',d:'Long threads in the nucleus of every cell. They are made of DNA and contain genes. Human cells have 46: two of each kind.'},
+ {id:'genes',t:'genes',topic:'7.1',d:'Parts of a chromosome, arranged in a sequence along it. Each gene helps to control a particular characteristic of the organism.'},
+ {id:'DNA',t:'DNA',topic:'7.1',d:'The chemical that chromosomes (and so genes) are made of. Its molecule is shaped like a twisted ladder, a double helix. It holds the instructions to make a cell and a whole organism.'},
+ {id:'gametes',t:'gametes',topic:'7.2',d:'Specialised sex cells. The sperm cell is the male gamete and the egg cell is the female gamete. In humans each contains 23 chromosomes.'},
+ {id:'sperm cell',t:'sperm cell',topic:'7.2',d:'The male gamete. Very small and very active, with a tail for swimming and a nucleus containing 23 chromosomes.'},
+ {id:'egg cell',t:'egg cell',topic:'7.2',d:'The female gamete. Much bigger than a sperm cell (about the size of a full stop), with cytoplasm containing food reserves and a nucleus containing 23 chromosomes.'},
+ {id:'fertilisation',t:'fertilisation',topic:'7.2',d:'The joining of a sperm cell with an egg cell. Their nuclei fuse, so the new cell has two sets of chromosomes (46 in humans).'},
+ {id:'zygote',t:'zygote',topic:'7.2',d:'The new cell formed at fertilisation. It divides over and over again to produce all the cells of the body.'},
+ {id:'sex chromosomes',t:'sex chromosomes',topic:'7.2',d:'The chromosomes that determine whether a person is male or female: the X and Y chromosomes.'},
+ {id:'X chromosomes',t:'X chromosomes',topic:'7.2',d:'A sex chromosome. A person with two X chromosomes (XX) is female. Every egg cell contains one X chromosome.'},
+ {id:'Y chromosomes',t:'Y chromosomes',topic:'7.2',d:'A sex chromosome, much smaller than the X. A person with one X and one Y (XY) is male. Half of sperm cells contain a Y.'},
+ {id:'inheritance',t:'inheritance',topic:'7.2',d:'Passing on DNA, as chromosomes containing genes, from parents to their offspring.'},
+ {id:'sex inheritance',t:'sex inheritance',topic:'7.2',d:'How a baby\'s sex is determined by inheriting X or Y chromosomes from its parents.'},
+ {id:'variation',t:'variation',topic:'7.3',d:'The differences between individuals that belong to the same species.'},
+ {id:'genetic differences',t:'genetic differences',topic:'7.3',d:'Differences in the DNA of organisms within a species. "Genetic" means to do with genes.'},
+ {id:'natural selection',t:'natural selection',topic:'7.4',d:'The process in which individuals with advantageous features are more likely to survive and reproduce, so the genes for those features become more common over many generations.'},
+ {id:'advantageous feature',t:'advantageous feature',topic:'7.4',d:'A feature that makes an individual more likely to survive than individuals without it, such as a long neck when only high leaves are left.'},
+ {id:'resistant',t:'resistant',topic:'7.4',d:'Not killed or affected by something. Bacteria that are resistant to an antibiotic are not killed by it.'}
+];
+
+const TOPICS7=[
+{
+ id:'7.1',title:'Chromosomes, genes and DNA',pages:'243–246',
+ goals:['Learn that chromosomes contain genes.','Find out what genes and chromosomes are made of.'],
+ hook:{q:'Atoms and cells both contain a nucleus. Why do you think these very different structures have the same name? Which one is larger? What does the nucleus of a cell do?',a:'Both are the central part of their structure, so they share the name. A cell is far larger than an atom, so a cell nucleus is much larger than an atom\'s nucleus. From Stage 7: the nucleus of a cell controls the cell\'s activities.'},
+ big:'The nucleus contains chromosomes. Each chromosome is one long molecule of DNA, and it carries hundreds of genes. Genes help to decide an organism\'s characteristics.',
+ steps:[
+  {t:'Chromosomes',body:`<p>The nucleus of every cell contains threads called <span class="kw">chromosomes</span>. They were discovered in the nineteenth century, once microscopes became powerful enough.</p>
+   <p>You can only see chromosomes with a light microscope when a cell is <b>dividing</b>, and even then they must be coloured with special <b>stains</b>. Fruit flies have especially thick "giant chromosomes" that are much easier to see.</p>
+   <table class="dt"><tr><th>Organism</th><th>Human</th><th>Fruit fly</th><th>Mango tree</th></tr><tr><td>Chromosomes per cell</td><td>46</td><td>8</td><td>40</td></tr></table>
+   <p>We have <b>two of each kind</b> of chromosome. Scientists number them by length: chromosome 1 is the longest, then chromosome 2, and so on. The famous picture of all human chromosomes in size order is made by cutting and pasting photos; the chromosomes do not really line up like that. Each looks like a cross because, just before a cell divides, every chromosome copies itself and the two copies stay joined.</p>
+   <p class="note">Pick an organism to see its chromosomes arranged in pairs.</p>`,
+   extra:'karyo7',
+   check:C('Why can we not usually see chromosomes in a cell, even with a microscope?',['They are only present in dividing cells','They only become visible when the cell is dividing, and need special stains','They are made of glass','They are outside the nucleus'],1,'Chromosomes are always in the nucleus, but they only become visible when the cell is dividing and they are stained.')},
+  {t:'Genes',body:`<p>Each chromosome is made up of hundreds of different <span class="kw">genes</span>, arranged in a particular sequence along the chromosome. Each gene helps to control a particular characteristic of the organism.</p>
+   <p>For example, two genes on <b>chromosome 15</b> help to determine eye colour. Everyone has these genes in the same place on their chromosome 15s, but there are <b>different versions</b> of the genes: one version gives blue eyes, another gives brown eyes. That is why two sisters can have different eye colours.</p>
+   <p class="note">Tap a stripe (gene) on the model chromosome. The stripes stand for different genes.</p>`,
+   extra:'genes7',
+   check:C('All fruit flies have a gene for wing shape in the same place on chromosome 2, but some have normal wings and some have tiny wings. What explains this?',['Some flies have no chromosome 2','They have different versions of the wing-shape gene','Tiny wings are caused by the stain','The gene moves to another chromosome'],1,'The gene is in the same place, but there are different versions of it.')},
+  {t:'DNA',body:`<p>Chromosomes are made of a chemical called <span class="kw">DNA</span>. Each chromosome is one enormously long molecule of DNA, so genes are made of DNA too.</p>
+   <p>A DNA molecule is shaped like a <b>twisted ladder</b>, called a <b>double helix</b>. One gene could be a length of DNA with about 2500 twists. DNA molecules are far too small to see with microscopes.</p>
+   <p>The DNA in a cell decides what the cell does. It contains a complete set of instructions to make a working cell, and a whole organism.</p>
+   <p class="note">Zoom from the cell down to the double helix.</p>`,
+   extra:'zoom7',
+   check:C('Which list goes from largest to smallest?',['Gene → chromosome → nucleus → cell','Cell → nucleus → chromosome → gene','Nucleus → cell → gene → chromosome','Chromosome → cell → gene → nucleus'],1,'A cell contains a nucleus, the nucleus contains chromosomes, and each chromosome contains many genes.')}
+ ],
+ mistakes:[
+  ['A chromosome and a gene are the same thing.','A chromosome is a long thread of DNA; a gene is a small part of a chromosome. Each chromosome carries hundreds of genes.'],
+  ['Chromosomes are only in a cell while it divides.','They are always in the nucleus; they just only become visible when the cell divides and is stained.'],
+  ['Everyone with brown eyes has different eye-colour genes in a different place.','Everyone has the eye-colour genes in the same place on chromosome 15; people have different versions of them.']
+ ],
+ bq:[
+  {p:'p. 245',q:'Explain why we cannot usually see the chromosomes in a cell, even using a microscope.',a:'Chromosomes only become visible with a light microscope when a cell is dividing, and they have to be coloured with special stains.'},
+  {p:'p. 245',q:'Red blood cells do not contain a nucleus. Do you think they contain any chromosomes? Explain.',a:'Reasoning from the book: chromosomes are found in the nucleus, so a cell with no nucleus should contain no chromosomes.'},
+  {p:'p. 246',q:'Explain the difference between a chromosome and a gene.',a:'A chromosome is a long thread in the nucleus, made of one long molecule of DNA. A gene is one part of a chromosome; each chromosome has hundreds of genes, each helping to control one characteristic.'},
+  {p:'p. 246',q:'All fruit flies have a gene for wing shape in the same place on chromosome 2. Some have normal wings and some have tiny wings. What can explain this?',a:'There are different versions of the wing-shape gene. Flies with one version have normal wings; flies with another version have tiny wings (like the blue and brown versions of the eye-colour genes).'}
+ ],
+ checklist:['I can explain that chromosomes are made of DNA.','I can explain that each chromosome contains many genes.','I can explain that genes help to determine an organism\'s characteristics.']
+},
+{
+ id:'7.2',title:'Gametes and inheritance',pages:'247–252',
+ goals:['Learn what a gamete is.','Find out the similarities and differences between male and female gametes.','Find out what happens at fertilisation.','Find out what determines whether a baby is a boy or a girl.'],
+ hook:{q:'All cells share similar features, but most are specialised. How many kinds of animal cell can you name? What features do they all share?',a:'Use your Stage 7 notes on specialised cells for your list. The gametes in this topic share features with other animal cells, such as a cell surface membrane, cytoplasm and a nucleus, but each is specialised for its job.'},
+ big:'Gametes have one set of chromosomes (23 in humans). At fertilisation a sperm and an egg fuse to make a zygote with two sets (46). XX is female, XY is male, and the sperm decides which.',
+ steps:[
+  {t:'Sperm and egg cells',body:`<p>Every human began life as a single cell, made when a <span class="kw">sperm cell</span> joined with an <span class="kw">egg cell</span>. These specialised cells are called <span class="kw">gametes</span>: the sperm is the male gamete and the egg is the female gamete.</p>
+   <table class="dt"><tr><th></th><th>Sperm cell</th><th>Egg cell</th></tr>
+   <tr><td>Size</td><td>Very small</td><td>Much bigger, about the size of a full stop</td></tr>
+   <tr><td>Movement</td><td>Very active; tail makes swimming movements</td><td>Does not swim</td></tr>
+   <tr><td>Cytoplasm</td><td>Small amount</td><td>Contains food reserves</td></tr>
+   <tr><td>Nucleus</td><td>23 chromosomes</td><td>23 chromosomes</td></tr>
+   <tr><td>Membrane</td><td>Cell surface membrane</td><td>Cell surface membrane</td></tr></table>
+   <p class="note">Tap the labels on each gamete.</p>`,
+   extra:'gametes7',
+   check:C('Which statement is true for both sperm cells and egg cells in humans?',['They can swim','They contain food reserves','They contain 23 chromosomes','They are the same size'],2,'Both gametes have a nucleus with one set of 23 chromosomes.')},
+  {t:'Fertilisation',body:`<p>Body cells have <b>46</b> chromosomes (two sets of 23). Gametes have only <b>23</b> (one set). When a sperm cell joins with an egg cell, the head of the sperm enters the egg and the two nuclei <b>fuse</b>. This is <span class="kw">fertilisation</span>.</p>
+   <p>The new cell has two sets of chromosomes again: 23 + 23 = 46. It is called a <span class="kw">zygote</span>. It divides over and over again, eventually producing all the millions of cells in a human body. One set of chromosomes came from the mother and one from the father.</p>`,
+   extra:'fert7',
+   check:C('A human zygote contains…',['23 chromosomes, all from the mother','46 chromosomes: 23 from each parent','92 chromosomes','46 chromosomes, all from the father'],1,'23 from the sperm + 23 from the egg = 46.')},
+  {t:'Boy or girl?',body:`<p>One pair of chromosomes are the <span class="kw">sex chromosomes</span>. A female has two <span class="kw">X chromosomes</span> (XX). A male has one X and one much smaller <span class="kw">Y chromosome</span> (XY).</p>
+   <ul><li>All egg cells contain one X chromosome.</li><li>Sperm cells contain <b>either</b> one X <b>or</b> one Y chromosome; half carry X and half carry Y.</li><li>X sperm + egg → XX zygote → girl. Y sperm + egg → XY zygote → boy.</li></ul>
+   <p>The chance of each is about equal, which is why roughly equal numbers of boys and girls are born. Passing on DNA from parents to offspring is <span class="kw">inheritance</span>; inheriting X or Y in this way is <span class="kw">sex inheritance</span>.</p>
+   <p class="note">This is the book's Activity 7.2.1 model: 30 "eggs" (all X) and 30 "sperm" (15 X, 15 Y). Draw one from each pot.</p>`,
+   extra:'sexPots7',
+   check:C('Which cell decides whether the baby is a boy or a girl?',['The egg, because it carries X or Y','The sperm, because it carries either X or Y','Both equally','Neither; it is chance in the zygote'],1,'Every egg carries an X, so the sperm (X or Y) decides.')}
+ ],
+ mistakes:[
+  ['Gametes have 46 chromosomes.','Human gametes have 23 (one set). The zygote has 46.'],
+  ['The mother decides the sex of the baby.','Every egg carries an X. The sperm carries X or Y, so it decides.'],
+  ['The X and Y chromosomes are the same size.','The Y chromosome is much smaller than the X.']
+ ],
+ bq:[
+  {p:'p. 249',q:'What is a gamete?',a:'A specialised sex cell. The sperm cell is the male gamete and the egg cell is the female gamete.'},
+  {p:'p. 249',q:'Make a table comparing a sperm cell and an egg cell, with at least three differences.',a:'From pages 248–249: the sperm is very small, the egg is much bigger (about a full stop); the sperm has a tail and swims, the egg does not swim; the sperm has little cytoplasm, the egg\'s cytoplasm contains food reserves. (Both have a cell surface membrane and a nucleus with 23 chromosomes.)'},
+  {p:'p. 252',q:'Activity 7.2.1: from your results, what can you say about the chance of a baby being a boy or a girl?',a:'Use your own results. The model is built so that half of the sperm carry X and half carry Y, so you should get roughly equal numbers of XX and XY zygotes: about an equal chance.'},
+  {p:'p. 252',q:'Is it correct to say that the sex of a baby is determined by its father, not its mother? Explain.',a:'Yes. All egg cells contain an X chromosome, so the mother always passes on an X. Sperm contain either X or Y, so it is the sperm from the father that decides: X gives a girl (XX), Y gives a boy (XY).'},
+  {p:'p. 252',q:'Explain, in your own words, why the numbers of boy and girl babies born each year are approximately equal.',a:'Half of sperm cells carry an X and half carry a Y, so an egg is about equally likely to be fertilised by either. About half the zygotes are XX and half XY.'}
+ ],
+ checklist:['I can explain what a gamete is, and describe the male and female gametes of humans.','I can explain that fertilisation is the fusion of a male and female gamete.','I can describe how sex is inherited in humans, in terms of X and Y chromosomes.']
+},
+{
+ id:'7.3',title:'Variation',pages:'253–260',
+ goals:['Learn what is meant by variation.','Think about how genes help to produce variation.','Investigate and record some examples of variation.'],
+ hook:{q:'In Stage 7 you learnt what a species is. Complete the sentence "A species is ……" with some useful scientific information.',a:'Use your Stage 7 notes for the full definition. In this topic, the important idea is that individuals of the same species are still all slightly different from each other.'},
+ big:'Individuals of the same species differ: this is variation. Some variation is caused by genes (genetic differences), some by the environment, and some by both.',
+ steps:[
+  {t:'Variation within a species',body:`<p>Different species usually look very different, like horses and donkeys, or lions and tigers. But individuals of the <b>same</b> species differ too: you and your classmates are one species, yet you are all different.</p>
+   <p>The differences between individuals belonging to the same species are called <span class="kw">variation</span>.</p>
+   <p>In Activity 7.3.1 you choose four or five features that vary in your class (at least one you must measure, such as height or shoe size) and record them for at least eight people.</p>`,
+   check:C('Which is an example of variation?',['A horse and a donkey look different','Goats of the same species have different coat colours','A lion and a tiger have different stripes','A fruit fly has 8 chromosomes'],1,'Variation is about differences within one species.')},
+  {t:'Bar charts and tally charts',body:`<p>Kidney vetch flowers can be one of five colours. Zara counted the plants of each colour in a small area of a field, using <b>tally strokes</b> (the fifth stroke goes across the first four).</p>
+   <table class="dt"><tr><th>Colour</th><th>Red</th><th>Pink</th><th>Orange</th><th>Yellow</th><th>Cream</th></tr><tr><td>Number of plants</td><td>5</td><td>2</td><td>3</td><td>9</td><td>3</td></tr></table>
+   <p>Data that fall into clear categories like this are shown in a <b>bar chart</b>, with gaps between the bars.</p>
+   <p class="note">Tap a bar to see its tally.</p>`,
+   extra:'vetch7',
+   check:C('How many kidney vetch plants did Zara find altogether?',['9','19','22','25'],2,'5 + 2 + 3 + 9 + 3 = 22.')},
+  {t:'Median, mode and mean',body:`<p>In the book's leaf investigation you collect at least 20 leaves from one tree species and count the <b>leaflets</b> on each one. Then you work out:</p>
+   <ul><li><b>Median</b>: the middle value when the numbers are in order.</li><li><b>Mode</b>: the most common value.</li><li><b>Mean</b>: add up all the values and divide by how many there are.</li></ul>
+   <p class="note">Practise on any numbers: type them in or use the example, and the calculator shows each working step.</p>`,
+   extra:'stats7',
+   check:C('For 11, 15, 12, 11, 13, what is the mode?',['11','12','12.4','15'],0,'11 appears twice, more than any other value.')},
+  {t:'Genes and variation',body:`<p>Each goat began when a sperm fertilised an egg. Goat gametes carry genes affecting horns, and there are several versions of these genes with slightly different DNA: long horns, short horns, maybe no horns; curved or straight. The same is true for height, coat colour, tail shape and more.</p>
+   <p>Different gametes carry different versions. At fertilisation the zygote gets a <b>new combination of DNA</b>, not exactly the same as its parents or its brothers and sisters. Differences in DNA within a species are called <span class="kw">genetic differences</span>.</p>
+   <p class="note">Make offspring from two parent goats and see the new combinations.</p>`,
+   extra:'goats7',
+   check:C('Why are brothers and sisters not identical (unless twins from one zygote)?',['They have different numbers of chromosomes','Each zygote gets a new combination of DNA from different gametes','Only the father\'s genes are used','The environment changes their DNA'],1,'Different gametes carry different versions of genes.')},
+  {t:'Genes, environment, or both?',body:`<p>DNA is not the only cause of variation. The <b>environment</b> affects organisms too.</p>
+   <ul><li>Goat coat colour is determined by DNA (genetic differences).</li><li>Goat size may be affected by DNA, but also by the environment: a goat that eats more grows fatter, and that is not caused by its genes.</li></ul>
+   <p>Some data, like wrist circumference, don't fall into definite categories, so you choose groups with equal ranges (8.0–8.9 cm, 9.0–9.9 cm…) and draw a <b>frequency diagram</b> with the bars touching.</p>
+   <p class="note">Sort each example using what the book says about it.</p>`,
+   extra:'cause7',
+   check:C('A goat that eats more food grows heavier. This variation is caused by…',['Genes only','The environment','Its chromosomes','Natural selection'],1,'The book says this is not caused by its genes.')}
+ ],
+ mistakes:[
+  ['All variation is caused by genes.','Some is caused by genes, some by the environment, and some by both.'],
+  ['Measured data like wrist size go in a bar chart with gaps.','Use groups with equal ranges and a frequency diagram with touching bars.'],
+  ['Mode, median and mean are the same thing.','Mode = most common, median = middle value in order, mean = total ÷ number of values.']
+ ],
+ bq:[
+  {p:'p. 254',q:'The goats all belong to the same species. What similarities and what differences can you see between them?',a:'Look at the photograph on page 254 and describe what you see; similar body shape is a similarity, while things like coat colour and horns can differ. Differences between individuals of one species are variation.'},
+  {p:'p. 256',q:'How many plants did Zara find? Which was the most common colour? Which shows the results more clearly, the table or the bar chart?',a:'22 plants (5 + 2 + 3 + 9 + 3). Yellow was the most common (9). The last part is your opinion; many people find the bar chart clearer because you can compare bar heights at a glance.'},
+  {p:'p. 257',q:'Leaf investigation: find the median, the mode and the mean of the number of leaflets. Were there differences between leaves of the same tree? Could genes have caused them?',a:'Use your own data. Reasoning: leaves on one tree all came from the same zygote, so they share the same DNA; differences between them are therefore likely to be caused by the environment (such as light), not by genes.'},
+  {p:'p. 258',q:'For each feature in your Activity 7.3.1 results, suggest whether differences are caused by genes only, the environment only, or both.',a:'Use your own features. Reason like the book: features set by DNA (like goat coat colour) are genetic; features also affected by things like food (like body mass) are genes and environment.'}
+ ],
+ checklist:['I can explain what is meant by variation.','I can describe some examples of variation affected by genes.','I can explain that when two gametes fuse, they produce a fertilised egg with a new combination of DNA.','I can measure and record some examples of variation, and display them in bar charts or frequency diagrams.']
+},
+{
+ id:'7.4',title:'Natural selection',pages:'261–266',
+ goals:['Learn about the scientific theory of natural selection.','Find out about some examples of natural selection in action.'],
+ hook:{q:'The waxy monkey leaf frog lives in a hot, humid rainforest and has many predators. Suggest how it is adapted to survive.',a:'Look at the photograph on page 261. Suggestions should link a feature you can see (such as its colour matching leaves) to how it helps the frog survive in its environment.'},
+ big:'There is variation, partly caused by genes. Individuals with advantageous features survive and reproduce more, so the genes for those features become more common over many generations. This is natural selection.',
+ steps:[
+  {t:'A story about long necks',body:`<p>The book tells an imaginary story. Long ago, a herbivore on the African plains ate leaves from trees. There was <b>genetic variation</b>: some had genes for long necks, some for shorter necks.</p>
+   <p>In some years the rains did not come. When the lower leaves were eaten, only long-necked animals could reach food, and most short-necked animals starved. Only the survivors reproduced, so only their genes passed on, and most offspring had long necks.</p>
+   <p>This might be how giraffes came to have long necks. We do not know if this is what happened, and never really can, but the theory helps explain how almost every species is so well adapted.</p>
+   <p class="note">Step through the four panels.</p>`,
+   extra:'necks7',
+   check:C('In the story, why did long necks become more common?',['Animals stretched their necks and passed this on','Long-necked animals survived and passed on their genes','The rain made necks grow','Short-necked animals moved away'],1,'Only the survivors reproduced, so their genes were passed on.')},
+  {t:'The five points of natural selection',body:`<ol><li>In every species, there is <b>variation</b> among individuals.</li><li>Some of this variation is caused by differences in their <b>genes</b>.</li><li>Some individuals have features that make them more likely to survive than others.</li><li>Individuals with these <span class="kw">advantageous features</span> are more likely to reproduce and pass on the genes for those features to their offspring.</li><li>Over many generations, the genes for advantageous features get a little more common, and less useful genes get a little less common.</li></ol>
+   <p>This process is <span class="kw">natural selection</span>. It causes genetic changes over time.</p>
+   <p class="note">Put the five points in order.</p>`,
+   extra:'order7',
+   check:C('Which point comes first in the theory?',['Advantageous genes become more common','In every species there is variation','Individuals reproduce','Some individuals survive'],1,'Natural selection needs variation to work on.')},
+  {t:'Bacteria and antibiotics',body:`<p>Antibiotics are medicinal drugs that cure diseases caused by bacteria. Doctors find some antibiotics no longer work, because bacteria have become <span class="kw">resistant</span> to them.</p>
+   <ol><li>In a population of bacteria, not every one is alike. By chance, one may have a gene that makes it resistant.</li><li>An antibiotic is added and kills the bacteria that are not resistant.</li><li>The resistant one multiplies and forms a population of resistant bacteria just like itself.</li></ol>
+   <p class="note">Add the antibiotic and watch what survives.</p>`,
+   extra:'bact7',
+   check:C('Why do doctors advise saving antibiotics for when they are really needed?',['Antibiotics are too expensive to make','Each use kills non-resistant bacteria, so resistant ones are selected and spread','Antibiotics make bacteria grow faster','Bacteria have no genes'],1,'Reasoning from the book: using antibiotics favours resistant bacteria, so the antibiotic may stop working for serious illnesses.')},
+  {t:'Peppered moths',body:`<p>Peppered moths live in England. Most have pale wings, but some have a gene for dark wings. They rest on tree trunks by day, where birds hunt them. Pale wings are camouflaged on bark covered in <b>lichen</b>.</p>
+   <p>Until 1849 almost all were pale. During the Industrial Revolution, coal smoke killed the lichens and made trunks dark. Pale moths were no longer camouflaged and were eaten more; dark moths survived and reproduced more. By 1900 almost all moths near some cities were dark. Today the air is cleaner, lichens have returned, and most peppered moths are pale again.</p>
+   <p class="note">Set the bark colour and run generations. Birds catch the moths that stand out most.</p>`,
+   extra:'moths7',
+   check:C('Why did dark moths become common near cities by 1900?',['Smoke dyed the moths dark','Dark moths were camouflaged on sooty trunks, so more survived to reproduce','Birds preferred pale trunks','Lichens ate pale moths'],1,'Dark moths were less likely to be eaten, so their genes were passed on.')},
+  {t:'Extinction',body:`<p>If the moth population had not changed when the trunks darkened, most pale moths could have been eaten. The population could have become so small that the species died out: it would have become <b>extinct</b>.</p>
+   <p>Changes in the environment can make a species extinct if it cannot change over time. Scientists are worried that <b>climate change</b> may cause a very large number of species to become extinct, such as animals that depend on sea ice.</p>`,
+   check:C('When can a change in the environment make a species extinct?',['When the species can change over time','When the species cannot change over time to survive the new conditions','Only when there is pollution','Never'],1,'If no individuals have features that help them survive the change, the population can die out.')}
+ ],
+ mistakes:[
+  ['Animals change during their lives and pass the change on (stretching necks).','Natural selection works on variation that is already there, caused by genes. Survivors pass on their genes.'],
+  ['Antibiotics make bacteria resistant.','A resistant bacterium is there by chance. The antibiotic kills the others, so the resistant one multiplies.'],
+  ['Natural selection always causes change.','If the environment doesn\'t change, well-adapted organisms stay well adapted.']
+ ],
+ bq:[
+  {p:'p. 263',q:'Activity 7.4.1: What happens to a well-adapted population if the environment does not change? What if it changes?',a:'Reasoning from the five points: if nothing changes, the same features stay advantageous, so the population stays much the same. If the environment changes, different features may become advantageous, so the genes for those features become more common over generations.'},
+  {p:'p. 264',q:'Explain what we mean when we say bacteria have become resistant to an antibiotic.',a:'The antibiotic no longer kills them, so it no longer cures the disease they cause.'},
+  {p:'p. 264',q:'Explain how the development of resistance can be explained in terms of genetic changes over time.',a:'By chance, one bacterium has a gene for resistance. The antibiotic kills the non-resistant bacteria. The resistant one multiplies, passing on the gene, so the population becomes mostly resistant: the gene for resistance has become more common.'},
+  {p:'p. 264',q:'Doctors advise not using antibiotics unless really needed. Suggest an explanation.',a:'Suggested reasoning: every time an antibiotic is used, it kills non-resistant bacteria and leaves any resistant ones to multiply. Using antibiotics less means resistant bacteria are selected less often, so the antibiotics keep working for serious illnesses.'},
+  {p:'p. 265',q:'Use the five-point list to explain how natural selection made dark peppered moths more common than pale ones in the late nineteenth century.',a:'(1) The moths varied in colour. (2) Dark colour was caused by a gene. (3) On dark, sooty trunks, dark moths were camouflaged and more likely to survive bird attacks. (4) Dark moths were more likely to reproduce and pass on the gene for dark wings. (5) Over several generations the gene for dark wings became more common and the gene for pale wings less common.'}
+ ],
+ checklist:['I can describe the scientific theory of natural selection.','I can explain how natural selection can sometimes produce genetic changes in a population over time.','I can describe some examples of natural selection in action.','I can explain that environmental change can cause a species to become extinct.']
+}
+];
+
+const CYP7=[
+ {p:'7.1',m:4,q:'Complete the sentences using chromosomes, DNA, four, genes, two: The nucleus of every cell contains several long threads, called ……. In most cells there are …… copies of each thread. Each thread contains many ……. The threads are made of a chemical called …….',a:'chromosomes; two; genes; DNA. ("four" is not used.)'},
+ {p:'7.2',m:5,q:'Tick egg cells, sperm cells or both: (a) contain a nucleus, (b) are gametes, (c) can swim, (d) in humans contain 23 chromosomes, (e) contain either an X or a Y chromosome.',a:'(a) both; (b) both; (c) sperm cells only; (d) both; (e) sperm cells only (every egg cell contains an X).'},
+ {p:'7.3',m:8,q:'Arun counted the beans in 20 pods of one species: 7, 3, 8, 6, 3, 4, 7, 5, 5, 8, 6, 4, 6, 7, 5, 5, 6, 5, 4, 8. (a) Calculate the mean, showing working. (b) Complete a tally table: number of beans in a pod / tally / number of pods. (c) Draw a graph of the results.',a:'(a) Total = 112; 112 ÷ 20 = 5.6 beans. (b) 3 beans: 2 pods; 4: 3; 5: 5; 6: 4; 7: 3; 8: 3 (total 20). (c) Number of beans on the x-axis, number of pods on the y-axis, suitable scales, labelled axes; the book asks for the bars to touch.'},
+ {p:'7.4',m:5,q:'A line graph shows the percentage of pneumonia cases caused by penicillin-resistant bacteria, 1995–2004 (see page 270). (a) What is an antibiotic? (b) Describe the trend. (c) Suggest how natural selection has caused this trend.',a:'(a) A medicinal drug that cures diseases caused by bacteria. (b) Overall, the percentage of resistant cases increased (read the values from the graph on page 270). (c) The bacteria varied; by chance some had a gene for resistance. Penicillin killed the non-resistant bacteria, so the resistant ones survived, multiplied and passed on the gene. Over time resistant bacteria became more common.'}
+];
+
+const QUIZ7=[
+ C('Where are chromosomes found in a cell?',['In the cytoplasm','In the nucleus','In the cell membrane','In the cell wall'],1,'The nucleus of every cell contains chromosomes.'),
+ C('How many chromosomes are in a human body cell?',['23','46','8','40'],1,'Two sets of 23.'),
+ C('What are chromosomes made of?',['Protein only','DNA','Starch','Fat'],1,'Each chromosome is one long DNA molecule.'),
+ C('The shape of a DNA molecule is called…',['A single strand','A double helix','A crystal','A spiral staircase'],1,'Like a twisted ladder.'),
+ C('Each gene helps to control…',['The size of the nucleus','A particular characteristic','The number of chromosomes','How fast the cell divides'],1,'For example, eye colour.'),
+ C('Which chromosome carries two genes for eye colour?',['Chromosome 1','Chromosome 15','The Y chromosome','Chromosome 23'],1,'Chromosome 15.'),
+ C('The male gamete in humans is the…',['Egg cell','Sperm cell','Zygote','Red blood cell'],1,'Sperm = male, egg = female.'),
+ C('Which gamete contains food reserves in its cytoplasm?',['Sperm cell','Egg cell','Both','Neither'],1,'The egg cell.'),
+ C('The cell formed at fertilisation is called a…',['Gamete','Zygote','Chromosome','Gene'],1,'Zygote.'),
+ C('A person with XY sex chromosomes is…',['Female','Male','Either','Neither'],1,'XY = male, XX = female.'),
+ C('What fraction of human sperm cells carry a Y chromosome?',['None','About half','All','A quarter'],1,'Half carry X and half carry Y.'),
+ C('Differences between individuals of the same species are called…',['Inheritance','Variation','Fertilisation','Extinction'],1,'Variation.'),
+ C('Goat coat colour is determined by…',['The environment only','DNA (genetic differences)','How much it eats','The weather'],1,'The book\'s example of genetic variation.'),
+ C('The mean of 4, 6 and 8 is…',['6','18','8','4'],0,'(4 + 6 + 8) ÷ 3 = 6.'),
+ C('Data such as wrist circumference are best shown as…',['A pie chart','A frequency diagram with touching bars','A line graph','A table only'],1,'Choose groups with equal ranges.'),
+ C('In natural selection, which individuals are more likely to reproduce?',['The oldest','Those with advantageous features','The biggest','All equally'],1,'They are more likely to survive.'),
+ C('Bacteria that are not killed by an antibiotic are…',['Extinct','Resistant','Camouflaged','Gametes'],1,'Resistant.'),
+ C('Before 1849, most peppered moths in England were…',['Dark','Pale','Red','Spotted'],1,'Pale moths were camouflaged on lichen.'),
+ C('Why did tree trunks near English cities turn dark?',['Smoke killed lichens and darkened the bark','The trees were diseased','Moths covered them','Rain washed the bark'],0,'Coal smoke from factories.'),
+ C('What can happen to a species that cannot change when its environment changes?',['It becomes resistant','It may become extinct','It grows longer necks','Nothing'],1,'Its population could die out.')
+];
+
+/* =================== CHAPTER 7 INTERACTIVE EXTRAS =================== */
+Object.assign(EXTRA,{
+karyo7(){return `<div class="vis" id="ky7"><div class="row" style="justify-content:center">${[['Human',46],['Mango tree',40],['Fruit fly',8]].map(([n,k],i)=>`<button class="btn ${i?'':'primary'}" data-ky="${k}">${n} (${k})</button>`).join('')}</div>
+ <canvas id="kyC" class="trough" style="height:230px" aria-label="Chromosomes arranged in pairs by size"></canvas><div class="infobox" id="kyInfo"></div><p class="cap">A simplified drawing: real chromosomes don't line up like this in the cell.</p></div>`},
+genes7(){const G=[['Gene 1','One gene. It helps to control one particular characteristic.','#5FB4FF'],['Gene 2','A different gene, controlling a different characteristic.','#E8A15A'],['Eye colour gene','The book\'s example: genes on chromosome 15 help to determine eye colour. One version gives blue eyes, another gives brown eyes.','#9FD47A'],['Gene 4','Each gene sits in a particular place in the sequence along the chromosome.','#FF7A8E'],['Gene 5','Everyone of the same species has this gene in the same place, but there can be different versions of it.','#B48CFF'],['Gene 6','A real chromosome has hundreds of genes; only six are drawn here.','#FFD36E']];
+ return `<div class="vis" id="gn7"><svg viewBox="0 0 420 90" style="max-width:520px" aria-label="Model chromosome with genes as stripes"><rect x="10" y="30" width="400" height="30" rx="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+ ${G.map(([n,,c],i)=>`<rect class="gst" data-g="${i}" x="${30+i*62}" y="31" width="36" height="28" fill="${c}" style="cursor:pointer"><title>${n}</title></rect>`).join('')}<text x="210" y="80" text-anchor="middle" class="small">one chromosome: hundreds of genes in a sequence (6 shown)</text></svg>
+ <div class="infobox" id="gnInfo">Tap a stripe.</div><span hidden id="gnData">${encodeURIComponent(JSON.stringify(G))}</span></div>`},
+zoom7(){return `<div class="vis" id="zm7"><canvas id="zmC" class="trough" style="height:240px" aria-label="Zooming from a cell to DNA"></canvas><div class="row" style="justify-content:center"><button class="btn" id="zmOut">− Zoom out</button><span class="chip" id="zmN">Cell</span><button class="btn primary" id="zmIn">Zoom in +</button></div><div class="infobox" id="zmInfo"></div></div>`},
+gametes7(){const L=[['s','tail','Makes swimming movements, so the sperm can swim vigorously.'],['s','nucleus','Contains 23 chromosomes.'],['s','membrane','The cell surface membrane.'],['s','cytoplasm','Only a small amount.'],['e','nucleus','Contains 23 chromosomes.'],['e','cytoplasm','Contains food reserves.'],['e','membrane','The cell surface membrane.']];
+ return `<div class="vis" id="gm7"><div class="calcgrid"><div><svg viewBox="0 0 200 120" aria-label="Sperm cell (not to scale)"><path id="gmTail" d="M70 60 C100 40 120 80 150 60 S190 50 196 62" fill="none" stroke="#5FB4FF" stroke-width="3"/><ellipse cx="45" cy="60" rx="28" ry="18" fill="rgba(95,180,255,.25)" stroke="#5FB4FF" stroke-width="2"/><ellipse cx="40" cy="60" rx="16" ry="11" fill="#5FB4FF"/></svg><div class="row" style="justify-content:center">${L.filter(x=>x[0]==='s').map(x=>`<button class="btn" data-gm="${x[0]}|${x[1]}|${x[2]}">${x[1]}</button>`).join('')}</div><p class="cap">Sperm cell (very small)</p></div>
+ <div><svg viewBox="0 0 200 120" aria-label="Egg cell (not to scale)"><circle cx="100" cy="60" r="55" fill="rgba(255,122,194,.18)" stroke="#FF7AC2" stroke-width="2"/>${Array.from({length:24},(_,i)=>`<circle cx="${100+Math.cos(i*2.4)*(18+i*1.4)}" cy="${60+Math.sin(i*2.4)*(14+i*1.2)}" r="2" fill="#E8C47A"/>`).join('')}<circle cx="100" cy="60" r="16" fill="#FF7AC2"/></svg><div class="row" style="justify-content:center">${L.filter(x=>x[0]==='e').map(x=>`<button class="btn" data-gm="${x[0]}|${x[1]}|${x[2]}">${x[1]}</button>`).join('')}</div><p class="cap">Egg cell (much bigger; dots = food reserves)</p></div></div>
+ <div class="infobox" id="gmInfo">Tap a label.</div></div>`},
+fert7(){return `<div class="vis" id="ft7"><canvas id="ftC" class="trough" style="height:220px" aria-label="Sperm fertilising an egg"></canvas><div class="row" style="justify-content:center"><button class="btn primary" id="ftGo">▶ Fertilise</button><button class="btn" id="ftReset">Reset</button></div><div class="infobox" id="ftInfo">Sperm: 23 chromosomes. Egg: 23 chromosomes.</div></div>`},
+sexPots7(){return `<div class="vis" id="sx7"><div class="calcgrid"><div class="card" style="padding:10px;gap:4px;text-align:center"><b>Egg pot</b><span class="tiny" id="sxE">30 left (all X)</span></div><div class="card" style="padding:10px;gap:4px;text-align:center"><b>Sperm pot</b><span class="tiny" id="sxS">30 left (15 X, 15 Y)</span></div></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="sxOne">Draw one pair</button><button class="btn" id="sxAll">Draw all</button><button class="btn" id="sxReset">Reset</button></div>
+ <div id="sxLog" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:30px"></div><div class="infobox" id="sxInfo">Girls (XX): 0 · Boys (XY): 0</div></div>`},
+vetch7(){const D=[['Red',5,'#E0443E'],['Pink',2,'#FF9EC4'],['Orange',3,'#FF9A3C'],['Yellow',9,'#FFD23F'],['Cream',3,'#F3E9C8']];
+ return `<div class="vis"><svg viewBox="0 0 420 230" aria-label="Bar chart of kidney vetch flower colours"><line x1="40" y1="190" x2="410" y2="190" stroke="var(--ink)"/><line x1="40" y1="10" x2="40" y2="190" stroke="var(--ink)"/>
+ ${[0,2,4,6,8,10].map(v=>`<text x="32" y="${194-v*17}" text-anchor="end" class="small">${v}</text><line x1="40" x2="410" y1="${190-v*17}" y2="${190-v*17}" stroke="var(--line)"/>`).join('')}
+ ${D.map(([n,v,c],i)=>`<rect class="vbar" data-v="${n}|${v}" x="${60+i*70}" y="${190-v*17}" width="46" height="${v*17}" fill="${c}" stroke="var(--ink)" style="cursor:pointer"/><text x="${83+i*70}" y="206" text-anchor="middle" class="small">${n}</text>`).join('')}
+ <text x="225" y="224" text-anchor="middle" class="small">Colour of flowers</text><text x="12" y="100" transform="rotate(-90 12 100)" text-anchor="middle" class="small">Number of plants</text></svg>
+ <div class="infobox" id="vtInfo">Tap a bar.</div><p class="cap">Zara's results from page 255.</p></div>`},
+stats7(){return `<div class="vis" id="st7"><div class="row" style="justify-content:center"><input id="stIn" value="11, 15, 12, 11, 13" style="flex:1;max-width:340px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)" aria-label="Numbers separated by commas"><button class="btn primary" id="stGo">Work it out</button></div><div class="infobox" id="stOut"></div></div>`},
+goats7(){return `<div class="vis" id="gt7"><div class="calcgrid"><div class="card" style="padding:10px;gap:4px"><b>Parent 1</b><span class="tiny">Horns: long or short · Coat: brown or white</span></div><div class="card" style="padding:10px;gap:4px"><b>Parent 2</b><span class="tiny">Horns: curved or straight · Coat: black or brown</span></div></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="gtGo">Make an offspring</button></div><div id="gtKids" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"></div><p class="cap">A simplified model: each gamete carries one version of each gene, chosen by chance. Real inheritance involves many more genes.</p></div>`},
+cause7(){const S=[['Goat coat colour','g'],['Goat body mass (one goat eats more)','b'],['Eye colour (blue or brown)','g'],['Whether a baby is a boy or a girl','g'],['Different numbers of leaflets on leaves from the same tree','e']];
+ return `<div class="vis"><div class="sort" id="cs7">${S.map(([t,a])=>`<div class="srow" data-a="${a}"><span class="lbl">${t}</span><span class="seg"><button class="btn" data-v="g">Genes</button><button class="btn" data-v="e">Environment</button><button class="btn" data-v="b">Both</button></span></div>`).join('')}</div><p class="cap">Goats: page 258. Eye colour: page 246. Boy or girl: pages 250–251. Leaves from one tree share the same DNA, so their differences come from the environment (reasoning from the page 257 question).</p></div>`},
+necks7(){return `<div class="vis" id="nk7"><canvas id="nkC" class="trough" style="height:230px" aria-label="Animals with long and short necks reaching leaves"></canvas><div class="row" style="justify-content:center"><button class="btn" id="nkPrev">◀</button><span class="chip" id="nkN">1 / 4</span><button class="btn primary" id="nkNext">▶</button></div><div class="infobox" id="nkInfo"></div></div>`},
+order7(){const P=['In every species, there is variation among individuals.','Some of this variation is caused by differences in their genes.','Some individuals have features that make them more likely to survive.','Individuals with advantageous features are more likely to reproduce and pass on their genes.','Over many generations, the genes for advantageous features become more common.'];
+ return `<div class="vis" id="od7"><div id="odList" style="display:grid;gap:6px"></div><div class="row" style="justify-content:center"><button class="btn primary" id="odCheck">Check order</button><button class="btn" id="odShuffle">Shuffle</button></div><div class="infobox" id="odInfo">Use the arrows to move each point.</div><span hidden id="odData">${encodeURIComponent(JSON.stringify(P))}</span></div>`},
+bact7(){return `<div class="vis" id="bc7"><canvas id="bcC" class="trough" style="height:220px" aria-label="Bacteria population and an antibiotic"></canvas><div class="row" style="justify-content:center"><button class="btn primary" id="bcAnti">Add antibiotic</button><button class="btn" id="bcGrow">Let them multiply</button><button class="btn" id="bcReset">Reset</button></div><div class="infobox" id="bcInfo">Most bacteria (green) are not resistant. By chance, one (orange) has a gene for resistance.</div></div>`},
+moths7(){return `<div class="vis" id="mo7"><canvas id="moC" class="trough" style="height:220px" aria-label="Pale and dark moths on bark"></canvas>
+ <div class="row" style="justify-content:center"><label class="tiny" for="moBark">Bark: lichen-covered</label><input type="range" id="moBark" min="0" max="100" value="0" style="flex:1;max-width:220px"><span class="tiny">sooty</span></div>
+ <div class="row" style="justify-content:center"><button class="btn primary" id="moGen">Run 1 generation</button><button class="btn" id="moTen">Run 10</button><button class="btn" id="moReset">Reset</button></div><div class="infobox" id="moInfo"></div><p class="cap">A simplified model: birds are more likely to eat the moths that contrast most with the bark.</p></div>`}
+});
+
+/* =================== CHAPTER 7 WIDGET INIT =================== */
+function initWidgets7(){
+ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const dpr=Math.min(2,devicePixelRatio||1);
+ const fit=cv=>{const W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==Math.round(W*dpr)){cv.width=W*dpr;cv.height=H*dpr;}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return[g,W,H];};
+ const loop=(cv,fn)=>{const f=t=>{if(!document.body.contains(cv))return;fn(t);requestAnimationFrame(f);};requestAnimationFrame(f);};
+ // karyotype
+ if($('#ky7')){let n=46;const cv=$('#kyC');const set=k=>{n=k;$$('[data-ky]').forEach(b=>b.classList.toggle('primary',+b.dataset.ky===k));$('#kyInfo').innerHTML=`<b>${k} chromosomes</b> = ${k/2} pairs. Two of each kind, numbered from the longest (1) down.${k===46?' The last pair are the sex chromosomes (7.2).':''}`;};
+  $$('[data-ky]').forEach(b=>b.onclick=()=>set(+b.dataset.ky));set(46);
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const p=n/2,cols=Math.min(p,12),rows=Math.ceil(p/cols),cw=W/cols,rh=(H-10)/rows;
+   for(let i=0;i<p;i++){const c=i%cols,r=Math.floor(i/cols);const len=(rh-22)*(1-i/(p*1.15));const x=c*cw+cw/2,y=r*rh+8+(rh-22-len)/2;const hue=(i*37)%360;
+    [-6,6].forEach(dx=>{g.fillStyle=`hsl(${hue},55%,60%)`;g.beginPath();g.roundRect?g.roundRect(x+dx-3,y,6,len,3):g.rect(x+dx-3,y,6,len);g.fill();g.fillStyle='rgba(0,0,0,.25)';for(let s=y+4;s<y+len-2;s+=6)g.fillRect(x+dx-3,s,6,1.5);});
+    g.fillStyle=css('--ink');g.font='10px system-ui';g.textAlign='center';g.fillText(n===46&&i===p-1?'X X':String(i+1),x,r*rh+rh-4);}
+   g.textAlign='left';});}
+ // genes
+ if($('#gn7')){const G=JSON.parse(decodeURIComponent($('#gnData').textContent));$$('.gst').forEach(r=>r.onclick=()=>{const[n,d]=G[+r.dataset.g];$$('.gst').forEach(x=>x.setAttribute('stroke',x===r?'var(--ink)':'none'));r.setAttribute('stroke-width','3');$('#gnInfo').innerHTML=`<b>${n}</b>: ${d}`;});}
+ // zoom
+ if($('#zm7')){const cv=$('#zmC');const L=[['Cell','A cell. The nucleus controls its activities.'],['Nucleus','The nucleus contains chromosomes (two of each kind).'],['Chromosome','One chromosome: one enormously long molecule of DNA, carrying hundreds of genes.'],['Gene','A gene is a length of DNA. One gene could have about 2500 twists.'],['DNA','DNA is a double helix, shaped like a twisted ladder. Far too small to see with a microscope.']];let z=0,zs=0;
+  const go=()=>{$('#zmN').textContent=L[z][0];$('#zmInfo').innerHTML=`<b>${L[z][0]}</b>: ${L[z][1]}`;};$('#zmIn').onclick=()=>{z=Math.min(4,z+1);go();};$('#zmOut').onclick=()=>{z=Math.max(0,z-1);go();};go();
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);zs+=(z-zs)*(reduce?1:.08);const cx=W/2,cy=H/2,k=Math.min(1,Math.max(0,zs-Math.floor(zs)));const lvl=Math.round(zs);const a=1-Math.abs(zs-lvl)*2;g.globalAlpha=Math.max(.15,a);
+   if(lvl===0){g.fillStyle='rgba(159,212,122,.35)';g.strokeStyle='#5A8A3A';g.lineWidth=2;g.beginPath();g.ellipse(cx,cy,140,90,0,0,7);g.fill();g.stroke();g.fillStyle='#B48CFF';g.beginPath();g.arc(cx+20,cy,32,0,7);g.fill();}
+   if(lvl===1){g.fillStyle='rgba(180,140,255,.35)';g.strokeStyle='#7A5ACF';g.lineWidth=2;g.beginPath();g.arc(cx,cy,100,0,7);g.fill();g.stroke();for(let i=0;i<14;i++){g.save();g.translate(cx+Math.cos(i*1.7)*55,cy+Math.sin(i*2.3)*50);g.rotate(i);g.strokeStyle=`hsl(${i*40},60%,55%)`;g.lineWidth=5;g.beginPath();g.moveTo(-14,0);g.quadraticCurveTo(0,8,14,0);g.stroke();g.restore();}}
+   if(lvl===2){g.fillStyle='#C98BE8';g.beginPath();g.ellipse(cx-20,cy,150,16,-.05,0,7);g.fill();g.beginPath();g.ellipse(cx+20,cy,150,16,.05,0,7);g.fill();g.fillStyle='rgba(0,0,0,.25)';for(let x=-150;x<150;x+=14)g.fillRect(cx+x,cy-14,4,28);}
+   if(lvl===3){g.fillStyle='#C98BE8';g.fillRect(20,cy-22,W-40,44);['#5FB4FF','#FFD36E','#9FD47A','#FF7A8E'].forEach((c,i)=>{g.fillStyle=c;g.fillRect(40+i*(W-80)/4,cy-22,(W-80)/4-10,44);});g.fillStyle=css('--ink');g.font='12px system-ui';g.fillText('genes = sections of the DNA',30,cy+42);}
+   if(lvl===4){const ph=reduce?0:t/800;for(let x=20;x<W-20;x+=3){const y1=cy+Math.sin(x/28+ph)*50,y2=cy+Math.sin(x/28+ph+Math.PI)*50;if(x%15<3){g.strokeStyle='rgba(255,211,110,.8)';g.lineWidth=2;g.beginPath();g.moveTo(x,y1);g.lineTo(x,y2);g.stroke();}g.fillStyle='#5FB4FF';g.fillRect(x,y1-2,3,4);g.fillStyle='#FF7A8E';g.fillRect(x,y2-2,3,4);}}
+   g.globalAlpha=1;});}
+ // gametes
+ if($('#gm7')){$$('[data-gm]').forEach(b=>b.onclick=()=>{const[w,n,d]=b.dataset.gm.split('|');$$('[data-gm]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('#gmInfo').innerHTML=`<b>${w==='s'?'Sperm':'Egg'} ${n}</b>: ${d}`;});}
+ // fertilisation
+ if($('#ft7')){const cv=$('#ftC');let t0=null;$('#ftGo').onclick=()=>{t0=performance.now();};$('#ftReset').onclick=()=>{t0=null;$('#ftInfo').textContent='Sperm: 23 chromosomes. Egg: 23 chromosomes.';};
+  loop(cv,now=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const k=t0==null?0:reduce?1:Math.min(1,(now-t0)/3000);const ex=W*.62,ey=H/2;
+   g.fillStyle='rgba(255,122,194,.2)';g.strokeStyle='#FF7AC2';g.lineWidth=2;g.beginPath();g.arc(ex,ey,80,0,7);g.fill();g.stroke();
+   const sx=k<.5?20+(ex-100-20)*(k/.5):ex-80+ (k-.5)*2*60;const nk=Math.max(0,(k-.6)/.4);
+   if(k<.6){g.strokeStyle='#5FB4FF';g.beginPath();for(let i=0;i<40;i++){const x=sx-14-i*2,y=ey+Math.sin(i/4+now/80)*5;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.fillStyle='#5FB4FF';g.beginPath();g.ellipse(sx,ey,12,8,0,0,7);g.fill();}
+   const enx=ex+20-nk*20,snx=(k<.6?sx:ex-40)+nk*40;g.fillStyle='#FF7AC2';g.beginPath();g.arc(enx,ey,18,0,7);g.fill();
+   if(k>=.6){g.fillStyle='#5FB4FF';g.globalAlpha=1-nk*.6;g.beginPath();g.arc(snx,ey,10,0,7);g.fill();g.globalAlpha=1;}
+   if(nk>=1){g.fillStyle='#B48CFF';g.beginPath();g.arc(ex,ey,22,0,7);g.fill();}
+   g.fillStyle=css('--ink');g.font='12px system-ui';g.textAlign='center';g.fillText(nk>=1?'zygote nucleus: 46':'23',nk>=1?ex:enx,ey-28);if(k<.6)g.fillText('23',sx,ey-14);g.textAlign='left';
+   if(nk>=1&&$('#ftInfo').dataset.done!=='1'){$('#ftInfo').innerHTML='<b>Fertilisation!</b> The nuclei fused: 23 + 23 = <b>46</b> chromosomes. This new cell is a <b>zygote</b>.';$('#ftInfo').dataset.done='1';}
+   if(nk<1)$('#ftInfo').dataset.done='0';});}
+ // sex pots
+ if($('#sx7')){let E,Sp,girls,boys;const reset=()=>{E=30;Sp=[...Array(15).fill('X'),...Array(15).fill('Y')];girls=boys=0;$('#sxLog').innerHTML='';up();};
+  const up=()=>{$('#sxE').textContent=`${E} left (all X)`;const x=Sp.filter(s=>s==='X').length;$('#sxS').textContent=`${Sp.length} left (${x} X, ${Sp.length-x} Y)`;$('#sxInfo').innerHTML=`Girls (XX): <b>${girls}</b> · Boys (XY): <b>${boys}</b>${E===0?' · <b>All used.</b> The numbers are equal because the sperm pot was half X, half Y. With real random gametes the numbers are only approximately equal.':''}`;$('#sxOne').disabled=$('#sxAll').disabled=E===0;};
+  const one=()=>{if(!E)return;const i=Math.floor(Math.random()*Sp.length);const s=Sp.splice(i,1)[0];E--;s==='X'?girls++:boys++;const c=document.createElement('span');c.className='chip';c.style.padding='2px 8px';c.textContent='X'+s;c.style.borderColor=s==='X'?'#FF7AC2':'#5FB4FF';$('#sxLog').appendChild(c);up();};
+  $('#sxOne').onclick=one;$('#sxAll').onclick=()=>{while(E)one();};$('#sxReset').onclick=reset;reset();}
+ // vetch
+ $$('.vbar').forEach(b=>b.onclick=()=>{const[n,v]=b.dataset.v.split('|');const tally='𝍸'.repeat(Math.floor(v/5))+'|'.repeat(v%5);$('#vtInfo').innerHTML=`<b>${n}</b>: ${v} plants. Tally: <span style="font-size:20px;letter-spacing:2px">${tally}</span>`;});
+ // stats
+ if($('#st7')){const run=()=>{const a=$('#stIn').value.split(/[\s,;]+/).map(Number).filter(x=>!isNaN(x)&&String(x)!=='');if(!a.length){$('#stOut').textContent='Type some numbers separated by commas.';return;}
+   const s=a.slice().sort((x,y)=>x-y),n=s.length,sum=s.reduce((p,c)=>p+c,0);const med=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;const cnt={};s.forEach(v=>cnt[v]=(cnt[v]||0)+1);const mx=Math.max(...Object.values(cnt));const modes=Object.keys(cnt).filter(k=>cnt[k]===mx);
+   const r=v=>Math.round(v*100)/100;$('#stOut').innerHTML=`In order: ${s.join(', ')}<br><b>Median</b> = ${n%2?`the middle value = ${med}`:`halfway between ${s[n/2-1]} and ${s[n/2]} = ${med}`}<br><b>Mode</b> = ${mx===1?'no value repeats, so there is no mode':modes.join(' and ')+` (appears ${mx} times)`}<br><b>Mean</b> = ${sum} ÷ ${n} = ${r(sum/n)}`;};
+  $('#stGo').onclick=run;run();}
+ // goats
+ if($('#gt7')){const pick=a=>a[Math.floor(Math.random()*a.length)];$('#gtGo').onclick=()=>{const h=pick(['long','short'])+', '+pick(['curved','straight']);const c=pick(['brown','white'])+' + '+pick(['black','brown']);const k=document.createElement('div');k.className='card';k.style.cssText='padding:8px;gap:2px;min-width:150px';k.innerHTML=`<b>Kid ${$$('#gtKids .card').length+1}</b><span class="tiny">Horns: ${h}<br>Coat genes: ${c}</span>`;$('#gtKids').appendChild(k);if($$('#gtKids .card').length>6)$('#gtKids').firstChild.remove();};}
+ // cause sort
+ if($('#cs7'))$$('#cs7 .srow').forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;const ok=b.dataset.v===r.dataset.a;$$('[data-v]',r).forEach(x=>x.setAttribute('aria-pressed',x===b));r.classList.toggle('ok',ok);r.classList.toggle('no',!ok);}));
+ // necks
+ if($('#nk7')){const cv=$('#nkC');let s=0,t0=0;const T=['Long ago: a herbivore with genetic variation. Some have genes for long necks, some for shorter necks.','The rains fail and food runs short. Once the lower leaves are eaten, only long-necked animals can reach food.','Most short-necked animals die of starvation.','The survivors reproduce and pass on their genes, so most offspring grow up with long necks.'];
+  const go=()=>{$('#nkN').textContent=`${s+1} / 4`;$('#nkInfo').textContent=T[s];t0=performance.now();};$('#nkNext').onclick=()=>{s=Math.min(3,s+1);go();};$('#nkPrev').onclick=()=>{s=Math.max(0,s-1);go();};go();
+  const A=[[.12,1],[.22,0],[.32,1],[.42,0],[.52,0],[.62,1],[.72,0],[.82,1]];
+  loop(cv,now=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);const k=reduce?1:Math.min(1,(now-t0)/1200);const gy=H-20;g.fillStyle='#C8B26A';g.fillRect(0,gy,W,20);
+   [W*.2,W*.5,W*.8].forEach(x=>{g.fillStyle='#7A5A3A';g.fillRect(x-6,40,12,gy-40);g.fillStyle='#4E9A3A';g.beginPath();g.arc(x,40,38,0,7);g.fill();if(s===0){g.beginPath();g.arc(x,gy-70,26,0,7);g.fill();}});
+   A.forEach(([fx,long],i)=>{let alive=true,ln=long;if(s===2&&!long)alive=false;if(s===3){ln=i%4!==3?1:0;alive=true;}if(s===2&&!long){g.globalAlpha=1-k*.8;}const x=fx*W,nl=ln?95:45;g.fillStyle=s===2&&!long?'#999':'#E3B04B';
+    g.beginPath();g.ellipse(x,gy-30,22,13,0,0,7);g.fill();g.fillRect(x+12,gy-30-nl,7,nl);g.beginPath();g.ellipse(x+17,gy-32-nl,9,6,0,0,7);g.fill();g.fillRect(x-14,gy-22,4,22);g.fillRect(x+10,gy-22,4,22);g.globalAlpha=1;});});}
+ // order
+ if($('#od7')){const P=JSON.parse(decodeURIComponent($('#odData').textContent));let ord=[];const draw=()=>{$('#odList').innerHTML=ord.map((i,pos)=>`<div class="srow" data-i="${i}"><span class="lbl"><b>${pos+1}.</b> ${P[i]}</span><span class="seg"><button class="btn" data-mv="-1" data-p="${pos}" aria-label="Move up">▲</button><button class="btn" data-mv="1" data-p="${pos}" aria-label="Move down">▼</button></span></div>`).join('');
+   $$('#odList [data-mv]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p,q=p+ +b.dataset.mv;if(q<0||q>=ord.length)return;[ord[p],ord[q]]=[ord[q],ord[p]];draw();});};
+  const shuf=()=>{ord=[0,1,2,3,4];do{ord.sort(()=>Math.random()-.5);}while(ord.every((v,i)=>v===i));draw();$('#odInfo').textContent='Use the arrows to move each point.';};
+  $('#odShuffle').onclick=shuf;$('#odCheck').onclick=()=>{let ok=0;$$('#odList .srow').forEach((r,i)=>{const g=+r.dataset.i===i;r.classList.toggle('ok',g);r.classList.toggle('no',!g);if(g)ok++;});$('#odInfo').innerHTML=ok===5?'<b>Perfect!</b> That is the order on pages 262–263.':`${ok} of 5 in the right place. Remember: variation first, genes become more common last.`;};shuf();}
+ // bacteria
+ if($('#bc7')){const cv=$('#bcC');let B,stage;const reset=()=>{B=Array.from({length:40},(_,i)=>({x:Math.random(),y:Math.random(),r:i===0,a:1,dead:false}));stage=0;$('#bcInfo').textContent='Most bacteria (green) are not resistant. By chance, one (orange) has a gene for resistance.';$('#bcGrow').disabled=true;$('#bcAnti').disabled=false;};
+  $('#bcAnti').onclick=()=>{B.forEach(b=>{if(!b.r)b.dead=true;});stage=1;$('#bcInfo').innerHTML='The antibiotic kills the bacteria that are <b>not</b> resistant. The resistant one survives.';$('#bcAnti').disabled=true;$('#bcGrow').disabled=false;};
+  $('#bcGrow').onclick=()=>{B=B.filter(b=>!b.dead);const add=Math.min(40,B.length*2)-B.length;for(let i=0;i<add;i++)B.push({x:Math.random(),y:Math.random(),r:true,a:0,dead:false});stage=2;$('#bcInfo').innerHTML=B.length>=40?'A whole population of <b>resistant</b> bacteria. The same antibiotic would no longer work.':'The resistant bacteria multiply, passing on the gene for resistance. Keep going.';};
+  $('#bcReset').onclick=reset;reset();
+  loop(cv,t=>{const[g,W,H]=fit(cv);g.clearRect(0,0,W,H);if(stage===1){g.fillStyle='rgba(95,180,255,.12)';g.fillRect(0,0,W,H);}
+   B.forEach((b,i)=>{if(b.dead)b.a=Math.max(0,b.a-.03);else b.a=Math.min(1,b.a+.05);g.globalAlpha=b.a;const x=10+b.x*(W-20)+(reduce?0:Math.sin(t/700+i)*3),y=10+b.y*(H-20);g.fillStyle=b.r?'#FF9A3C':'#7CD67C';g.beginPath();g.ellipse(x,y,9,5,i,0,7);g.fill();});g.globalAlpha=1;});}
+ // moths
+ if($('#mo7')){const cv=$('#moC');let pale,dark,gen;const reset=()=>{pale=95;dark=5;gen=0;info();};const bark=()=>+$('#moBark').value/100;
+  const info=()=>{$('#moInfo').innerHTML=`Generation <b>${gen}</b> · pale moths <b>${Math.round(pale)}%</b> · dark moths <b>${Math.round(dark)}%</b>`;};
+  const step=()=>{const b=bark();const sp=.15+.6*b,sd=.15+.6*(1-b);let p=pale*(1-sp),d=dark*(1-sd);const tot=p+d;pale=p/tot*100;dark=d/tot*100;gen++;info();};
+  $('#moGen').onclick=step;$('#moTen').onclick=()=>{for(let i=0;i<10;i++)step();};$('#moReset').onclick=reset;$('#moBark').oninput=()=>{$('#moBark').previousElementSibling.textContent=bark()<.5?'Bark: lichen-covered':'Bark: sooty';};reset();
+  const spots=Array.from({length:40},()=>({x:Math.random(),y:Math.random(),w:Math.random()}));
+  loop(cv,t=>{const[g,W,H]=fit(cv);const b=bark();const c=Math.round(200-150*b);g.fillStyle=`rgb(${c},${c},${Math.round(c*.95)})`;g.fillRect(0,0,W,H);
+   if(b<.6){g.fillStyle=`rgba(170,200,150,${.6-b})`;spots.forEach(s=>{g.beginPath();g.arc(s.x*W,s.y*H,10+s.w*18,0,7);g.fill();});}
+   g.strokeStyle='rgba(0,0,0,.2)';for(let x=10;x<W;x+=26){g.beginPath();g.moveTo(x,0);g.lineTo(x+(Math.sin(x)*6),H);g.stroke();}
+   const n=20,nd=Math.round(dark/100*n);for(let i=0;i<n;i++){const x=20+((i*53)%Math.max(1,W-40)),y=20+((i*37)%Math.max(1,H-40));const d=i<nd;g.fillStyle=d?'#2B2B2B':'#E8E4D8';g.save();g.translate(x,y);g.beginPath();g.ellipse(-7,0,8,5,-.4,0,7);g.ellipse(7,0,8,5,.4,0,7);g.fill();g.fillStyle=d?'#111':'#9A968A';g.fillRect(-1,-5,2,10);g.restore();}});}
+}
+
 const CHAPTERS_DATA={
  1:{title:'Photosynthesis and the carbon cycle',pages:'8–47',cypPages:'45–47',cypNote:'Questions 1.2, 1.3 and 1.4 use a diagram or graph, so keep your book open at those pages.',topics:TOPICS1,kw:KEYWORDS1,cyp:CYP1,quiz:QUIZ1},
  2:{title:'Properties of materials',pages:'48–83',cypPages:'82–83',cypNote:'Questions 2.1, 2.4 and 2.5 use a table, a model or a diagram, so keep your book open at those pages.',topics:TOPICS2,kw:KEYWORDS2,cyp:CYP2,quiz:QUIZ2},
  3:{title:'Forces and energy',pages:'84–141',cypPages:'139–141',cypNote:'Questions 3.9 and 3.10 use diagrams, so keep your book open at pages 140–141.',topics:TOPICS3,kw:KEYWORDS3,cyp:CYP3,quiz:QUIZ3},
  4:{title:'Maintaining life',pages:'142–167',cypPages:'166–167',cypNote:'Question 4.3 uses a diagram of Arun\'s two plants on page 166, so keep your book open there.',topics:TOPICS4,kw:KEYWORDS4,cyp:CYP4,quiz:QUIZ4},
  5:{title:'Reactivity',pages:'168–205',cypPages:'204–205',cypNote:'Questions 5.3 and 5.4 refer to diagrams on page 205, so keep your book open there.',topics:TOPICS5,kw:KEYWORDS5,cyp:CYP5,quiz:QUIZ5},
- 6:{title:'Sound and space',pages:'206–242',cypPages:'241–242',cypNote:'Questions 6.1 and 6.3 use waveform diagrams on page 241, so keep your book open there.',topics:TOPICS6,kw:KEYWORDS6,cyp:CYP6,quiz:QUIZ6}};
+ 6:{title:'Sound and space',pages:'206–242',cypPages:'241–242',cypNote:'Questions 6.1 and 6.3 use waveform diagrams on page 241, so keep your book open there.',topics:TOPICS6,kw:KEYWORDS6,cyp:CYP6,quiz:QUIZ6},
+ 7:{title:'Genes and inheritance',pages:'243–270',cypPages:'269–270',cypNote:'Question 7.4 uses a line graph on page 270, so keep your book open there.',topics:TOPICS7,kw:KEYWORDS7,cyp:CYP7,quiz:QUIZ7}};
 let CUR=1,TOPICS,KEYWORDS,CYP,QUIZ,CHD;
 const qb=()=>S.quiz[CUR]?S.quiz[CUR].best:null;
 function useChapter(n){if(!CHAPTERS_DATA[n])n=1;CUR=n;CHD=CHAPTERS_DATA[n];TOPICS=CHD.topics;KEYWORDS=CHD.kw;CYP=CHD.cyp;QUIZ=CHD.quiz;S.ch=n;if(!S.sec[n])S.sec[n]=TOPICS[0].id;QZ=null;}
@@ -3630,6 +3982,7 @@ function initWidgets(){
  try{initWidgets4();}catch(e){console.error(e);}
  try{initWidgets5();}catch(e){console.error(e);}
  try{initWidgets6();}catch(e){console.error(e);}
+ try{initWidgets7();}catch(e){console.error(e);}
 }
 
 /* =================== GALAXY: themes, rail, study-later, stickers, notes, fonts =================== */
